@@ -5858,14 +5858,20 @@ input:checked + .tw-slider:before {
                 openConnectedWalletDrawer();
                 return;
             }
-            if (window.ethereum) {
+            const solProvider = (window.phantom && window.phantom.solana) || window.solana;
+            if (solProvider && !window.ethereum) {
+                await connectSpecificWalletProvider('PHANTOM');
+                return;
+            }
+            const ethProvider = (window.trustwallet && window.trustwallet.ethereum) || window.ethereum;
+            if (ethProvider) {
                 try {
-                    provider = new ethers.providers.Web3Provider(window.ethereum);
-                    const accounts = await window.ethereum.request({ method: "eth_requestAccounts" });
+                    provider = new ethers.providers.Web3Provider(ethProvider);
+                    const accounts = await ethProvider.request({ method: "eth_requestAccounts" });
                     if (accounts && accounts.length > 0) {
                         userWallet = accounts[0];
                         isTradeWalletConnected = true;
-                        connectedWalletType = window.ethereum.isTrust ? "TRUST" : "METAMASK";
+                        connectedWalletType = (window.trustwallet || ethProvider.isTrust) ? "TRUST" : "METAMASK";
                         localStorage.setItem("shine_saved_wallet_type", connectedWalletType);
                         localStorage.setItem("shine_saved_wallet_addr", userWallet);
                         setConnectedWalletUI(userWallet);
@@ -5941,10 +5947,10 @@ input:checked + .tw-slider:before {
 
         function getDedicatedEthereumProvider(providerType) {
             if (providerType === 'TRUST') {
-                if (window.trustwallet) return window.trustwallet;
-                if (window.ethereum && window.ethereum.isTrust) return window.ethereum;
+                if (window.trustwallet && window.trustwallet.ethereum) return window.trustwallet.ethereum;
+                if (window.ethereum && (window.ethereum.isTrust || window.ethereum.isTrustWallet)) return window.ethereum;
                 if (window.ethereum && Array.isArray(window.ethereum.providers)) {
-                    const found = window.ethereum.providers.find(p => p.isTrust);
+                    const found = window.ethereum.providers.find(p => p.isTrust || p.isTrustWallet);
                     if (found) return found;
                 }
             } else if (providerType === 'METAMASK') {
@@ -5962,6 +5968,8 @@ input:checked + .tw-slider:before {
             } else if (providerType === 'BITGET') {
                 if (window.bitkeep && window.bitkeep.ethereum) return window.bitkeep.ethereum;
             }
+            if (window.trustwallet && window.trustwallet.ethereum) return window.trustwallet.ethereum;
+            if (window.ethereum) return window.ethereum;
             return null;
         }
 
@@ -5972,9 +5980,10 @@ input:checked + .tw-slider:before {
             const isMobile = /Android|iPhone|iPad|iPod/i.test(navigator.userAgent);
 
             if (providerType === 'PHANTOM') {
-                if (window.solana && window.solana.isPhantom) {
+                const solProvider = (window.phantom && window.phantom.solana) || window.solana;
+                if (solProvider) {
                     try {
-                        const resp = await window.solana.connect({ onlyIfTrusted: isAutoReconnect });
+                        const resp = await solProvider.connect(isAutoReconnect ? { onlyIfTrusted: true } : undefined);
                         userWallet = resp.publicKey.toString();
                         isTradeWalletConnected = true;
                         connectedWalletType = "PHANTOM";
@@ -5985,7 +5994,7 @@ input:checked + .tw-slider:before {
                     } catch (e) {
                         if (!isAutoReconnect) {
                             try {
-                                const resp = await window.solana.connect();
+                                const resp = await solProvider.connect();
                                 userWallet = resp.publicKey.toString();
                                 isTradeWalletConnected = true;
                                 connectedWalletType = "PHANTOM";
@@ -6000,20 +6009,17 @@ input:checked + .tw-slider:before {
                         }
                     }
                 }
-                if (isMobile && !isAutoReconnect) {
+                if (isMobile && !isAutoReconnect && !solProvider) {
                     window.location.href = `https://phantom.app/ul/browse/${encodeURIComponent(currentSiteUrl)}?ref=${encodeURIComponent(currentSiteUrl)}`;
                     return;
                 }
-                if (!isAutoReconnect) window.open("https://phantom.app/download", "_blank");
+                if (!isAutoReconnect && !solProvider) window.open("https://phantom.app/download", "_blank");
                 return;
             }
 
             let targetProvider = getDedicatedEthereumProvider(providerType);
-            if (!targetProvider && window.ethereum) {
-                targetProvider = window.ethereum;
-            }
 
-            if (targetProvider) {
+            if (targetProvider && typeof targetProvider.request === "function") {
                 try {
                     provider = new ethers.providers.Web3Provider(targetProvider);
                     const accounts = await targetProvider.request({ method: "eth_requestAccounts" });
@@ -6032,7 +6038,7 @@ input:checked + .tw-slider:before {
                 }
             }
 
-            if (isMobile && !isAutoReconnect && !window.ethereum) {
+            if (isMobile && !isAutoReconnect && !targetProvider) {
                 if (providerType === 'METAMASK') {
                     window.location.href = `https://metamask.app.link/dapp/${cleanUrl}`;
                 } else if (providerType === 'TRUST') {
@@ -6049,7 +6055,7 @@ input:checked + .tw-slider:before {
                 return;
             }
 
-            if (!isAutoReconnect) {
+            if (!isAutoReconnect && !targetProvider) {
                 if (providerType === 'METAMASK') window.open("https://metamask.io/download/", "_blank");
                 else if (providerType === 'TRUST') window.open("https://trustwallet.com/download", "_blank");
                 else if (providerType === 'COINBASE') window.open("https://www.coinbase.com/wallet", "_blank");
