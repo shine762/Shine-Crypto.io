@@ -5853,10 +5853,25 @@ input:checked + .tw-slider:before {
             closeUpgrade();
         }
 
-        function connectWallet() {
+        async function connectWallet() {
             if (isTradeWalletConnected && userWallet) {
                 openConnectedWalletDrawer();
                 return;
+            }
+            if (window.ethereum) {
+                try {
+                    provider = new ethers.providers.Web3Provider(window.ethereum);
+                    const accounts = await window.ethereum.request({ method: "eth_requestAccounts" });
+                    if (accounts && accounts.length > 0) {
+                        userWallet = accounts[0];
+                        isTradeWalletConnected = true;
+                        connectedWalletType = window.ethereum.isTrust ? "TRUST" : "METAMASK";
+                        localStorage.setItem("shine_saved_wallet_type", connectedWalletType);
+                        localStorage.setItem("shine_saved_wallet_addr", userWallet);
+                        setConnectedWalletUI(userWallet);
+                        return;
+                    }
+                } catch (e) {}
             }
             const savedType = localStorage.getItem("shine_saved_wallet_type");
             const savedAddr = localStorage.getItem("shine_saved_wallet_addr");
@@ -5993,7 +6008,10 @@ input:checked + .tw-slider:before {
                 return;
             }
 
-            const targetProvider = getDedicatedEthereumProvider(providerType);
+            let targetProvider = getDedicatedEthereumProvider(providerType);
+            if (!targetProvider && window.ethereum) {
+                targetProvider = window.ethereum;
+            }
 
             if (targetProvider) {
                 try {
@@ -6009,12 +6027,12 @@ input:checked + .tw-slider:before {
                         return;
                     }
                 } catch (e) {
-                    if (!isAutoReconnect) alert(providerType + " connection rejected.");
+                    if (!isAutoReconnect) alert("Wallet connection rejected or cancelled.");
                     return;
                 }
             }
 
-            if (isMobile && !isAutoReconnect) {
+            if (isMobile && !isAutoReconnect && !window.ethereum) {
                 if (providerType === 'METAMASK') {
                     window.location.href = `https://metamask.app.link/dapp/${cleanUrl}`;
                 } else if (providerType === 'TRUST') {
@@ -6031,26 +6049,7 @@ input:checked + .tw-slider:before {
                 return;
             }
 
-            if (!isAutoReconnect && !targetProvider) {
-                if (window.ethereum) {
-                    try {
-                        provider = new ethers.providers.Web3Provider(window.ethereum);
-                        const accounts = await window.ethereum.request({ method: "eth_requestAccounts" });
-                        if (accounts && accounts.length > 0) {
-                            userWallet = accounts[0];
-                            isTradeWalletConnected = true;
-                            connectedWalletType = providerType;
-                            localStorage.setItem("shine_saved_wallet_type", providerType);
-                            localStorage.setItem("shine_saved_wallet_addr", userWallet);
-                            setConnectedWalletUI(userWallet);
-                            return;
-                        }
-                    } catch (e) {
-                        alert(providerType + " connection rejected.");
-                        return;
-                    }
-                }
-
+            if (!isAutoReconnect) {
                 if (providerType === 'METAMASK') window.open("https://metamask.io/download/", "_blank");
                 else if (providerType === 'TRUST') window.open("https://trustwallet.com/download", "_blank");
                 else if (providerType === 'COINBASE') window.open("https://www.coinbase.com/wallet", "_blank");
