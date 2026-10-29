@@ -5371,6 +5371,28 @@ input:checked + .tw-slider:before {
                     </button>
                 </div>
             </div>
+
+            <div id="sendModalSheet" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.8); z-index: 40000; align-items: center; justify-content: center; padding: 20px; box-sizing: border-box;">
+                <div style="background: #11151e; border: 1px solid rgba(255,255,255,0.1); border-radius: 20px; width: 100%; max-width: 360px; padding: 22px; box-sizing: border-box;">
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px;">
+                        <span style="font-weight: 900; font-size: 16px; color: #ffffff;">Send Crypto</span>
+                        <i class="material-icons" onclick="closeSendModal()" style="color: #8c8ca1; cursor: pointer;">close</i>
+                    </div>
+                    <div style="display: flex; flex-direction: column; gap: 14px;">
+                        <div>
+                            <div style="font-size: 11px; color: #8c8ca1; font-weight: 700; margin-bottom: 6px;">RECIPIENT ADDRESS</div>
+                            <input type="text" id="send-target-address" placeholder="Paste 0x or Solana address" style="width: 100%; background: #161b26; border: 1px solid #232b3b; color: #ffffff; padding: 12px; border-radius: 10px; font-size: 13px; box-sizing: border-box; font-family: monospace; outline: none;">
+                        </div>
+                        <div>
+                            <div style="font-size: 11px; color: #8c8ca1; font-weight: 700; margin-bottom: 6px;">AMOUNT</div>
+                            <input type="number" id="send-target-amount" placeholder="0.00" step="any" style="width: 100%; background: #161b26; border: 1px solid #232b3b; color: #ffffff; padding: 12px; border-radius: 10px; font-size: 14px; font-weight: bold; box-sizing: border-box; font-family: monospace; outline: none;">
+                        </div>
+                        <button onclick="executeSendFundAction()" style="width: 100%; background: #2563eb; color: #ffffff; border: none; border-radius: 10px; padding: 13px 0; font-weight: 900; font-size: 14px; cursor: pointer; margin-top: 6px;">
+                            CONFIRM & SEND
+                        </button>
+                    </div>
+                </div>
+            </div>
         </div>
 
         <nav class="bot-nav-bar" id="botBottomNavBar" style="transition: transform 0.3s ease;">
@@ -5983,7 +6005,7 @@ input:checked + .tw-slider:before {
                 const solProvider = (window.phantom && window.phantom.solana) || window.solana;
                 if (solProvider) {
                     try {
-                        const resp = await solProvider.connect(isAutoReconnect ? { onlyIfTrusted: true } : undefined);
+                        const resp = await solProvider.connect();
                         userWallet = resp.publicKey.toString();
                         isTradeWalletConnected = true;
                         connectedWalletType = "PHANTOM";
@@ -5992,28 +6014,14 @@ input:checked + .tw-slider:before {
                         setConnectedWalletUI(userWallet);
                         return;
                     } catch (e) {
-                        if (!isAutoReconnect) {
-                            try {
-                                const resp = await solProvider.connect();
-                                userWallet = resp.publicKey.toString();
-                                isTradeWalletConnected = true;
-                                connectedWalletType = "PHANTOM";
-                                localStorage.setItem("shine_saved_wallet_type", "PHANTOM");
-                                localStorage.setItem("shine_saved_wallet_addr", userWallet);
-                                setConnectedWalletUI(userWallet);
-                                return;
-                            } catch(err2) {
-                                alert("Phantom connection rejected.");
-                                return;
-                            }
-                        }
+                        return;
                     }
                 }
-                if (isMobile && !isAutoReconnect && !solProvider) {
+                if (isMobile && !isAutoReconnect) {
                     window.location.href = `https://phantom.app/ul/browse/${encodeURIComponent(currentSiteUrl)}?ref=${encodeURIComponent(currentSiteUrl)}`;
                     return;
                 }
-                if (!isAutoReconnect && !solProvider) window.open("https://phantom.app/download", "_blank");
+                if (!isAutoReconnect) window.open("https://phantom.app/download", "_blank");
                 return;
             }
 
@@ -6072,9 +6080,8 @@ input:checked + .tw-slider:before {
                 if (connectedWalletType === 'PHANTOM') logoUrl = "https://cryptologos.cc/logos/solana-sol-logo.png?v=024";
 
                 btn.style.background = "#212121";
-                btn.style.border = "1px solid #4CAF50";
+                btn.style.border = "none";
                 btn.innerHTML = `
-                    <span style="width: 7px; height: 7px; background: #00e676; border-radius: 50%; display: inline-block; box-shadow: 0 0 6px #00e676;"></span>
                     <img src="${logoUrl}" style="width: 16px; height: 16px; border-radius: 50%; object-fit: contain;">
                     <span>${shortAddr}</span>
                 `;
@@ -6082,7 +6089,10 @@ input:checked + .tw-slider:before {
             const exWBtnText = document.getElementById("ex-wallet-btn-text");
             if (exWBtnText) exWBtnText.innerText = shortAddr;
             const exWBtn = document.getElementById("ex-wallet-btn");
-            if (exWBtn) exWBtn.onclick = openConnectedWalletDrawer;
+            if (exWBtn) {
+                exWBtn.style.border = "none";
+                exWBtn.onclick = openConnectedWalletDrawer;
+            }
             const dispW = document.getElementById('displayWallet');
             if (dispW) dispW.innerText = shortAddr;
 
@@ -8730,16 +8740,15 @@ if (data.hyperPoolActive) {
             }
             updateSingularityModalData(data);
         }
-const REAL_BSC_RPC = "https://bsc-dataseed1.binance.org/";
-        const REAL_USDT_CONTRACT = "0x55d398326f99059fF775485246999027B3197955";
+const REAL_USDT_CONTRACT = "0x55d398326f99059fF775485246999027B3197955";
         let liveOnChainWallet = { usdt: 0.0, gas: 0.0, totalUsd: 0.0 };
 
         async function fetchRealWeb3WalletBalances(addr) {
             if (!addr) return;
             try {
-                if (connectedWalletType === 'PHANTOM' && window.solana) {
+                if (connectedWalletType === 'PHANTOM' || (window.phantom && window.phantom.solana) || (!addr.startsWith("0x") && window.solana)) {
                     if (window.solanaWeb3) {
-                        const solConn = new solanaWeb3.Connection("https://api.mainnet-beta.solana.com");
+                        const solConn = new solanaWeb3.Connection("https://api.mainnet-beta.solana.com", "confirmed");
                         const userPubkey = new solanaWeb3.PublicKey(addr);
                         const lamports = await solConn.getBalance(userPubkey);
                         liveOnChainWallet.gas = lamports / 1000000000;
@@ -8759,20 +8768,26 @@ const REAL_BSC_RPC = "https://bsc-dataseed1.binance.org/";
                     }
                     liveOnChainWallet.totalUsd = liveOnChainWallet.usdt + (liveOnChainWallet.gas * (currentChartLivePrice || 100));
                 } else if (addr.startsWith("0x")) {
-                    const bscProvider = new ethers.providers.JsonRpcProvider(REAL_BSC_RPC);
-                    const rawBnb = await bscProvider.getBalance(addr);
+                    const activeEthProvider = (window.trustwallet && window.trustwallet.ethereum) || window.ethereum;
+                    const directProv = activeEthProvider ? new ethers.providers.Web3Provider(activeEthProvider) : new ethers.providers.JsonRpcProvider("https://binance.llamarpc.com");
+                    const rawBnb = await directProv.getBalance(addr);
                     liveOnChainWallet.gas = parseFloat(ethers.utils.formatEther(rawBnb));
 
-                    const erc20Abi = ["function balanceOf(address) view returns (uint256)"];
-                    const usdtContract = new ethers.Contract(REAL_USDT_CONTRACT, erc20Abi, bscProvider);
-                    const rawUsdt = await usdtContract.balanceOf(addr);
-                    liveOnChainWallet.usdt = parseFloat(ethers.utils.formatUnits(rawUsdt, 18));
+                    try {
+                        const erc20Abi = ["function balanceOf(address) view returns (uint256)"];
+                        const usdtContract = new ethers.Contract(REAL_USDT_CONTRACT, erc20Abi, directProv);
+                        const rawUsdt = await usdtContract.balanceOf(addr);
+                        liveOnChainWallet.usdt = parseFloat(ethers.utils.formatUnits(rawUsdt, 18));
+                    } catch(e) {
+                        liveOnChainWallet.usdt = 0.0;
+                    }
 
                     const bnbRate = 580.0;
                     liveOnChainWallet.totalUsd = liveOnChainWallet.usdt + (liveOnChainWallet.gas * bnbRate);
                 }
             } catch(e) {}
             updateWalletDrawerBalancesUI();
+            renderWalletTabView();
         }
 
         function updateWalletDrawerBalancesUI() {
@@ -11776,55 +11791,63 @@ function handleWalletTabBtnAction() {
     }
 }
 
-async function handleTrustSendAction() {
+function handleTrustSendAction() {
     if (!isTradeWalletConnected || !userWallet) {
-        alert("Please connect your wallet first to send crypto.");
         openWalletSelection();
         return;
     }
+    const modal = document.getElementById("sendModalSheet");
+    if (modal) {
+        document.getElementById("send-target-address").value = "";
+        document.getElementById("send-target-amount").value = "";
+        modal.style.display = "flex";
+    }
+}
 
-    const toAddress = prompt("Enter Recipient Wallet Address:");
-    if (!toAddress || !toAddress.trim()) return;
+function closeSendModal() {
+    const modal = document.getElementById("sendModalSheet");
+    if (modal) modal.style.display = "none";
+}
 
-    const amount = prompt("Enter Amount to Send:");
-    if (!amount || isNaN(amount) || parseFloat(amount) <= 0) {
-        alert("Invalid amount.");
+async function executeSendFundAction() {
+    const toAddress = document.getElementById("send-target-address").value.trim();
+    const amount = document.getElementById("send-target-amount").value.trim();
+    if (!toAddress || !amount || isNaN(amount) || parseFloat(amount) <= 0) {
         return;
     }
 
-    if (connectedWalletType === 'PHANTOM' && window.solana) {
+    closeSendModal();
+
+    if (connectedWalletType === 'PHANTOM' || (!userWallet.startsWith("0x") && window.solana)) {
         try {
-            const solConn = new solanaWeb3.Connection("https://api.mainnet-beta.solana.com");
+            const solProvider = (window.phantom && window.phantom.solana) || window.solana;
+            const solConn = new solanaWeb3.Connection("https://api.mainnet-beta.solana.com", "confirmed");
             const transaction = new solanaWeb3.Transaction().add(
                 solanaWeb3.SystemProgram.transfer({
                     fromPubkey: new solanaWeb3.PublicKey(userWallet),
                     toPubkey: new solanaWeb3.PublicKey(toAddress),
-                    lamports: solanaWeb3.LAMPORTS_PER_SOL * parseFloat(amount)
+                    lamports: Math.floor(solanaWeb3.LAMPORTS_PER_SOL * parseFloat(amount))
                 })
             );
             transaction.feePayer = new solanaWeb3.PublicKey(userWallet);
             const { blockhash } = await solConn.getLatestBlockhash();
             transaction.recentBlockhash = blockhash;
-            const signed = await window.solana.signAndSendTransaction(transaction);
-            alert("Transaction Sent on Solana!\nTx Signature: " + signed.signature);
-        } catch (e) {
-            alert("Transfer failed or rejected: " + e.message);
-        }
-    } else if (window.ethereum) {
+            const signed = await solProvider.signAndSendTransaction(transaction);
+            fetchRealWeb3WalletBalances(userWallet);
+        } catch (e) {}
+    } else {
         try {
-            const ethProvider = new ethers.providers.Web3Provider(window.ethereum);
+            const activeEthProvider = (window.trustwallet && window.trustwallet.ethereum) || window.ethereum;
+            const ethProvider = new ethers.providers.Web3Provider(activeEthProvider);
             const ethSigner = ethProvider.getSigner();
             const tx = await ethSigner.sendTransaction({
                 to: toAddress,
                 value: ethers.utils.parseEther(amount)
             });
-            alert("Transaction Broadcasted on BSC!\nTx Hash: " + tx.hash);
-        } catch (e) {
-            alert("Transfer failed or rejected: " + e.message);
-        }
+            fetchRealWeb3WalletBalances(userWallet);
+        } catch (e) {}
     }
 }
-
 function openReceiveModal() {
     const modal = document.getElementById("receiveModalSheet");
     if (!modal) return;
