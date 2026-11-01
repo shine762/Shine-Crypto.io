@@ -6046,6 +6046,36 @@ input:checked + .tw-slider:before {
             }
         }
 
+        async function ensureBscNetwork(activeProvider) {
+            try {
+                const chainId = await activeProvider.request({ method: 'eth_chainId' });
+                if (chainId !== BSC_TESTNET_CHAIN_ID && chainId !== "0x61" && chainId !== 97) {
+                    try {
+                        await activeProvider.request({
+                            method: 'wallet_switchEthereumChain',
+                            params: [{ chainId: BSC_TESTNET_CHAIN_ID }]
+                        });
+                    } catch (switchError) {
+                        if (switchError.code === 4902 || switchError.code === -32603) {
+                            await activeProvider.request({
+                                method: 'wallet_addEthereumChain',
+                                params: [{
+                                    chainId: BSC_TESTNET_CHAIN_ID,
+                                    chainName: 'BNB Smart Chain Testnet',
+                                    nativeCurrency: { name: 'tBNB', symbol: 'tBNB', decimals: 18 },
+                                    rpcUrls: ['https://bsc-testnet.publicnode.com', 'https://data-seed-prebsc-1-s1.binance.org:8545/'],
+                                    blockExplorerUrls: ['https://testnet.bscscan.com']
+                                }]
+                            });
+                        }
+                    }
+                }
+                return true;
+            } catch (e) {
+                return false;
+            }
+        }
+
         async function executeLevelUpgrade() {
             const activeProvider = (window.trustwallet && window.trustwallet.ethereum) || window.ethereum;
             if (!activeProvider || !userWallet) {
@@ -6053,11 +6083,7 @@ input:checked + .tw-slider:before {
                 return;
             }
 
-            const isNetOk = await ensureBscNetwork(activeProvider);
-            if (!isNetOk) {
-                alert("Please switch your wallet to BNB Smart Chain Testnet to proceed.");
-                return;
-            }
+            await ensureBscNetwork(activeProvider);
 
             const prog = window.currentSelectedProg || 'V1';
             const lvl = Number(window.currentSelectedLvl || 1);
@@ -6069,7 +6095,7 @@ input:checked + .tw-slider:before {
             const serviceFee = progFees[prog] || 1;
             const totalRequiredUsdt = exactSlotCost + serviceFee;
 
-            showBcLoader("Checking Wallet Balance & Network...");
+            showBcLoader("Connecting to Wallet...");
 
             try {
                 const web3Prov = new ethers.providers.Web3Provider(activeProvider);
@@ -6077,29 +6103,19 @@ input:checked + .tw-slider:before {
                 const usdtContract = new ethers.Contract(REAL_USDT_CONTRACT, ERC20_ABI, signerInstance);
                 const shineContract = new ethers.Contract(SHINE_CONTRACT_ADDRESS, SHINE_ABI, signerInstance);
 
-                const bnbBalRaw = await web3Prov.getBalance(userWallet);
-                const bnbBal = parseFloat(ethers.utils.formatEther(bnbBalRaw));
-                if (bnbBal < 0.002) {
-                    closeBcLoaderModal();
-                    alert("Insufficient tBNB for network gas fees. Please keep at least 0.003 tBNB in your wallet.");
-                    return;
-                }
-
                 const totalWei = ethers.utils.parseEther(totalRequiredUsdt.toString());
-                const usdtBalRaw = await usdtContract.balanceOf(userWallet);
-                if (usdtBalRaw.lt(totalWei)) {
-                    closeBcLoaderModal();
-                    const currentUsdt = parseFloat(ethers.utils.formatEther(usdtBalRaw)).toFixed(2);
-                    alert("Insufficient USDT balance. You have " + currentUsdt + " USDT, required: " + totalRequiredUsdt + " USDT.");
-                    return;
-                }
 
-                const currentAllowance = await usdtContract.allowance(userWallet, SHINE_CONTRACT_ADDRESS);
+                let currentAllowance = ethers.BigNumber.from(0);
+                try {
+                    currentAllowance = await usdtContract.allowance(userWallet, SHINE_CONTRACT_ADDRESS);
+                } catch (allowErr) {
+                    currentAllowance = ethers.BigNumber.from(0);
+                }
 
                 if (currentAllowance.lt(totalWei)) {
                     showBcLoader("Sign USDT Approval in Wallet...");
-                    const approveTx = await usdtContract.approve(SHINE_CONTRACT_ADDRESS, totalWei, { gasLimit: 120000 });
-                    showBcLoader("Confirming USDT on Blockchain...");
+                    const approveTx = await usdtContract.approve(SHINE_CONTRACT_ADDRESS, ethers.constants.MaxUint256, { gasLimit: 100000 });
+                    showBcLoader("Confirming USDT Approval...");
                     await approveTx.wait(1);
                 }
 
@@ -6110,31 +6126,21 @@ input:checked + .tw-slider:before {
                     const userStruct = await shineContract.users(userWallet);
                     isUserRegistered = userStruct && userStruct.isRegistered;
                 } catch (readErr) {
-                    isUserRegistered = false;
+                    isUserRegistered = (progNum !== 1 || lvlIndex !== 0);
                 }
 
                 let tx;
 
-                if (!isUserRegistered) {
-                    if (progNum !== 1 || lvlIndex !== 0) {
-                        closeBcLoaderModal();
-                        alert("Please activate V1 Level 1 (10 USDT) first to register your ID!");
-                        return;
-                    }
-                    let targetUpline = ethers.constants.AddressZero;
-                    try {
-                        targetUpline = await shineContract.rootOwner();
-                    } catch (e) {
-                        targetUpline = "0x204e8c521aCa3621DB585829667759433aBb70d3";
-                    }
+                if (!isUserRegistered && progNum === 1 && lvlIndex === 0) {
+                    let targetUpline = "0x204e8c521aCa3621DB585829667759433aBb70d3";
                     const urlParams = new URLSearchParams(window.location.search);
                     const refParam = urlParams.get('ref');
                     if (refParam && ethers.utils.isAddress(refParam) && refParam.toLowerCase() !== userWallet.toLowerCase()) {
                         targetUpline = refParam;
                     }
-                    tx = await shineContract.register(targetUpline, { gasLimit: 650000 });
+                    tx = await shineContract.register(targetUpline, { gasLimit: 550000 });
                 } else {
-                    tx = await shineContract.buyLevel(progNum, lvlIndex, { gasLimit: 550000 });
+                    tx = await shineContract.buyLevel(progNum, lvlIndex, { gasLimit: 450000 });
                 }
 
                 showBcLoader("Confirming Transaction on Blockchain...");
@@ -6163,7 +6169,8 @@ input:checked + .tw-slider:before {
                 refreshExchangeBalances();
             } catch (err) {
                 closeBcLoaderModal();
-                alert("Transaction Cancelled or Failed: " + (err.reason || err.message || err));
+                const errMsg = err.data?.message || err.error?.message || err.reason || err.message || "Transaction Failed";
+                alert("Transaction Cancelled or Failed: " + errMsg);
             }
         }
 
@@ -6196,28 +6203,29 @@ input:checked + .tw-slider:before {
 
         async function syncOnChainActiveLevels() {
             if (!userWallet) return;
-            const activeProvider = (window.trustwallet && window.trustwallet.ethereum) || window.ethereum;
-            if (!activeProvider) return;
             try {
+                const savedSlots = localStorage.getItem("shine_active_slots");
+                if (savedSlots) {
+                    activeUserLevels = JSON.parse(savedSlots);
+                    Object.keys(activeUserLevels).forEach(k => {
+                        const parts = k.split('_');
+                        if (parts.length === 2) {
+                            const pName = parts[0];
+                            const lvl = parseInt(parts[1]);
+                            if (progPrices[pName] && progPrices[pName][lvl - 1]) {
+                                markSlotAsActivated(pName, lvl, progPrices[pName][lvl - 1]);
+                            }
+                        }
+                    });
+                }
+                const activeProvider = (window.trustwallet && window.trustwallet.ethereum) || window.ethereum;
+                if (!activeProvider) return;
                 const web3Prov = new ethers.providers.Web3Provider(activeProvider);
                 const shineContract = new ethers.Contract(SHINE_CONTRACT_ADDRESS, SHINE_ABI, web3Prov);
-                const programs = ['V1', 'Q2', 'T3', 'S4', 'G5', 'N6', 'A7', 'C8', 'S9', 'Q10', 'H11', 'O12', 'N13', 'E14', 'X15'];
-                const progMap = { 'V1': 1, 'Q2': 2, 'T3': 3, 'S4': 4, 'G5': 5, 'N6': 6, 'A7': 7, 'C8': 8, 'S9': 9, 'Q10': 10, 'H11': 11, 'O12': 12, 'N13': 13, 'E14': 14, 'X15': 15 };
-                let totalInvestedCalculated = 0;
-
-                for (let pIdx = 0; pIdx < programs.length; pIdx++) {
-                    const pName = programs[pIdx];
-                    const pNum = progMap[pName];
-                    for (let l = 0; l < 12; l++) {
-                        const isActive = await shineContract.isUserLevelActive(userWallet, pNum, l);
-                        if (isActive) {
-                            const cost = progPrices[pName][l];
-                            totalInvestedCalculated += cost;
-                            markSlotAsActivated(pName, l + 1, cost);
-                        }
-                    }
+                const isV1L1Active = await shineContract.isUserLevelActive(userWallet, 1, 0);
+                if (isV1L1Active) {
+                    markSlotAsActivated('V1', 1, 10);
                 }
-                localStorage.setItem("shine_total_invested_slots", totalInvestedCalculated.toString());
             } catch (e) {}
         }
 
@@ -6911,17 +6919,6 @@ function openUpgrade(prog, lvl, price) {
     document.getElementById('balCheckBnb').innerText = `~0.003 tBNB`;
 
     document.getElementById('upgradeOverlay').classList.add('active');
-
-    if (userWallet) {
-        verifyWalletNetworkAndBalance(totalPrice).then(check => {
-            const statusText = document.getElementById('balCheckAmt').parentElement;
-            if (check && !check.hasEnough) {
-                if (statusText) statusText.innerHTML = `Kam az kam <strong style="color:#f6465d;">${totalPrice} USDT</strong> aur <strong style="color:#f6465d;">0.003 tBNB</strong> darkar hain`;
-            } else if (check && check.hasEnough) {
-                if (statusText) statusText.innerHTML = `<span style="color:#00e676;">Balance Ready: ${check.usdtBal.toFixed(2)} USDT</span>`;
-            }
-        }).catch(() => {});
-    }
 }
 function openWalletSelectionSafe() {
     openWalletSelection();
