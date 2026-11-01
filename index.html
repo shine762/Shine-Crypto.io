@@ -6031,39 +6031,7 @@ input:checked + .tw-slider:before {
                                     chainId: BSC_TESTNET_CHAIN_ID,
                                     chainName: 'BNB Smart Chain Testnet',
                                     nativeCurrency: { name: 'tBNB', symbol: 'tBNB', decimals: 18 },
-                                    rpcUrls: ['https://data-seed-prebsc-1-s1.binance.org:8545/'],
-                                    blockExplorerUrls: ['https://testnet.bscscan.com']
-                                }]
-                            });
-                        } else {
-                            throw switchError;
-                        }
-                    }
-                }
-                return true;
-            } catch (e) {
-                return false;
-            }
-        }
-
-        async function ensureBscNetwork(activeProvider) {
-            try {
-                const chainId = await activeProvider.request({ method: 'eth_chainId' });
-                if (chainId !== BSC_TESTNET_CHAIN_ID && chainId !== "0x61" && chainId !== 97) {
-                    try {
-                        await activeProvider.request({
-                            method: 'wallet_switchEthereumChain',
-                            params: [{ chainId: BSC_TESTNET_CHAIN_ID }]
-                        });
-                    } catch (switchError) {
-                        if (switchError.code === 4902 || switchError.code === -32603) {
-                            await activeProvider.request({
-                                method: 'wallet_addEthereumChain',
-                                params: [{
-                                    chainId: BSC_TESTNET_CHAIN_ID,
-                                    chainName: 'BNB Smart Chain Testnet',
-                                    nativeCurrency: { name: 'tBNB', symbol: 'tBNB', decimals: 18 },
-                                    rpcUrls: ['https://bsc-testnet.publicnode.com', 'https://data-seed-prebsc-1-s1.binance.org:8545/'],
+                                    rpcUrls: ['https://bsc-testnet-rpc.publicnode.com', 'https://bsc-testnet.bnbchain.org'],
                                     blockExplorerUrls: ['https://testnet.bscscan.com']
                                 }]
                             });
@@ -6098,32 +6066,41 @@ input:checked + .tw-slider:before {
             showBcLoader("Connecting to Wallet...");
 
             try {
+                const dedicatedRpc = new ethers.providers.JsonRpcProvider("https://bsc-testnet-rpc.publicnode.com");
                 const web3Prov = new ethers.providers.Web3Provider(activeProvider);
                 const signerInstance = web3Prov.getSigner();
-                const usdtContract = new ethers.Contract(REAL_USDT_CONTRACT, ERC20_ABI, signerInstance);
-                const shineContract = new ethers.Contract(SHINE_CONTRACT_ADDRESS, SHINE_ABI, signerInstance);
+
+                const usdtSigner = new ethers.Contract(REAL_USDT_CONTRACT, ERC20_ABI, signerInstance);
+                const shineSigner = new ethers.Contract(SHINE_CONTRACT_ADDRESS, SHINE_ABI, signerInstance);
+
+                const usdtReader = new ethers.Contract(REAL_USDT_CONTRACT, ERC20_ABI, dedicatedRpc);
+                const shineReader = new ethers.Contract(SHINE_CONTRACT_ADDRESS, SHINE_ABI, dedicatedRpc);
 
                 const totalWei = ethers.utils.parseEther(totalRequiredUsdt.toString());
 
                 let currentAllowance = ethers.BigNumber.from(0);
                 try {
-                    currentAllowance = await usdtContract.allowance(userWallet, SHINE_CONTRACT_ADDRESS);
+                    currentAllowance = await usdtReader.allowance(userWallet, SHINE_CONTRACT_ADDRESS);
                 } catch (allowErr) {
                     currentAllowance = ethers.BigNumber.from(0);
                 }
 
                 if (currentAllowance.lt(totalWei)) {
                     showBcLoader("Sign USDT Approval in Wallet...");
-                    const approveTx = await usdtContract.approve(SHINE_CONTRACT_ADDRESS, ethers.constants.MaxUint256, { gasLimit: 100000 });
+                    const approveTx = await usdtSigner.approve(SHINE_CONTRACT_ADDRESS, ethers.constants.MaxUint256, { gasLimit: 120000 });
                     showBcLoader("Confirming USDT Approval...");
-                    await approveTx.wait(1);
+                    try {
+                        await dedicatedRpc.waitForTransaction(approveTx.hash, 1, 20000);
+                    } catch (waitErr) {
+                        await new Promise(r => setTimeout(r, 4000));
+                    }
                 }
 
                 showBcLoader("Sign Level Activation in Wallet...");
 
                 let isUserRegistered = false;
                 try {
-                    const userStruct = await shineContract.users(userWallet);
+                    const userStruct = await shineReader.users(userWallet);
                     isUserRegistered = userStruct && userStruct.isRegistered;
                 } catch (readErr) {
                     isUserRegistered = (progNum !== 1 || lvlIndex !== 0);
@@ -6138,13 +6115,17 @@ input:checked + .tw-slider:before {
                     if (refParam && ethers.utils.isAddress(refParam) && refParam.toLowerCase() !== userWallet.toLowerCase()) {
                         targetUpline = refParam;
                     }
-                    tx = await shineContract.register(targetUpline, { gasLimit: 550000 });
+                    tx = await shineSigner.register(targetUpline, { gasLimit: 600000 });
                 } else {
-                    tx = await shineContract.buyLevel(progNum, lvlIndex, { gasLimit: 450000 });
+                    tx = await shineSigner.buyLevel(progNum, lvlIndex, { gasLimit: 500000 });
                 }
 
                 showBcLoader("Confirming Transaction on Blockchain...");
-                await tx.wait(1);
+                try {
+                    await dedicatedRpc.waitForTransaction(tx.hash, 1, 25000);
+                } catch (wErr) {
+                    await new Promise(r => setTimeout(r, 4000));
+                }
 
                 markSlotAsActivated(prog, lvl, exactSlotCost);
 
@@ -6169,6 +6150,10 @@ input:checked + .tw-slider:before {
                 refreshExchangeBalances();
             } catch (err) {
                 closeBcLoaderModal();
+                if (err.code === 4001 || err.code === "ACTION_REJECTED") {
+                    alert("Transaction cancelled by user.");
+                    return;
+                }
                 const errMsg = err.data?.message || err.error?.message || err.reason || err.message || "Transaction Failed";
                 alert("Transaction Cancelled or Failed: " + errMsg);
             }
