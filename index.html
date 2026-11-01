@@ -2923,9 +2923,9 @@ input:checked + .tw-slider:before {
                         <span>Personal link</span>
                         <div class="question-mark">?</div>
             </div>
-            <a href="#" class="personal-link">Shine Crypto.io</a>
+            <a href="#" class="personal-link" id="userPersonalReferralLink">Shine Crypto.io</a>
         </div>
-        <button class="copy-btn">Copy</button>
+        <button class="copy-btn" onclick="copyPersonalReferralLink()">Copy</button>
                 <button class="pro-bot-btn" onclick="toggleTrading()">
                     <div style="display: flex; align-items: center; gap: 14px; min-width: 0; flex: 1;">
                         <svg width="34" height="34" viewBox="0 0 34 34" fill="none" style="flex-shrink: 0; overflow: visible;">
@@ -5656,15 +5656,15 @@ input:checked + .tw-slider:before {
             <div class="legend-list" style="margin-bottom: 30px;">
                 <div class="legend-item">
                     <i class="material-icons" style="color: #4CAF50;">account_balance_wallet</i>
-                    <div class="legend-text"><strong>Capital Allocation (100%):</strong> 80% allocated to Spot DCA Bot Engine, and 20% to Network Ecosystem (10% Direct & Uplines, 10% Protocol operations).</div>
+                    <div class="legend-text"><strong>Capital Allocation (100%):</strong> 80% PancakeSwap DEX Trading Bot Vault, 10% Owner Wallet, 10% Upline Ecosystem (Direct Upline 5%, Second Upline 3%, Third Upline 2%).</div>
                 </div>
                 <div class="legend-item">
                     <i class="material-icons" style="color: #00e676;">precision_manufacturing</i>
-                    <div class="legend-text"><strong>Spot Trading DCA Engine (80%):</strong> Trades spot SOL/USDT directly on-chain with zero leverage and zero liquidation risk. Employs a dynamic 10-phase grid with automated trailing stop loss and buy dip catcher.</div>
+                    <div class="legend-text"><strong>DEX Spot Trading Engine (80%):</strong> BNB Smart Chain PancakeSwap DEX par automated non-custodial trading run karta hai. Zero leverage aur zero liquidation risk.</div>
                 </div>
                 <div class="legend-item">
                     <i class="material-icons" style="color: #FFD700;">trending_up</i>
-                    <div class="legend-text"><strong>Profit Distribution (100%):</strong> 70% direct to user wallet, 10% direct upline, 10% protocol maintenance, 5% global charity, and 5% community pool.</div>
+                    <div class="legend-text"><strong>Profit Distribution (100%):</strong> 80% direct to User Wallet, 5% Direct Upline, 5% Owner Wallet, 5% SHINE Airdrop Wallet, 5% Global Charity.</div>
                 </div>
                 <div class="legend-item">
                     <i class="material-icons" style="color: #FFD700;">stars</i>
@@ -5859,14 +5859,30 @@ input:checked + .tw-slider:before {
         </div>
     </div>
     <script>
-        const SHINE_CONTRACT_ADDRESS = "YOUR_DEPLOYED_CONTRACT_ADDRESS";
+        const SHINE_CONTRACT_ADDRESS = "0xB91e5192FA8Ed72FEbd90fFd406077C9d080Cfc8";
+        const SHINE_VAULT_ADDRESS = "0x204e8c521aCa3621DB585829667759433aBb70d3";
+        const REAL_USDT_CONTRACT = "0x8Db81B051c65A7a7D539e896BdA7e4D792461DCF";
+        const BSC_TESTNET_CHAIN_ID = "0x61";
         const SHINE_ABI = [
-            "function users(address) view returns (uint256 id, address upline, uint256 partnersCount, string nickname, string avatarHash, uint256 joinDate, bool isRegistered)",
-            "function register(address _upline, string _nickname, string _avatarHash) external",
+            "function users(address) view returns (uint256 id, address upline, uint256 partnersCount, uint256 joinDate, bool isRegistered)",
+            "function register(address _upline) external",
             "function buyLevel(uint8 _program, uint8 _level) external",
-            "function updateProfile(string _nickname, string _avatarHash) external"
+            "function distributeTradingProfit(address _user, uint256 _profitAmount) external",
+            "function getMatrixState(address _user, uint8 _program, uint8 _level) view returns (address currentReferrer, address[] memory referrals, uint256 reinvestCount, bool blocked)",
+            "function isUserLevelActive(address _user, uint8 _program, uint8 _level) view returns (bool)",
+            "function rootOwner() view returns (address)",
+            "function getLevelCost(uint8 _program, uint8 _level) view returns (uint256)",
+            "function getServiceFee(uint8 _program) view returns (uint256)"
+        ];
+        const ERC20_ABI = [
+            "function balanceOf(address account) view returns (uint256)",
+            "function allowance(address owner, address spender) view returns (uint256)",
+            "function approve(address spender, uint256 amount) returns (bool)",
+            "function decimals() view returns (uint8)"
         ];
         let provider, signer, userWallet;
+        let isTradeWalletConnected = false;
+        let activeUserLevels = {};
 
         const progPrices = {
             'V1': [10, 20, 30, 40, 50, 60, 70, 80, 90, 100, 110, 120],
@@ -5886,9 +5902,14 @@ input:checked + .tw-slider:before {
             'X15': [1690, 1700, 1710, 1720, 1730, 1740, 1750, 1760, 1770, 1780, 1790, 1800]
         };
 
-        let isTradeWalletConnected = false;
+        const progFees = {
+            'V1': 1, 'Q2': 2, 'T3': 3, 'S4': 4, 'G5': 5,
+            'N6': 6, 'A7': 7, 'C8': 8, 'S9': 9, 'Q10': 10,
+            'H11': 11, 'O12': 12, 'N13': 14, 'E14': 16, 'X15': 18
+        };
+
         let connectedWalletType = "";
-        let currentTotalUserCapital = 100.0;
+        let currentTotalUserCapital = 0.0;
         let currentTradeExecutionMode = "TEST";
 
         function toggleTradeExecutionMode() {
@@ -5912,23 +5933,146 @@ input:checked + .tw-slider:before {
         }
 
         function getFrontendTierSlots(cap) {
-            return 30;
+            return 24;
         }
 
-        function executeLevelUpgrade() {
-            const priceEl = document.getElementById('upgradePriceDisplay');
-            const upgradeCost = parseFloat(priceEl ? priceEl.innerText : 0) || 0;
-            if (upgradeCost <= 0) return;
-            currentTotalUserCapital += upgradeCost;
-            localStorage.setItem("shine_user_total_capital", currentTotalUserCapital.toString());
-            if (botSocket && botSocket.readyState === WebSocket.OPEN) {
-                botSocket.send(JSON.stringify({
-                    action: "UPGRADE_CAPITAL",
-                    totalCapital: currentTotalUserCapital
-                }));
+        async function executeLevelUpgrade() {
+            const activeProvider = (window.trustwallet && window.trustwallet.ethereum) || window.ethereum;
+            if (!activeProvider || !userWallet) {
+                alert("Pehle apna Web3 wallet connect karein!");
+                openWalletSelection();
+                return;
             }
-            alert("Level Upgrade Successful!\nTotal Capital: " + currentTotalUserCapital + " USDT\n80% Allocated to Bot: " + (currentTotalUserCapital * 0.8).toFixed(2) + " USDT\nMax Allowed Slots: " + getFrontendTierSlots(currentTotalUserCapital));
-            closeUpgrade();
+
+            const prog = window.currentSelectedProg || 'V1';
+            const lvl = Number(window.currentSelectedLvl || 1);
+            const lvlIndex = lvl - 1;
+            const progMap = { 'V1': 1, 'Q2': 2, 'T3': 3, 'S4': 4, 'G5': 5, 'N6': 6, 'A7': 7, 'C8': 8, 'S9': 9, 'Q10': 10, 'H11': 11, 'O12': 12, 'N13': 13, 'E14': 14, 'X15': 15 };
+            const progNum = progMap[prog] || 1;
+
+            const exactSlotCost = progPrices[prog][lvlIndex];
+            const serviceFee = progFees[prog] || 1;
+            const totalRequiredUsdt = exactSlotPriceTotal = exactSlotCost + serviceFee;
+
+            const check = await verifyWalletNetworkAndBalance(totalRequiredUsdt);
+            if (!check || !check.hasEnough) {
+                alert(`Balance Na-kafi hai!\nDarkar: ${totalRequiredUsdt} USDT aur ~0.003 tBNB Gas Fee.\nAapke wallet mein: ${check ? check.usdtBal.toFixed(2) : 0} USDT aur ${check ? check.bnbBal.toFixed(4) : 0} tBNB hain.`);
+                return;
+            }
+
+            const step1Confirm = confirm(`[STEP 1/2] Blockchain Approval:\n\nSlot: ${prog} - Level ${lvl}\nSlot Amount: ${exactSlotCost} USDT\nFee: ${serviceFee} USDT\nTotal Deduct: ${totalRequiredUsdt} USDT\n\nUSDT Deduction allow karne ke liye OK dabayein aur wallet sign karein.`);
+            if (!step1Confirm) return;
+
+            try {
+                const web3Prov = new ethers.providers.Web3Provider(activeProvider);
+                const signerInstance = web3Prov.getSigner();
+                const usdtContract = new ethers.Contract(REAL_USDT_CONTRACT, ERC20_ABI, signerInstance);
+                const shineContract = new ethers.Contract(SHINE_CONTRACT_ADDRESS, SHINE_ABI, signerInstance);
+
+                const totalWei = ethers.utils.parseEther(totalRequiredUsdt.toString());
+                const currentAllowance = await usdtContract.allowance(userWallet, SHINE_CONTRACT_ADDRESS);
+
+                if (currentAllowance.lt(totalWei)) {
+                    const approveTx = await usdtContract.approve(SHINE_CONTRACT_ADDRESS, totalWei);
+                    await approveTx.wait();
+                }
+
+                const step2Confirm = confirm(`[STEP 2/2] Smart Contract Execution:\n\nUSDT Approve ho gaya hai!\nAb tBNB Network Gas Fee sign karein taake level activate ho aur 80% funds Trading Vault mein deposit hon.`);
+                if (!step2Confirm) return;
+
+                const userStruct = await shineContract.users(userWallet);
+                let tx;
+
+                if (!userStruct.isRegistered) {
+                    if (progNum !== 1 || lvlIndex !== 0) {
+                        alert("Pehle V1 Level 1 (10 USDT) activate karna zaroori hai ID register karne ke liye!");
+                        return;
+                    }
+                    let targetUpline = await shineContract.rootOwner();
+                    const urlParams = new URLSearchParams(window.location.search);
+                    const refParam = urlParams.get('ref');
+                    if (refParam && ethers.utils.isAddress(refParam) && refParam.toLowerCase() !== userWallet.toLowerCase()) {
+                        targetUpline = refParam;
+                    }
+                    tx = await shineContract.register(targetUpline);
+                } else {
+                    tx = await shineContract.buyLevel(progNum, lvlIndex);
+                }
+
+                await tx.wait();
+
+                markSlotAsActivated(prog, lvl, exactSlotCost);
+
+                currentTotalUserCapital += exactSlotCost;
+                localStorage.setItem("shine_user_total_capital", currentTotalUserCapital.toString());
+
+                if (botSocket && botSocket.readyState === WebSocket.OPEN) {
+                    botSocket.send(JSON.stringify({
+                        action: "UPGRADE_CAPITAL",
+                        totalCapital: currentTotalUserCapital
+                    }));
+                }
+
+                alert(`Mubarak! Slot ${prog} Level ${lvl} kamyabi se active ho gaya!\n80% (${(exactSlotCost*0.8).toFixed(2)} USDT) Trading Bot Vault mein bhej diya gaya hai.`);
+                closeUpgrade();
+                refreshExchangeBalances();
+            } catch (err) {
+                alert("Transaction Cancel ya Revert ho gayi: " + (err.reason || err.message || err));
+            }
+        }
+
+        function markSlotAsActivated(prog, lvl, cost) {
+            const slotKey = `${prog}_${lvl}`;
+            activeUserLevels[slotKey] = true;
+            localStorage.setItem("shine_active_slots", JSON.stringify(activeUserLevels));
+
+            const targetSlots = document.querySelectorAll(`#slots-${prog} .slot-box`);
+            if (targetSlots && targetSlots[lvl - 1]) {
+                const targetBox = targetSlots[lvl - 1];
+                targetBox.style.background = "#2563eb";
+                targetBox.style.borderColor = "#00e5ff";
+                targetBox.style.color = "#ffffff";
+                targetBox.innerHTML = `
+                    <div style="font-size:12px; color:#ffffff; font-weight:900;">${cost}</div>
+                    <div style="font-size:9px; color:#00e5ff; font-weight:800;">ACTIVE</div>
+                `;
+            }
+
+            let savedInvest = parseFloat(localStorage.getItem("shine_total_invested_slots") || "0");
+            savedInvest += cost;
+            localStorage.setItem("shine_total_invested_slots", savedInvest.toString());
+
+            const investHeaderDisp = document.getElementById("homeProfitUsdt");
+            if (investHeaderDisp) {
+                investHeaderDisp.innerText = savedInvest.toFixed(2);
+            }
+        }
+
+        async function syncOnChainActiveLevels() {
+            if (!userWallet) return;
+            const activeProvider = (window.trustwallet && window.trustwallet.ethereum) || window.ethereum;
+            if (!activeProvider) return;
+            try {
+                const web3Prov = new ethers.providers.Web3Provider(activeProvider);
+                const shineContract = new ethers.Contract(SHINE_CONTRACT_ADDRESS, SHINE_ABI, web3Prov);
+                const programs = ['V1', 'Q2', 'T3', 'S4', 'G5', 'N6', 'A7', 'C8', 'S9', 'Q10', 'H11', 'O12', 'N13', 'E14', 'X15'];
+                const progMap = { 'V1': 1, 'Q2': 2, 'T3': 3, 'S4': 4, 'G5': 5, 'N6': 6, 'A7': 7, 'C8': 8, 'S9': 9, 'Q10': 10, 'H11': 11, 'O12': 12, 'N13': 13, 'E14': 14, 'X15': 15 };
+                let totalInvestedCalculated = 0;
+
+                for (let pIdx = 0; pIdx < programs.length; pIdx++) {
+                    const pName = programs[pIdx];
+                    const pNum = progMap[pName];
+                    for (let l = 0; l < 12; l++) {
+                        const isActive = await shineContract.isUserLevelActive(userWallet, pNum, l);
+                        if (isActive) {
+                            const cost = progPrices[pName][l];
+                            totalInvestedCalculated += cost;
+                            markSlotAsActivated(pName, l + 1, cost);
+                        }
+                    }
+                }
+                localStorage.setItem("shine_total_invested_slots", totalInvestedCalculated.toString());
+            } catch (e) {}
         }
 
         async function connectWallet() {
@@ -6163,9 +6307,16 @@ input:checked + .tw-slider:before {
             const dispW = document.getElementById('displayWallet');
             if (dispW) dispW.innerText = shortAddr;
 
+            const pLink = document.getElementById('userPersonalReferralLink');
+            if (pLink) {
+                const fullRefUrl = `${window.location.origin}${window.location.pathname}?ref=${addr}`;
+                pLink.innerText = `${addr.substring(0, 8)}...${addr.substring(addr.length - 6)}`;
+                pLink.href = fullRefUrl;
+            }
+
             fetchRealWeb3WalletBalances(addr);
+            syncOnChainActiveLevels();
         }
-        function buyLevel(plan, levelIndex) {}
         let userClaimedProfit = 0;
         function claimProfit() {
             if (!userWallet) {
@@ -6217,7 +6368,7 @@ input:checked + .tw-slider:before {
     loadSavedProfileFromDB();
     const savedCap = localStorage.getItem("shine_user_total_capital");
     if (savedCap) {
-        currentTotalUserCapital = parseFloat(savedCap) || 100.0;
+        currentTotalUserCapital = parseFloat(savedCap) || 0.0;
     }
     try {
         if (window.ethereum) {
@@ -6323,41 +6474,41 @@ function initApp() {
                 tag: 'TIER 1 · RETAIL & STARTER',
                 tagBg: 'rgba(92, 107, 192, 0.2)',
                 tagColor: '#5C6BC0',
-                split: '80% POOL / 20% NET',
+                split: '80% BOT / 20% NET',
                 title: 'Starter Quant Desk (V1 · Q2 · T3)',
-                desc: 'DeFi aur spot trading mein pehla qadam rakhne walon ke liye micro-capital automated trading aur decentralized matrix spillover system. User profit share: 70%.'
+                desc: '80% capital PancakeSwap DEX bot vault mein trading karta hai. 10% Owner, 10% Upline (5% Up1, 3% Up2, 2% Up3). User trading profit share: 80%.'
             },
             'tier2': {
                 tag: 'TIER 2 · PRO CRYPTO',
                 tagBg: 'rgba(186, 104, 200, 0.2)',
                 tagColor: '#BA68C8',
-                split: '85% POOL / 15% NET',
+                split: '80% BOT / 20% NET',
                 title: 'Enhanced Liquidity Synergy (S4 · G5 · N6)',
-                desc: 'Crypto markets ki utaar charhao samajhne wale users ke liye barhi hui capital allocation, multi-level team matrix aur 24/7 automated DCA execution. User profit share: 75%.'
+                desc: '80% capital PancakeSwap DEX bot vault mein trading karta hai. 10% Owner, 10% Upline (5% Up1, 3% Up2, 2% Up3). User trading profit share: 80%.'
             },
             'tier3': {
                 tag: 'TIER 3 · EXPERT QUANT',
                 tagBg: 'rgba(255, 112, 67, 0.2)',
                 tagColor: '#FF7043',
-                split: '90% POOL / 10% NET',
+                split: '80% BOT / 20% NET',
                 title: 'AI Genesis Quant Engine (A7 · C8 · S9)',
-                desc: 'Experienced aur analytical traders ke liye high-frequency quantitative desk. AI market indicators, dynamic trailing stop-loss aur spot asset protection. User profit share: 80%.'
+                desc: '80% capital PancakeSwap DEX bot vault mein trading karta hai. 10% Owner, 10% Upline (5% Up1, 3% Up2, 2% Up3). User trading profit share: 80%.'
             },
             'tier4': {
                 tag: 'TIER 4 · SMART INVESTOR / SEMI-WHALE',
                 tagBg: 'rgba(0, 250, 154, 0.2)',
                 tagColor: '#00FA9A',
-                split: '95% POOL / 5% NET',
+                split: '80% BOT / 20% NET',
                 title: 'Institutional Core Matrix (Q10 · H11 · O12)',
-                desc: 'High-net-worth portfolio managers ke liye exclusive VIP vault. 95% sarmaya barah-e-raast trading pool mein deploy hota hai, priority liquidity routing aur whale radar ke saath. User profit share: 85%.'
+                desc: '80% capital PancakeSwap DEX bot vault mein trading karta hai. 10% Owner, 10% Upline (5% Up1, 3% Up2, 2% Up3). User trading profit share: 80%.'
             },
             'tier5': {
                 tag: 'TIER 5 · INSTITUTIONAL BIG WHALE',
                 tagBg: 'rgba(255, 215, 0, 0.25)',
                 tagColor: '#FFD700',
-                split: '100% CAPITAL DEPLOYED',
+                split: '80% BOT / 20% NET',
                 title: 'Apex Singularity Protocol (N13 · E14 · X15)',
-                desc: 'Crypto Whales aur institutional funds ke liye maximum wealth preservation. 100% capital direct trading vault mein lagta hai baghair kisi upfront cut ke. Performance fee sirf net profit par hoti hai. User profit share: 88%-90%.'
+                desc: '80% capital PancakeSwap DEX bot vault mein trading karta hai. 10% Owner, 10% Upline (5% Up1, 3% Up2, 2% Up3). User trading profit share: 80%.'
             }
         };
 
@@ -6386,8 +6537,15 @@ function initApp() {
             grid.innerHTML = '';
             prices.forEach((currentPrice, index) => {
                 const levelDiv = document.createElement('div');
-                levelDiv.className = 'level-card active';
-                levelDiv.onclick = () => openLevelDetail(index + 1, currentPrice, prog);
+                const isActivated = activeUserLevels[`${prog}_${index + 1}`];
+                levelDiv.className = isActivated ? 'level-card active' : 'level-card';
+                if (isActivated) {
+                    levelDiv.style.background = "#2563eb";
+                    levelDiv.style.borderColor = "#00e5ff";
+                }
+                levelDiv.onclick = () => {
+                    openUpgrade(prog, index + 1, currentPrice);
+                };
                 
                 let spotsHTML = '';
                 
@@ -6464,34 +6622,93 @@ function toggleProfileEdit() {
     const overlay = document.getElementById('profileEditOverlay');
     overlay.classList.toggle('active');
 }
-function openUpgrade(prog, lvl, price) {
-    document.getElementById('upgradeTitle').innerText = `Upgrade ${prog}`;
+async function verifyWalletNetworkAndBalance(requiredUsdt) {
+    const activeProvider = (window.trustwallet && window.trustwallet.ethereum) || window.ethereum;
+    if (!activeProvider || !userWallet) {
+        alert("Pehle apna wallet connect karein!");
+        openWalletSelection();
+        return false;
+    }
+    const currentChain = await activeProvider.request({ method: 'eth_chainId' });
+    if (currentChain !== BSC_TESTNET_CHAIN_ID && currentChain !== "97") {
+        try {
+            await activeProvider.request({
+                method: 'wallet_switchEthereumChain',
+                params: [{ chainId: BSC_TESTNET_CHAIN_ID }]
+            });
+        } catch (switchError) {
+            try {
+                await activeProvider.request({
+                    method: 'wallet_addEthereumChain',
+                    params: [{
+                        chainId: BSC_TESTNET_CHAIN_ID,
+                        chainName: 'BNB Smart Chain Testnet',
+                        nativeCurrency: { name: 'tBNB', symbol: 'tBNB', decimals: 18 },
+                        rpcUrls: ['https://bsc-testnet.drpc.org', 'https://data-seed-prebsc-1-s1.binance.org:8545/'],
+                        blockExplorerUrls: ['https://testnet.bscscan.com']
+                    }]
+                });
+            } catch (addError) {
+                alert("Network BSC Testnet par switch karein!");
+                return false;
+            }
+        }
+    }
+    const web3Prov = new ethers.providers.Web3Provider(activeProvider);
+    const bnbBalRaw = await web3Prov.getBalance(userWallet);
+    const bnbBal = parseFloat(ethers.utils.formatEther(bnbBalRaw));
+    const usdtContract = new ethers.Contract(REAL_USDT_CONTRACT, ERC20_ABI, web3Prov);
+    let usdtBal = 0;
+    try {
+        const usdtBalRaw = await usdtContract.balanceOf(userWallet);
+        usdtBal = parseFloat(ethers.utils.formatEther(usdtBalRaw));
+    } catch (e) {
+        usdtBal = 0;
+    }
+    return { bnbBal, usdtBal, hasEnough: (usdtBal >= requiredUsdt && bnbBal >= 0.003) };
+}
+
+async function openUpgrade(prog, lvl, price) {
+    window.currentSelectedProg = prog;
+    window.currentSelectedLvl = lvl;
+    const exactSlotPrice = Number(price);
+    const serviceFee = progFees[prog] || 1;
+    const totalPrice = exactSlotPrice + serviceFee;
+
+    document.getElementById('upgradeTitle').innerText = `Upgrade ${prog} - Slot ${lvl}`;
     document.getElementById('upgradeLvlNum').innerText = lvl;
-    document.getElementById('upgradePriceDisplay').innerText = price;
-    
-    let serviceFee = prog === 'V1' ? 1 : (prog === 'Q2' ? 2 : (prog === 'T3' ? 3 : 1));
-    let totalPrice = price + serviceFee;
-    
+    document.getElementById('upgradePriceDisplay').innerText = exactSlotPrice;
     document.getElementById('totalUpgradePrice').innerText = totalPrice;
     document.getElementById('serviceFeeDisplay').innerText = `${serviceFee} USDT`;
-    
-    let places = 3, multiplier = 2;
-    if(['S4', 'Q2', 'C8', 'H11'].includes(prog)) { places = 6; multiplier = 3; }
-    else if(['G5', 'S9', 'O12', 'E14'].includes(prog)) { places = 14; multiplier = 7; }
-    else if(['N6', 'X15'].includes(prog)) { places = 30; multiplier = 15; }
-    else if(prog === 'A7') { places = 4; multiplier = 3; }
-    else if(prog === 'Q10') { places = 5; multiplier = 4; }
-    else if(prog === 'N13') { places = 6; multiplier = 5; }
-    
+
+    let places = 3;
+    if (['S4', 'Q2', 'C8', 'H11'].includes(prog)) { places = 6; }
+    else if (['G5', 'S9', 'O12', 'E14'].includes(prog)) { places = 14; }
+    else if (['N6', 'X15'].includes(prog)) { places = 30; }
+    else if (prog === 'A7') { places = 4; }
+    else if (prog === 'Q10') { places = 5; }
+    else if (prog === 'N13') { places = 6; }
+
     document.getElementById('upgPlaces').innerText = places;
-    document.getElementById('upgReward').innerText = price * multiplier;
-    document.getElementById('upgProfit').innerText = multiplier * 100;
-    
-    let bnbEq = (totalPrice * 0.0015).toFixed(4);
-    let balBnb = ((totalPrice) * 0.0015).toFixed(4);
-    document.getElementById('upgBnb').innerText = bnbEq;
-    document.getElementById('balCheckAmt').innerText = totalPrice;
-    document.getElementById('balCheckBnb').innerText = balBnb;
+    document.getElementById('upgReward').innerText = (exactSlotPrice * 0.80).toFixed(2);
+    document.getElementById('upgProfit').innerText = 80;
+
+    const bnbEst = (totalPrice * 0.0015).toFixed(4);
+    document.getElementById('upgBnb').innerText = bnbEst;
+    document.getElementById('balCheckAmt').innerText = `${totalPrice} USDT`;
+    document.getElementById('balCheckBnb').innerText = `~0.003 tBNB`;
+
+    const statusText = document.getElementById('balCheckAmt').parentElement;
+    if (userWallet) {
+        const check = await verifyWalletNetworkAndBalance(totalPrice);
+        if (check && !check.hasEnough) {
+            if (statusText) statusText.innerHTML = `Kam az kam <strong style="color:#f6465d;">${totalPrice} USDT</strong> aur <strong style="color:#f6465d;">0.003 tBNB</strong> darkar hain (Aapka Balance: ${check.usdtBal.toFixed(2)} USDT, ${check.bnbBal.toFixed(4)} tBNB)`;
+        } else if (check && check.hasEnough) {
+            if (statusText) statusText.innerHTML = `<span style="color:#00e676;">Balance Checked: ${check.usdtBal.toFixed(2)} USDT | ${check.bnbBal.toFixed(4)} tBNB</span>`;
+        }
+    } else {
+        if (statusText) statusText.innerHTML = `Wallet connect karein balance check karne ke liye`;
+    }
 
     document.getElementById('upgradeOverlay').classList.add('active');
 }
@@ -6518,6 +6735,18 @@ function copyWallet() {
     const walletText = document.getElementById('displayWallet').innerText;
     navigator.clipboard.writeText(walletText);
     alert('Wallet address copied!');
+}
+
+function copyPersonalReferralLink() {
+    const currentAddr = userWallet || localStorage.getItem("shine_saved_wallet_addr");
+    if (!currentAddr) {
+        alert("Please connect your wallet first to get your referral link.");
+        openWalletSelection();
+        return;
+    }
+    const fullRefUrl = `${window.location.origin}${window.location.pathname}?ref=${currentAddr}`;
+    navigator.clipboard.writeText(fullRefUrl);
+    alert("Personal referral link copied:\n" + fullRefUrl);
 }
 function previewUpline(id) {
     document.getElementById('headerIdDisplay').innerText = 'Preview ID ' + id;
@@ -6583,7 +6812,7 @@ function uploadAvatar(event) {
     const file = event.target.files[0];
     if (!file) return;
 
-    compressImage(file, function (compressedData) {
+    compressImage(file, async function (compressedData) {
         window.currentCompressedAvatar = compressedData;
         document.querySelectorAll('.avatar, .edit-avatar').forEach(el => {
             el.style.backgroundImage = `url('${compressedData}')`;
@@ -6593,23 +6822,26 @@ function uploadAvatar(event) {
             postAvatar.style.backgroundImage = `url('${compressedData}')`;
         }
         localStorage.setItem("shine_profile_avatar", compressedData);
-        const effectiveWallet = userWallet || localStorage.getItem("shine_saved_wallet_addr") || "0xDefaultUser";
+        const effectiveWallet = (userWallet || localStorage.getItem("shine_saved_wallet_addr") || "0xDefaultUser").toLowerCase();
         const curName = document.getElementById('displayNickname') ? document.getElementById('displayNickname').innerText : "User";
-        fetchWithFallback("/api/profile/save", {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({
-                wallet: effectiveWallet,
-                nickname: curName,
-                avatar: compressedData
-            })
-        });
+
+        if (window.supabase) {
+            try {
+                const client = window.supabase.createClient(MAIN_SUPABASE_URL, MAIN_SUPABASE_KEY);
+                await client.from('user_profiles').upsert({
+                    wallet_address: effectiveWallet,
+                    nickname: curName,
+                    avatar_url: compressedData,
+                    updated_at: new Date().toISOString()
+                });
+            } catch (err) {}
+        }
     });
 }
 
 async function saveProfile() {
     const newName = document.getElementById('inputNickname').value.trim();
-    const effectiveWallet = userWallet || localStorage.getItem("shine_saved_wallet_addr") || "0xDefaultUser";
+    const effectiveWallet = (userWallet || localStorage.getItem("shine_saved_wallet_addr") || "0xDefaultUser").toLowerCase();
     const finalAvatar = window.currentCompressedAvatar || localStorage.getItem("shine_profile_avatar") || "";
 
     if (newName) {
@@ -6623,17 +6855,17 @@ async function saveProfile() {
         localStorage.setItem("shine_profile_avatar", window.currentCompressedAvatar);
     }
 
-    try {
-        await fetchWithFallback("/api/profile/save", {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({
-                wallet: effectiveWallet,
+    if (window.supabase) {
+        try {
+            const client = window.supabase.createClient(MAIN_SUPABASE_URL, MAIN_SUPABASE_KEY);
+            await client.from('user_profiles').upsert({
+                wallet_address: effectiveWallet,
                 nickname: newName || (document.getElementById('displayNickname') ? document.getElementById('displayNickname').innerText : "User"),
-                avatar: finalAvatar
-            })
-        });
-    } catch (e) {}
+                avatar_url: finalAvatar,
+                updated_at: new Date().toISOString()
+            });
+        } catch (err) {}
+    }
 
     toggleProfileEdit();
 }
@@ -6659,33 +6891,34 @@ async function loadSavedProfileFromDB() {
         if (postAvatar) postAvatar.style.backgroundImage = `url('${savedAvatar}')`;
     }
 
-    const effectiveWallet = userWallet || localStorage.getItem("shine_saved_wallet_addr");
+    const effectiveWallet = (userWallet || localStorage.getItem("shine_saved_wallet_addr") || "").toLowerCase();
     if (!effectiveWallet) return;
 
-    try {
-        const res = await fetchWithFallback(`/api/profile/${effectiveWallet}`);
-        if (!res) return;
-        const data = await res.json();
-        if (data && data.success) {
-            if (data.nickname) {
-                document.getElementById('displayNickname').innerText = data.nickname;
-                const postName = document.getElementById('posterUserName');
-                if (postName) postName.innerText = data.nickname;
-                const inp = document.getElementById('inputNickname');
-                if (inp) inp.value = data.nickname;
-                localStorage.setItem("shine_profile_nickname", data.nickname);
+    if (window.supabase) {
+        try {
+            const client = window.supabase.createClient(MAIN_SUPABASE_URL, MAIN_SUPABASE_KEY);
+            const { data, error } = await client.from('user_profiles').select('*').eq('wallet_address', effectiveWallet).single();
+            if (!error && data) {
+                if (data.nickname) {
+                    document.getElementById('displayNickname').innerText = data.nickname;
+                    const postName = document.getElementById('posterUserName');
+                    if (postName) postName.innerText = data.nickname;
+                    const inp = document.getElementById('inputNickname');
+                    if (inp) inp.value = data.nickname;
+                    localStorage.setItem("shine_profile_nickname", data.nickname);
+                }
+                if (data.avatar_url) {
+                    window.currentCompressedAvatar = data.avatar_url;
+                    document.querySelectorAll('.avatar, .edit-avatar').forEach(el => {
+                        el.style.backgroundImage = `url('${data.avatar_url}')`;
+                    });
+                    const postAvatar = document.getElementById('posterUserAvatar');
+                    if (postAvatar) postAvatar.style.backgroundImage = `url('${data.avatar_url}')`;
+                    localStorage.setItem("shine_profile_avatar", data.avatar_url);
+                }
             }
-            if (data.avatar) {
-                window.currentCompressedAvatar = data.avatar;
-                document.querySelectorAll('.avatar, .edit-avatar').forEach(el => {
-                    el.style.backgroundImage = `url('${data.avatar}')`;
-                });
-                const postAvatar = document.getElementById('posterUserAvatar');
-                if (postAvatar) postAvatar.style.backgroundImage = `url('${data.avatar}')`;
-                localStorage.setItem("shine_profile_avatar", data.avatar);
-            }
-        }
-    } catch (err) {}
+        } catch (err) {}
+    }
 }
         function openLevelDetail(lvl, cost, progName) {
     const detailOverlay = document.createElement('div');
@@ -6712,8 +6945,9 @@ async function loadSavedProfileFromDB() {
                 </div>
             </div>`;
         legendHTML = `
-            <div style="display:flex; align-items:center; gap:10px; color:#757575; font-size:12px;"><div style="width:12px; height:12px; border-radius:50%; background:#4CAF50;"></div> To Your Wallet (100%)</div>
-            <div style="display:flex; align-items:center; gap:10px; color:#757575; font-size:12px;"><div style="width:12px; height:12px; border-radius:50%; background:#FFD700;"></div> Recycle (To Upline)</div>`;
+            <div style="display:flex; align-items:center; gap:10px; color:#757575; font-size:12px;"><div style="width:12px; height:12px; border-radius:50%; background:#00d2ff;"></div> To Trading Bot Vault (80%)</div>
+            <div style="display:flex; align-items:center; gap:10px; color:#757575; font-size:12px;"><div style="width:12px; height:12px; border-radius:50%; background:#4CAF50;"></div> Upline 3-Level Bonus (10%)</div>
+            <div style="display:flex; align-items:center; gap:10px; color:#757575; font-size:12px;"><div style="width:12px; height:12px; border-radius:50%; background:#FFD700;"></div> Cycle Reset (Reinvest)</div>`;
     } 
     else if (['Q2', 'S4', 'C8', 'H11'].includes(prog)) {
         matrixHTML = `
@@ -6731,9 +6965,9 @@ async function loadSavedProfileFromDB() {
                 </div>
             </div>`;
         legendHTML = `
-            <div style="display:flex; align-items:center; gap:10px; color:#757575; font-size:12px;"><div style="width:12px; height:12px; border-radius:50%; background:#5C6BC0;"></div> To Upline</div>
-            <div style="display:flex; align-items:center; gap:10px; color:#757575; font-size:12px;"><div style="width:12px; height:12px; border-radius:50%; background:#4CAF50;"></div> To Your Wallet (100%)</div>
-            <div style="display:flex; align-items:center; gap:10px; color:#757575; font-size:12px;"><div style="width:12px; height:12px; border-radius:50%; background:#FFD700;"></div> Recycle</div>`;
+            <div style="display:flex; align-items:center; gap:10px; color:#757575; font-size:12px;"><div style="width:12px; height:12px; border-radius:50%; background:#00d2ff;"></div> To Trading Bot Vault (80%)</div>
+            <div style="display:flex; align-items:center; gap:10px; color:#757575; font-size:12px;"><div style="width:12px; height:12px; border-radius:50%; background:#4CAF50;"></div> Upline 3-Level Bonus (10%)</div>
+            <div style="display:flex; align-items:center; gap:10px; color:#757575; font-size:12px;"><div style="width:12px; height:12px; border-radius:50%; background:#FFD700;"></div> Cycle Reset (Reinvest)</div>`;
     } 
     else if (['G5', 'S9', 'O12', 'E14'].includes(prog)) {
         matrixHTML = `
@@ -6752,9 +6986,9 @@ async function loadSavedProfileFromDB() {
                 </div>
             </div>`;
         legendHTML = `
-            <div style="display:flex; align-items:center; gap:10px; color:#757575; font-size:12px;"><div style="width:12px; height:12px; border-radius:50%; background:#5C6BC0;"></div> To Upline</div>
-            <div style="display:flex; align-items:center; gap:10px; color:#757575; font-size:12px;"><div style="width:12px; height:12px; border-radius:50%; background:#4CAF50;"></div> To Your Wallet (30% / 70%)</div>
-            <div style="display:flex; align-items:center; gap:10px; color:#757575; font-size:12px;"><div style="width:12px; height:12px; border-radius:50%; background:#FFD700;"></div> Recycle</div>`;
+            <div style="display:flex; align-items:center; gap:10px; color:#757575; font-size:12px;"><div style="width:12px; height:12px; border-radius:50%; background:#00d2ff;"></div> To Trading Bot Vault (80%)</div>
+            <div style="display:flex; align-items:center; gap:10px; color:#757575; font-size:12px;"><div style="width:12px; height:12px; border-radius:50%; background:#4CAF50;"></div> Upline 3-Level Bonus (10%)</div>
+            <div style="display:flex; align-items:center; gap:10px; color:#757575; font-size:12px;"><div style="width:12px; height:12px; border-radius:50%; background:#FFD700;"></div> Cycle Reset (Reinvest)</div>`;
     } 
     else if (['N6', 'X15'].includes(prog)) {
         matrixHTML = `
@@ -6776,9 +7010,9 @@ async function loadSavedProfileFromDB() {
                 </div>
             </div>`;
         legendHTML = `
-            <div style="display:flex; align-items:center; gap:10px; color:#757575; font-size:12px;"><div style="width:12px; height:12px; border-radius:50%; background:#5C6BC0;"></div> To Upline</div>
-            <div style="display:flex; align-items:center; gap:10px; color:#757575; font-size:12px;"><div style="width:12px; height:12px; border-radius:50%; background:#4CAF50;"></div> To Your Wallet (20% / 30% / 50%)</div>
-            <div style="display:flex; align-items:center; gap:10px; color:#757575; font-size:12px;"><div style="width:12px; height:12px; border-radius:50%; background:#FFD700;"></div> Recycle</div>`;
+            <div style="display:flex; align-items:center; gap:10px; color:#757575; font-size:12px;"><div style="width:12px; height:12px; border-radius:50%; background:#00d2ff;"></div> To Trading Bot Vault (80%)</div>
+            <div style="display:flex; align-items:center; gap:10px; color:#757575; font-size:12px;"><div style="width:12px; height:12px; border-radius:50%; background:#4CAF50;"></div> Upline 3-Level Bonus (10%)</div>
+            <div style="display:flex; align-items:center; gap:10px; color:#757575; font-size:12px;"><div style="width:12px; height:12px; border-radius:50%; background:#FFD700;"></div> Cycle Reset (Reinvest)</div>`;
     }
 
     const tData = getTierDataByProgram(prog);
@@ -7576,11 +7810,11 @@ window.addEventListener('DOMContentLoaded', () => {
                 pnl = (livePrice - avgPriceCheck) * solBalCheck;
                 pnlPct = ((livePrice - avgPriceCheck) / avgPriceCheck) * 100;
             }
-            const usdtBal = parseFloat(data.usdtBalance !== undefined ? data.usdtBalance : 100);
+            const totalCapVal = (data && data.totalCapital !== undefined && parseFloat(data.totalCapital) > 0) ? parseFloat(data.totalCapital) : 0.0;
+            const usdtBal = totalCapVal > 0 ? parseFloat(data.usdtBalance || 0) : 0.0;
             const solBal = parseFloat(data.solBalance !== undefined ? data.solBalance : 0);
             const avgPrice = parseFloat(data.avgEntryPrice || 0);
             const investedVal = parseFloat(data.investedAmount || 0);
-            const totalCapVal = parseFloat(data.totalCapital || (usdtBal + investedVal));
             const tHigh = parseFloat(data.tsHigh || data.trailingHigh || data.lastPeakPrice || 0);
             const tLow = parseFloat(data.tsLow || data.trailingLow || 0);
             const phase = data.activePhase !== undefined ? parseInt(data.activePhase.toString().replace(/[^0-9]/g, "")) : (data.phase !== undefined ? parseInt(data.phase) : 1);
@@ -8024,7 +8258,7 @@ window.addEventListener('DOMContentLoaded', () => {
             if (activePosList.length > 0) {
                 if (botBadge) botBadge.innerText = activePosList.length + " OPEN";
                 const regularList = activePosList.filter(p => !p.isMacro);
-                const maxUserSlots = (data && data.maxSubTrades) ? parseInt(data.maxSubTrades) : getFrontendTierSlots(data.totalCapital || totalCapVal);
+                const maxUserSlots = 24;
                 let dotsHTML = '';
                 for (let i = 1; i <= maxUserSlots; i++) {
                     dotsHTML += i <= regularList.length 
@@ -8045,7 +8279,7 @@ window.addEventListener('DOMContentLoaded', () => {
                     '<span style="font-size:12px; font-weight:bold; color:#fff;">DCA SAFETY ORDERS:</span>' +
                     '<span style="font-size:11px; color:#00d2ff; font-weight:bold; font-family:monospace;">(' + regularList.length + '/' + maxUserSlots + ')</span>' +
                     '</div>' +
-                    '<div style="display:grid; grid-template-columns:repeat(10, 14px); gap:3px; justify-content:center; margin:6px 0;">' + dotsHTML + '</div>' +
+                    '<div style="display:grid; grid-template-columns:repeat(12, 14px); gap:3px; justify-content:center; margin:6px 0;">' + dotsHTML + '</div>' +
                     nextTargetHTML + '</div>';
 
                 const rowsHTML = activePosList.map(pos => {
@@ -8105,22 +8339,9 @@ window.addEventListener('DOMContentLoaded', () => {
             }
 
             let spotList = Array.isArray(data.spotTradesHistory) ? [...data.spotTradesHistory] : [];
-            const activeList = Array.isArray(data.activePositions) ? data.activePositions : [];
-            const activeAsAudit = activeList.map(p => ({
-                orderId: p.id,
-                side: "BUY",
-                price: parseFloat(p.entryPrice || 0),
-                solAmount: parseFloat(p.solAmount || 0),
-                profit: 0.0,
-                realizedPnl: 0.0,
-                isOpen: true,
-                round: p.round || 1,
-                execType: "OPEN_POSITION",
-                timestamp: p.timestamp || new Date().toISOString()
-            }));
             const seenSpotOrderIds = new Set();
             const cleanSpotList = [];
-            [...activeAsAudit, ...spotList].forEach(t => {
+            spotList.forEach(t => {
                 const oId = String(t.orderId || t.order_id || "").toUpperCase().trim();
                 if (oId && !seenSpotOrderIds.has(oId) && parseFloat(t.solAmount || t.sol_amount || 0) > 0) {
                     seenSpotOrderIds.add(oId);
@@ -8807,8 +9028,7 @@ if (data.hyperPoolActive) {
             }
             updateSingularityModalData(data);
         }
-const REAL_USDT_CONTRACT = "0x55d398326f99059fF775485246999027B3197955";
-        let liveOnChainWallet = { usdt: 0.0, gas: 0.0, trx: 0.0, totalUsd: 0.0 };
+let liveOnChainWallet = { usdt: 0.0, gas: 0.0, trx: 0.0, totalUsd: 0.0 };
 
         async function fetchRealWeb3WalletBalances(addr) {
             if (!addr) return;
@@ -9133,7 +9353,7 @@ function updateSingularityModalData(data) {
     const contEl = document.getElementById("sng-modal-positions-container");
     if (badgeEl) badgeEl.innerText = posList.length + " OPEN";
 
-    let allowedSlots = 150;
+    let allowedSlots = 40;
 
     if (contEl) {
         if (posList.length === 0) {
@@ -9150,7 +9370,7 @@ function updateSingularityModalData(data) {
                 '<span style="font-size:11px; font-weight:bold; color:#fff;">5-ENGINE SAFETY ORDERS:</span>' +
                 '<span style="font-size:11px; color:#e040fb; font-weight:bold; font-family:monospace;">(' + posList.length + '/' + allowedSlots + ')</span>' +
                 '</div>' +
-                '<div style="display:grid; grid-template-columns:repeat(15, 12px); gap:2px; justify-content:center; margin:6px 0;">' + dotsHTML + '</div>' +
+                '<div style="display:grid; grid-template-columns:repeat(10, 14px); gap:3px; justify-content:center; margin:6px 0;">' + dotsHTML + '</div>' +
                 '</div>';
 
             const engineNames = {
@@ -9246,7 +9466,7 @@ function updateKiller1ModalData(data) {
         if (posList.length === 0) {
             contEl.innerHTML = "NO ACTIVE BOT POSITIONS";
         } else {
-            const maxK1Slots = getFrontendTierSlots(data.totalCapital || currentTotalUserCapital);
+            const maxK1Slots = 24;
             let dotsHTML = '';
             for (let i = 1; i <= maxK1Slots; i++) {
                 dotsHTML += i <= posList.length 
@@ -9258,7 +9478,7 @@ function updateKiller1ModalData(data) {
                 '<span style="font-size:12px; font-weight:bold; color:#fff;">DCA SAFETY ORDERS:</span>' +
                 '<span style="font-size:11px; color:#00d2ff; font-weight:bold; font-family:monospace;">(' + posList.length + '/' + maxK1Slots + ')</span>' +
                 '</div>' +
-                '<div style="display:grid; grid-template-columns:repeat(10, 14px); gap:3px; justify-content:center; margin:6px 0;">' + dotsHTML + '</div>' +
+                '<div style="display:grid; grid-template-columns:repeat(12, 14px); gap:3px; justify-content:center; margin:6px 0;">' + dotsHTML + '</div>' +
                 '</div>';
 
             const rowsHTML = posList.map((p, idx) => `
@@ -9347,7 +9567,7 @@ function updateKiller2ModalData(data) {
         if (posList.length === 0) {
             contEl.innerHTML = "NO ACTIVE BOT POSITIONS";
         } else {
-            const maxK2Slots = getFrontendTierSlots(data.totalCapital || currentTotalUserCapital);
+            const maxK2Slots = 24;
             let dotsHTML = '';
             for (let i = 1; i <= maxK2Slots; i++) {
                 dotsHTML += i <= posList.length 
@@ -9359,7 +9579,7 @@ function updateKiller2ModalData(data) {
                 '<span style="font-size:12px; font-weight:bold; color:#fff;">DCA SAFETY ORDERS:</span>' +
                 '<span style="font-size:11px; color:#FFD700; font-weight:bold; font-family:monospace;">(' + posList.length + '/' + maxK2Slots + ')</span>' +
                 '</div>' +
-                '<div style="display:grid; grid-template-columns:repeat(10, 14px); gap:3px; justify-content:center; margin:6px 0;">' + dotsHTML + '</div>' +
+                '<div style="display:grid; grid-template-columns:repeat(12, 14px); gap:3px; justify-content:center; margin:6px 0;">' + dotsHTML + '</div>' +
                 '</div>';
 
             const rowsHTML = posList.map((p, idx) => `
@@ -9448,7 +9668,7 @@ function updateKiller3ModalData(data) {
         if (posList.length === 0) {
             contEl.innerHTML = "NO ACTIVE BOT POSITIONS";
         } else {
-            const maxK3Slots = getFrontendTierSlots(data.totalCapital || currentTotalUserCapital);
+            const maxK3Slots = 24;
             let dotsHTML = '';
             for (let i = 1; i <= maxK3Slots; i++) {
                 dotsHTML += i <= posList.length 
@@ -9460,7 +9680,7 @@ function updateKiller3ModalData(data) {
                 '<span style="font-size:12px; font-weight:bold; color:#fff;">DCA SAFETY ORDERS:</span>' +
                 '<span style="font-size:11px; color:#00e676; font-weight:bold; font-family:monospace;">(' + posList.length + '/' + maxK3Slots + ')</span>' +
                 '</div>' +
-                '<div style="display:grid; grid-template-columns:repeat(10, 14px); gap:3px; justify-content:center; margin:6px 0;">' + dotsHTML + '</div>' +
+                '<div style="display:grid; grid-template-columns:repeat(12, 14px); gap:3px; justify-content:center; margin:6px 0;">' + dotsHTML + '</div>' +
                 '</div>';
 
             const rowsHTML = posList.map((p, idx) => `
@@ -9639,7 +9859,7 @@ function updateHyperTitanModalData(data) {
         if (posList.length === 0) {
             contEl.innerHTML = "NO ACTIVE BOT POSITIONS";
         } else {
-            const maxHyperSlots = 30;
+            const maxHyperSlots = 24;
             let dotsHTML = '';
             for (let i = 1; i <= maxHyperSlots; i++) {
                 dotsHTML += i <= posList.length 
@@ -9651,7 +9871,7 @@ function updateHyperTitanModalData(data) {
                 '<span style="font-size:12px; font-weight:bold; color:#fff;">DCA SAFETY ORDERS:</span>' +
                 '<span style="font-size:11px; color:#00e5ff; font-weight:bold; font-family:monospace;">(' + posList.length + '/' + maxHyperSlots + ')</span>' +
                 '</div>' +
-                '<div style="display:grid; grid-template-columns:repeat(10, 14px); gap:3px; justify-content:center; margin:6px 0;">' + dotsHTML + '</div>' +
+                '<div style="display:grid; grid-template-columns:repeat(12, 14px); gap:3px; justify-content:center; margin:6px 0;">' + dotsHTML + '</div>' +
                 '</div>';
 
             const rowsHTML = posList.map((p, idx) => `
@@ -11689,16 +11909,10 @@ let showFullCombinedScalpHistory = false;
                     dateStr = String(t.timestamp);
                 }
             }
-            const isOpenTrade = Boolean(t.isOpen);
-            const badgeBg = isOpenTrade ? "rgba(0, 229, 255, 0.2)" : (isSell ? (isWin ? "rgba(76,175,80,0.2)" : "rgba(246,70,93,0.2)") : "rgba(92,107,192,0.2)");
-            const badgeColor = isOpenTrade ? "#00e5ff" : (isSell ? (isWin ? "#4CAF50" : "#f6465d") : "#5C6BC0");
-            const actionLabel = isOpenTrade ? "ACTIVE (OPEN)" : (isSell ? "EXIT" : "ENTRY");
-            const curP = currentChartLivePrice > 0 ? currentChartLivePrice : parseFloat(t.price || 0);
-            const floatPnl = (curP - parseFloat(t.price || 0)) * parseFloat(t.solAmount || 0);
-            const floatSign = floatPnl >= 0 ? "+" : "";
-            const pnlDisplay = isOpenTrade 
-                ? '<span style="color:' + (floatPnl >= 0 ? '#00e676' : '#f6465d') + '; font-weight:bold;">' + floatSign + floatPnl.toFixed(4) + ' USDT (LIVE)</span>' 
-                : (isSell ? '<span style="color:' + badgeColor + '; font-weight:bold;">' + (isWin ? "+" : "") + pVal.toFixed(4) + ' USDT</span>' : '<span style="color:#757575;">EXECUTED</span>');
+            const badgeBg = isSell ? (isWin ? "rgba(76,175,80,0.2)" : "rgba(246,70,93,0.2)") : "rgba(0,229,255,0.2)";
+            const badgeColor = isSell ? (isWin ? "#4CAF50" : "#f6465d") : "#00e5ff";
+            const actionLabel = isSell ? "EXIT" : "ENTRY";
+            const pnlDisplay = isSell ? '<span style="color:' + badgeColor + '; font-weight:bold;">' + (isWin ? "+" : "") + pVal.toFixed(4) + ' USDT</span>' : '<span style="color:#757575;">EXECUTED</span>';
             const orderIdDisplay = t.orderId ? t.orderId : "DCA";
 
             return '<div style="background:#151518; border:1px solid #222; border-radius:8px; padding:10px 12px; display:flex; flex-direction:column; gap:4px; font-family:monospace;">' +
@@ -11743,22 +11957,27 @@ function showAddLoopSlotForm() {
     const tradeHost = document.getElementById("tradeTabContainer");
 
     if (tab === 'Trade') {
+        const tradeView = document.getElementById('tabViewTrade');
+        if (tradeView) {
+            tradeView.classList.add('active');
+            tradeView.style.display = 'block';
+        }
         if (tradeDesk && tradeHost) {
             tradeDesk.style.position = "static";
             tradeDesk.style.display = "block";
             tradeDesk.style.zIndex = "auto";
             tradeDesk.style.padding = "0 0 20px 0";
-            tradeHost.appendChild(tradeDesk);
-            refreshExchangeBalances();
-            renderLiveOrderBook();
+            if (!tradeHost.contains(tradeDesk)) {
+                tradeHost.appendChild(tradeDesk);
+            }
+            try {
+                refreshExchangeBalances();
+                renderLiveOrderBook();
+                renderProfessionalOrderDesk(latestBackendState);
+            } catch(err) {}
             setTimeout(() => {
-                initTradeManualChart(currentTradeChartInterval);
+                try { initTradeManualChart(currentTradeChartInterval); } catch(e) {}
             }, 150);
-        }
-        const tradeView = document.getElementById('tabViewTrade');
-        if (tradeView) {
-            tradeView.classList.add('active');
-            tradeView.style.display = 'block';
         }
     } else if (tab === 'Bot') {
         const botView = document.getElementById('tabViewBot');
