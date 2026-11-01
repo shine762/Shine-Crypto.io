@@ -2411,6 +2411,67 @@ input:checked + .tw-slider:before {
     padding: 14px 0;
     border-bottom: 1px solid rgba(255, 255, 255, 0.05);
 }
+.blockchain-loader-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(10, 12, 18, 0.88);
+    backdrop-filter: blur(8px);
+    z-index: 99999;
+    display: none;
+    align-items: center;
+    justify-content: center;
+    padding: 20px;
+    box-sizing: border-box;
+}
+.blockchain-loader-card {
+    background: #151924;
+    border: 1px solid rgba(0, 229, 255, 0.3);
+    border-radius: 24px;
+    padding: 30px 24px;
+    width: 100%;
+    max-width: 380px;
+    text-align: center;
+    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.9);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 16px;
+    animation: fadeIn 0.25s ease;
+}
+.bc-spinner {
+    width: 60px;
+    height: 60px;
+    border: 4px solid rgba(0, 229, 255, 0.15);
+    border-top: 4px solid #00e5ff;
+    border-radius: 50%;
+    animation: orbitRotate 1s linear infinite;
+}
+.bc-success-icon {
+    width: 70px;
+    height: 70px;
+    background: rgba(0, 230, 118, 0.15);
+    border: 2px solid #00e676;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #00e676;
+    font-size: 38px;
+    box-shadow: 0 0 25px rgba(0, 230, 118, 0.4);
+}
+.bc-step-tag {
+    background: rgba(255, 215, 0, 0.12);
+    color: #FFD700;
+    border: 1px solid rgba(255, 215, 0, 0.3);
+    padding: 4px 12px;
+    border-radius: 12px;
+    font-size: 11px;
+    font-weight: 800;
+    font-family: monospace;
+}
 </style>
 </head>
 <body>
@@ -2758,6 +2819,17 @@ input:checked + .tw-slider:before {
         <div style="text-align: center; color: #718096; font-size: 11px; line-height: 1.4;">
             By connecting, you agree to decentralized non-custodial protocol terms.
         </div>
+    </div>
+</div>
+
+<div id="blockchainLoaderOverlay" class="blockchain-loader-overlay">
+    <div class="blockchain-loader-card">
+        <div id="bcLoaderSpinner" class="bc-spinner"></div>
+        <div id="bcSuccessIcon" class="bc-success-icon" style="display: none;">✓</div>
+        <span id="bcLoaderStepTag" class="bc-step-tag">PROCESSING</span>
+        <h3 id="bcLoaderTitle" style="color: #ffffff; font-size: 18px; margin: 0; font-weight: 800;">Contacting Blockchain...</h3>
+        <p id="bcLoaderDesc" style="color: #8c8ca1; font-size: 13px; line-height: 1.5; margin: 0;">Please wait while the transaction is prepared and verified by the protocol.</p>
+        <button id="bcSuccessCloseBtn" onclick="closeBcLoaderModal()" style="display: none; width: 100%; background: #00e676; color: #000; border: none; border-radius: 12px; padding: 14px 0; font-weight: 900; font-size: 14px; cursor: pointer; margin-top: 6px;">OK, CONTINUE</button>
     </div>
 </div>
 
@@ -5936,10 +6008,38 @@ input:checked + .tw-slider:before {
             return 24;
         }
 
+        function showBcLoader(stepTag, title, desc, showSuccess = false) {
+            const overlay = document.getElementById("blockchainLoaderOverlay");
+            const spinner = document.getElementById("bcLoaderSpinner");
+            const icon = document.getElementById("bcSuccessIcon");
+            const step = document.getElementById("bcLoaderStepTag");
+            const tEl = document.getElementById("bcLoaderTitle");
+            const dEl = document.getElementById("bcLoaderDesc");
+            const btn = document.getElementById("bcSuccessCloseBtn");
+            if (!overlay) return;
+            overlay.style.display = "flex";
+            if (showSuccess) {
+                if (spinner) spinner.style.display = "none";
+                if (icon) icon.style.display = "flex";
+                if (btn) btn.style.display = "block";
+            } else {
+                if (spinner) spinner.style.display = "block";
+                if (icon) icon.style.display = "none";
+                if (btn) btn.style.display = "none";
+            }
+            if (step) step.innerText = stepTag;
+            if (tEl) tEl.innerText = title;
+            if (dEl) dEl.innerText = desc;
+        }
+
+        function closeBcLoaderModal() {
+            const overlay = document.getElementById("blockchainLoaderOverlay");
+            if (overlay) overlay.style.display = "none";
+        }
+
         async function executeLevelUpgrade() {
             const activeProvider = (window.trustwallet && window.trustwallet.ethereum) || window.ethereum;
             if (!activeProvider || !userWallet) {
-                alert("Pehle apna Web3 wallet connect karein!");
                 openWalletSelection();
                 return;
             }
@@ -5952,16 +6052,16 @@ input:checked + .tw-slider:before {
 
             const exactSlotCost = progPrices[prog][lvlIndex];
             const serviceFee = progFees[prog] || 1;
-            const totalRequiredUsdt = exactSlotPriceTotal = exactSlotCost + serviceFee;
+            const totalRequiredUsdt = exactSlotCost + serviceFee;
+
+            showBcLoader("STEP 1/3", "Verifying Network & Balance", "Checking wallet balances and smart contract approvals...");
 
             const check = await verifyWalletNetworkAndBalance(totalRequiredUsdt);
             if (!check || !check.hasEnough) {
-                alert(`Balance Na-kafi hai!\nDarkar: ${totalRequiredUsdt} USDT aur ~0.003 tBNB Gas Fee.\nAapke wallet mein: ${check ? check.usdtBal.toFixed(2) : 0} USDT aur ${check ? check.bnbBal.toFixed(4) : 0} tBNB hain.`);
+                closeBcLoaderModal();
+                alert(`Insufficient Balance!\nRequired: ${totalRequiredUsdt} USDT and ~0.003 tBNB Gas.\nAvailable: ${check ? check.usdtBal.toFixed(2) : 0} USDT | ${check ? check.bnbBal.toFixed(4) : 0} tBNB`);
                 return;
             }
-
-            const step1Confirm = confirm(`[STEP 1/2] Blockchain Approval:\n\nSlot: ${prog} - Level ${lvl}\nSlot Amount: ${exactSlotCost} USDT\nFee: ${serviceFee} USDT\nTotal Deduct: ${totalRequiredUsdt} USDT\n\nUSDT Deduction allow karne ke liye OK dabayein aur wallet sign karein.`);
-            if (!step1Confirm) return;
 
             try {
                 const web3Prov = new ethers.providers.Web3Provider(activeProvider);
@@ -5973,32 +6073,37 @@ input:checked + .tw-slider:before {
                 const currentAllowance = await usdtContract.allowance(userWallet, SHINE_CONTRACT_ADDRESS);
 
                 if (currentAllowance.lt(totalWei)) {
+                    showBcLoader("STEP 2/3", "Sign USDT Allowance", "Please confirm USDT approval signature in your wallet...");
                     const approveTx = await usdtContract.approve(SHINE_CONTRACT_ADDRESS, totalWei);
+                    showBcLoader("STEP 2/3", "Confirming Approval", "Waiting for USDT approval confirmation on blockchain...");
                     await approveTx.wait();
                 }
 
-                const step2Confirm = confirm(`[STEP 2/2] Smart Contract Execution:\n\nUSDT Approve ho gaya hai!\nAb tBNB Network Gas Fee sign karein taake level activate ho aur 80% funds Trading Vault mein deposit hon.`);
-                if (!step2Confirm) return;
+                showBcLoader("STEP 3/3", "Confirm Level Activation", "Please confirm transaction gas fee in your wallet to activate level...");
 
                 const userStruct = await shineContract.users(userWallet);
                 let tx;
 
                 if (!userStruct.isRegistered) {
                     if (progNum !== 1 || lvlIndex !== 0) {
-                        alert("Pehle V1 Level 1 (10 USDT) activate karna zaroori hai ID register karne ke liye!");
+                        closeBcLoaderModal();
+                        alert("Please activate V1 Level 1 (10 USDT) first to register your ID!");
                         return;
                     }
                     let targetUpline = await shineContract.rootOwner();
                     const urlParams = new URLSearchParams(window.location.search);
                     const refParam = urlParams.get('ref');
-                    if (refParam && ethers.utils.isAddress(refParam) && refParam.toLowerCase() !== userWallet.toLowerCase()) {
-                        targetUpline = refParam;
+                    if (refParam) {
+                        if (ethers.utils.isAddress(refParam) && refParam.toLowerCase() !== userWallet.toLowerCase()) {
+                            targetUpline = refParam;
+                        }
                     }
                     tx = await shineContract.register(targetUpline);
                 } else {
                     tx = await shineContract.buyLevel(progNum, lvlIndex);
                 }
 
+                showBcLoader("STEP 3/3", "Finalizing Activation", "Blockchain confirmation in progress. Funds routing to 80% Trading Vault, 10% Upline, 10% Protocol...");
                 await tx.wait();
 
                 markSlotAsActivated(prog, lvl, exactSlotCost);
@@ -6013,11 +6118,13 @@ input:checked + .tw-slider:before {
                     }));
                 }
 
-                alert(`Mubarak! Slot ${prog} Level ${lvl} kamyabi se active ho gaya!\n80% (${(exactSlotCost*0.8).toFixed(2)} USDT) Trading Bot Vault mein bhej diya gaya hai.`);
+                showBcLoader("COMPLETED", "Level Successfully Activated ✅", `${prog} Level ${lvl} is now active!\n80% (${(exactSlotCost * 0.8).toFixed(2)} USDT) allocated to Trading Vault, 10% to Upline, 10% to Protocol.`, true);
                 closeUpgrade();
+                await syncOnChainUserData();
                 refreshExchangeBalances();
             } catch (err) {
-                alert("Transaction Cancel ya Revert ho gayi: " + (err.reason || err.message || err));
+                closeBcLoaderModal();
+                alert("Transaction Cancelled or Failed: " + (err.reason || err.message || err));
             }
         }
 
@@ -6316,6 +6423,67 @@ input:checked + .tw-slider:before {
 
             fetchRealWeb3WalletBalances(addr);
             syncOnChainActiveLevels();
+            syncOnChainUserData();
+        }
+
+        async function syncOnChainUserData() {
+            if (!userWallet) return;
+            const activeProvider = (window.trustwallet && window.trustwallet.ethereum) || window.ethereum;
+            if (!activeProvider) return;
+            try {
+                const web3Prov = new ethers.providers.Web3Provider(activeProvider);
+                const shineContract = new ethers.Contract(SHINE_CONTRACT_ADDRESS, SHINE_ABI, web3Prov);
+                const userStruct = await shineContract.users(userWallet);
+                if (userStruct && userStruct.isRegistered) {
+                    const uId = userStruct.id.toString();
+                    const partnersCount = userStruct.partnersCount.toString();
+                    const uplineAddr = userStruct.upline;
+                    const joinTimestamp = Number(userStruct.joinDate) * 1000;
+                    const dateStr = joinTimestamp > 0 ? new Date(joinTimestamp).toLocaleDateString() : "Active";
+
+                    document.getElementById('headerIdDisplay').innerText = `ID ${uId}`;
+                    const profIdEl = document.querySelector('.profile-id');
+                    if (profIdEl) {
+                        profIdEl.innerHTML = `ID ${uId} <span id="userRank" style="margin-left:8px; background:linear-gradient(90deg, #FFD700, #FFA500); color:#000; padding:2px 8px; border-radius:10px; font-size:10px; font-weight:900;">GOLD STAR</span>`;
+                    }
+
+                    const partnerStatCards = document.querySelectorAll('.stats-grid .stat-card .stat-value');
+                    if (partnerStatCards.length >= 2) {
+                        partnerStatCards[0].innerText = partnersCount;
+                        partnerStatCards[1].innerText = partnersCount;
+                    }
+
+                    const expProf = document.getElementById('expandedProfile');
+                    if (expProf) {
+                        const shortUpline = uplineAddr.substring(0, 6) + '...' + uplineAddr.substring(uplineAddr.length - 4);
+                        expProf.innerHTML = `
+                            <div class="wallet-address-row">
+                                <span id="displayWallet">${userWallet.substring(0,6)}...${userWallet.substring(userWallet.length-4)}</span>
+                                <i class="material-icons" style="font-size: 16px; color: #757575; cursor: pointer;" onclick="copyWallet()">content_copy</i>
+                            </div>
+                            <div class="invited-by-row">
+                                registered ${dateStr} by <span class="upline-badge">${shortUpline}</span>
+                            </div>
+                        `;
+                    }
+
+                    const pLink = document.getElementById('userPersonalReferralLink');
+                    if (pLink) {
+                        const refUrl = `https://ShineCrypto.io/?ref=${uId}`;
+                        pLink.innerText = `ShineCrypto.io/?ref=${uId}`;
+                        pLink.href = refUrl;
+                        window.currentGeneratedReferralLink = refUrl;
+                    }
+                } else {
+                    const pLink = document.getElementById('userPersonalReferralLink');
+                    if (pLink) {
+                        const refUrl = `https://ShineCrypto.io/?ref=${userWallet}`;
+                        pLink.innerText = `ShineCrypto.io/?ref=${userWallet.substring(0,6)}...`;
+                        pLink.href = refUrl;
+                        window.currentGeneratedReferralLink = refUrl;
+                    }
+                }
+            } catch (err) {}
         }
         let userClaimedProfit = 0;
         function claimProfit() {
@@ -6521,9 +6689,13 @@ function initApp() {
         }
 
         async function openPreview(programName) {
+            showBcLoader("MATRIX DATA", `Loading ${programName} Matrix`, "Reading on-chain partner spots, cycles and spillover states...");
             const overlay = document.getElementById('programPreview');
             const prog = programName;
             const prices = progPrices[prog];
+            setTimeout(() => {
+                closeBcLoaderModal();
+            }, 400);
             const names = {
                 'V1': 'VELOCITY ENGINE (V1)', 'Q2': 'QUANTUM MATRIX (Q2)', 'T3': 'TRINITY FORCE (T3)',
                 'S4': 'DUAL SYNERGY (S4)', 'G5': 'GALAXY ORBIT (G5)', 'N6': 'INFINITE NEXUS (N6)',
@@ -6669,8 +6841,12 @@ async function verifyWalletNetworkAndBalance(requiredUsdt) {
 }
 
 async function openUpgrade(prog, lvl, price) {
+    showBcLoader("PREPARING", `Loading Slot ${prog} Level ${lvl}`, "Fetching real-time protocol fee, smart contract rates and checking balances...");
     window.currentSelectedProg = prog;
     window.currentSelectedLvl = lvl;
+    setTimeout(() => {
+        closeBcLoaderModal();
+    }, 450);
     const exactSlotPrice = Number(price);
     const serviceFee = progFees[prog] || 1;
     const totalPrice = exactSlotPrice + serviceFee;
@@ -6740,13 +6916,12 @@ function copyWallet() {
 function copyPersonalReferralLink() {
     const currentAddr = userWallet || localStorage.getItem("shine_saved_wallet_addr");
     if (!currentAddr) {
-        alert("Please connect your wallet first to get your referral link.");
         openWalletSelection();
         return;
     }
-    const fullRefUrl = `${window.location.origin}${window.location.pathname}?ref=${currentAddr}`;
-    navigator.clipboard.writeText(fullRefUrl);
-    alert("Personal referral link copied:\n" + fullRefUrl);
+    const targetLink = window.currentGeneratedReferralLink || `https://ShineCrypto.io/?ref=${currentAddr}`;
+    navigator.clipboard.writeText(targetLink);
+    alert("Referral link copied successfully:\n" + targetLink);
 }
 function previewUpline(id) {
     document.getElementById('headerIdDisplay').innerText = 'Preview ID ' + id;
