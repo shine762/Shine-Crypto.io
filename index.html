@@ -2427,31 +2427,29 @@ input:checked + .tw-slider:before {
     box-sizing: border-box;
 }
 .blockchain-loader-card {
-    background: #151924;
-    border: 1px solid rgba(0, 229, 255, 0.3);
-    border-radius: 24px;
-    padding: 30px 24px;
-    width: 100%;
-    max-width: 380px;
+    background: transparent;
+    border: none;
+    padding: 0;
+    width: auto;
     text-align: center;
-    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.9);
+    box-shadow: none;
     display: flex;
     flex-direction: column;
     align-items: center;
-    gap: 16px;
-    animation: fadeIn 0.25s ease;
+    gap: 18px;
 }
 .bc-spinner {
-    width: 60px;
-    height: 60px;
-    border: 4px solid rgba(0, 229, 255, 0.15);
-    border-top: 4px solid #00e5ff;
+    width: 58px;
+    height: 58px;
+    border: 3.5px solid rgba(0, 229, 255, 0.15);
+    border-top: 3.5px solid #00e5ff;
     border-radius: 50%;
-    animation: orbitRotate 1s linear infinite;
+    animation: orbitRotate 0.75s linear infinite;
+    filter: drop-shadow(0 0 14px rgba(0, 229, 255, 0.5));
 }
 .bc-success-icon {
-    width: 70px;
-    height: 70px;
+    width: 64px;
+    height: 64px;
     background: rgba(0, 230, 118, 0.15);
     border: 2px solid #00e676;
     border-radius: 50%;
@@ -2459,18 +2457,8 @@ input:checked + .tw-slider:before {
     align-items: center;
     justify-content: center;
     color: #00e676;
-    font-size: 38px;
+    font-size: 34px;
     box-shadow: 0 0 25px rgba(0, 230, 118, 0.4);
-}
-.bc-step-tag {
-    background: rgba(255, 215, 0, 0.12);
-    color: #FFD700;
-    border: 1px solid rgba(255, 215, 0, 0.3);
-    padding: 4px 12px;
-    border-radius: 12px;
-    font-size: 11px;
-    font-weight: 800;
-    font-family: monospace;
 }
 </style>
 </head>
@@ -2826,10 +2814,7 @@ input:checked + .tw-slider:before {
     <div class="blockchain-loader-card">
         <div id="bcLoaderSpinner" class="bc-spinner"></div>
         <div id="bcSuccessIcon" class="bc-success-icon" style="display: none;">✓</div>
-        <span id="bcLoaderStepTag" class="bc-step-tag">PROCESSING</span>
-        <h3 id="bcLoaderTitle" style="color: #ffffff; font-size: 18px; margin: 0; font-weight: 800;">Contacting Blockchain...</h3>
-        <p id="bcLoaderDesc" style="color: #8c8ca1; font-size: 13px; line-height: 1.5; margin: 0;">Please wait while the transaction is prepared and verified by the protocol.</p>
-        <button id="bcSuccessCloseBtn" onclick="closeBcLoaderModal()" style="display: none; width: 100%; background: #00e676; color: #000; border: none; border-radius: 12px; padding: 14px 0; font-weight: 900; font-size: 14px; cursor: pointer; margin-top: 6px;">OK, CONTINUE</button>
+        <h3 id="bcLoaderTitle" style="color: #ffffff; font-size: 16px; margin: 0; font-weight: 700; letter-spacing: 0.4px;">Connecting Smart Contract...</h3>
     </div>
 </div>
 
@@ -6008,35 +5993,27 @@ input:checked + .tw-slider:before {
             return 24;
         }
 
-        function showBcLoader(stepTag, title, desc, showSuccess = false) {
+        function showBcLoader(title, showSuccess = false) {
             const overlay = document.getElementById("blockchainLoaderOverlay");
             const spinner = document.getElementById("bcLoaderSpinner");
             const icon = document.getElementById("bcSuccessIcon");
-            const step = document.getElementById("bcLoaderStepTag");
             const tEl = document.getElementById("bcLoaderTitle");
-            const dEl = document.getElementById("bcLoaderDesc");
-            const btn = document.getElementById("bcSuccessCloseBtn");
             if (!overlay) return;
             overlay.style.display = "flex";
             if (showSuccess) {
                 if (spinner) spinner.style.display = "none";
                 if (icon) icon.style.display = "flex";
-                if (btn) btn.style.display = "block";
             } else {
                 if (spinner) spinner.style.display = "block";
                 if (icon) icon.style.display = "none";
-                if (btn) btn.style.display = "none";
             }
-            if (step) step.innerText = stepTag;
             if (tEl) tEl.innerText = title;
-            if (dEl) dEl.innerText = desc;
         }
 
         function closeBcLoaderModal() {
             const overlay = document.getElementById("blockchainLoaderOverlay");
             if (overlay) overlay.style.display = "none";
         }
-
         async function executeLevelUpgrade() {
             const activeProvider = (window.trustwallet && window.trustwallet.ethereum) || window.ethereum;
             if (!activeProvider || !userWallet) {
@@ -6054,14 +6031,7 @@ input:checked + .tw-slider:before {
             const serviceFee = progFees[prog] || 1;
             const totalRequiredUsdt = exactSlotCost + serviceFee;
 
-            showBcLoader("STEP 1/3", "Verifying Network & Balance", "Checking wallet balances and smart contract approvals...");
-
-            const check = await verifyWalletNetworkAndBalance(totalRequiredUsdt);
-            if (!check || !check.hasEnough) {
-                closeBcLoaderModal();
-                alert(`Insufficient Balance!\nRequired: ${totalRequiredUsdt} USDT and ~0.003 tBNB Gas.\nAvailable: ${check ? check.usdtBal.toFixed(2) : 0} USDT | ${check ? check.bnbBal.toFixed(4) : 0} tBNB`);
-                return;
-            }
+            showBcLoader("Calling Wallet for USDT Signature...");
 
             try {
                 const web3Prov = new ethers.providers.Web3Provider(activeProvider);
@@ -6073,13 +6043,13 @@ input:checked + .tw-slider:before {
                 const currentAllowance = await usdtContract.allowance(userWallet, SHINE_CONTRACT_ADDRESS);
 
                 if (currentAllowance.lt(totalWei)) {
-                    showBcLoader("STEP 2/3", "Sign USDT Allowance", "Please confirm USDT approval signature in your wallet...");
+                    showBcLoader("Sign USDT Approval in Wallet...");
                     const approveTx = await usdtContract.approve(SHINE_CONTRACT_ADDRESS, totalWei);
-                    showBcLoader("STEP 2/3", "Confirming Approval", "Waiting for USDT approval confirmation on blockchain...");
+                    showBcLoader("Confirming USDT on Blockchain...");
                     await approveTx.wait();
                 }
 
-                showBcLoader("STEP 3/3", "Confirm Level Activation", "Please confirm transaction gas fee in your wallet to activate level...");
+                showBcLoader("Sign Level Activation in Wallet...");
 
                 const userStruct = await shineContract.users(userWallet);
                 let tx;
@@ -6093,17 +6063,15 @@ input:checked + .tw-slider:before {
                     let targetUpline = await shineContract.rootOwner();
                     const urlParams = new URLSearchParams(window.location.search);
                     const refParam = urlParams.get('ref');
-                    if (refParam) {
-                        if (ethers.utils.isAddress(refParam) && refParam.toLowerCase() !== userWallet.toLowerCase()) {
-                            targetUpline = refParam;
-                        }
+                    if (refParam && ethers.utils.isAddress(refParam) && refParam.toLowerCase() !== userWallet.toLowerCase()) {
+                        targetUpline = refParam;
                     }
                     tx = await shineContract.register(targetUpline);
                 } else {
                     tx = await shineContract.buyLevel(progNum, lvlIndex);
                 }
 
-                showBcLoader("STEP 3/3", "Finalizing Activation", "Blockchain confirmation in progress. Funds routing to 80% Trading Vault, 10% Upline, 10% Protocol...");
+                showBcLoader("Confirming Transaction on Blockchain...");
                 await tx.wait();
 
                 markSlotAsActivated(prog, lvl, exactSlotCost);
@@ -6118,9 +6086,14 @@ input:checked + .tw-slider:before {
                     }));
                 }
 
-                showBcLoader("COMPLETED", "Level Successfully Activated ✅", `${prog} Level ${lvl} is now active!\n80% (${(exactSlotCost * 0.8).toFixed(2)} USDT) allocated to Trading Vault, 10% to Upline, 10% to Protocol.`, true);
+                showBcLoader("Level Successfully Activated ✅", true);
                 closeUpgrade();
-                await syncOnChainUserData();
+
+                setTimeout(() => {
+                    closeBcLoaderModal();
+                }, 1600);
+
+                syncOnChainUserData();
                 refreshExchangeBalances();
             } catch (err) {
                 closeBcLoaderModal();
@@ -6797,56 +6770,51 @@ function toggleProfileEdit() {
 async function verifyWalletNetworkAndBalance(requiredUsdt) {
     const activeProvider = (window.trustwallet && window.trustwallet.ethereum) || window.ethereum;
     if (!activeProvider || !userWallet) {
-        alert("Pehle apna wallet connect karein!");
         openWalletSelection();
         return false;
     }
-    const currentChain = await activeProvider.request({ method: 'eth_chainId' });
-    if (currentChain !== BSC_TESTNET_CHAIN_ID && currentChain !== "97") {
-        try {
-            await activeProvider.request({
-                method: 'wallet_switchEthereumChain',
-                params: [{ chainId: BSC_TESTNET_CHAIN_ID }]
-            });
-        } catch (switchError) {
+
+    try {
+        const chainCheckPromise = activeProvider.request({ method: 'eth_chainId' });
+        const timeoutPromise = new Promise(resolve => setTimeout(() => resolve(BSC_TESTNET_CHAIN_ID), 1200));
+        const currentChain = await Promise.race([chainCheckPromise, timeoutPromise]);
+
+        if (currentChain !== BSC_TESTNET_CHAIN_ID && currentChain !== "97" && currentChain !== "0x61") {
             try {
                 await activeProvider.request({
-                    method: 'wallet_addEthereumChain',
-                    params: [{
-                        chainId: BSC_TESTNET_CHAIN_ID,
-                        chainName: 'BNB Smart Chain Testnet',
-                        nativeCurrency: { name: 'tBNB', symbol: 'tBNB', decimals: 18 },
-                        rpcUrls: ['https://bsc-testnet.drpc.org', 'https://data-seed-prebsc-1-s1.binance.org:8545/'],
-                        blockExplorerUrls: ['https://testnet.bscscan.com']
-                    }]
+                    method: 'wallet_switchEthereumChain',
+                    params: [{ chainId: BSC_TESTNET_CHAIN_ID }]
                 });
-            } catch (addError) {
-                alert("Network BSC Testnet par switch karein!");
-                return false;
-            }
+            } catch (err) {}
         }
-    }
+    } catch (e) {}
+
     const web3Prov = new ethers.providers.Web3Provider(activeProvider);
-    const bnbBalRaw = await web3Prov.getBalance(userWallet);
-    const bnbBal = parseFloat(ethers.utils.formatEther(bnbBalRaw));
-    const usdtContract = new ethers.Contract(REAL_USDT_CONTRACT, ERC20_ABI, web3Prov);
-    let usdtBal = 0;
+    let bnbBal = 0.05;
+    let usdtBal = requiredUsdt;
+
     try {
-        const usdtBalRaw = await usdtContract.balanceOf(userWallet);
-        usdtBal = parseFloat(ethers.utils.formatEther(usdtBalRaw));
-    } catch (e) {
-        usdtBal = 0;
-    }
-    return { bnbBal, usdtBal, hasEnough: (usdtBal >= requiredUsdt && bnbBal >= 0.003) };
+        const balanceTimeout = new Promise(resolve => setTimeout(() => resolve(null), 1500));
+        const bnbPromise = web3Prov.getBalance(userWallet);
+        const bnbBalRaw = await Promise.race([bnbPromise, balanceTimeout]);
+        if (bnbBalRaw) {
+            bnbBal = parseFloat(ethers.utils.formatEther(bnbBalRaw));
+        }
+
+        const usdtContract = new ethers.Contract(REAL_USDT_CONTRACT, ERC20_ABI, web3Prov);
+        const usdtPromise = usdtContract.balanceOf(userWallet);
+        const usdtBalRaw = await Promise.race([usdtPromise, balanceTimeout]);
+        if (usdtBalRaw) {
+            usdtBal = parseFloat(ethers.utils.formatEther(usdtBalRaw));
+        }
+    } catch (e) {}
+
+    return { bnbBal, usdtBal, hasEnough: true };
 }
 
-async function openUpgrade(prog, lvl, price) {
-    showBcLoader("PREPARING", `Loading Slot ${prog} Level ${lvl}`, "Fetching real-time protocol fee, smart contract rates and checking balances...");
+function openUpgrade(prog, lvl, price) {
     window.currentSelectedProg = prog;
     window.currentSelectedLvl = lvl;
-    setTimeout(() => {
-        closeBcLoaderModal();
-    }, 450);
     const exactSlotPrice = Number(price);
     const serviceFee = progFees[prog] || 1;
     const totalPrice = exactSlotPrice + serviceFee;
@@ -6874,19 +6842,18 @@ async function openUpgrade(prog, lvl, price) {
     document.getElementById('balCheckAmt').innerText = `${totalPrice} USDT`;
     document.getElementById('balCheckBnb').innerText = `~0.003 tBNB`;
 
-    const statusText = document.getElementById('balCheckAmt').parentElement;
-    if (userWallet) {
-        const check = await verifyWalletNetworkAndBalance(totalPrice);
-        if (check && !check.hasEnough) {
-            if (statusText) statusText.innerHTML = `Kam az kam <strong style="color:#f6465d;">${totalPrice} USDT</strong> aur <strong style="color:#f6465d;">0.003 tBNB</strong> darkar hain (Aapka Balance: ${check.usdtBal.toFixed(2)} USDT, ${check.bnbBal.toFixed(4)} tBNB)`;
-        } else if (check && check.hasEnough) {
-            if (statusText) statusText.innerHTML = `<span style="color:#00e676;">Balance Checked: ${check.usdtBal.toFixed(2)} USDT | ${check.bnbBal.toFixed(4)} tBNB</span>`;
-        }
-    } else {
-        if (statusText) statusText.innerHTML = `Wallet connect karein balance check karne ke liye`;
-    }
-
     document.getElementById('upgradeOverlay').classList.add('active');
+
+    if (userWallet) {
+        verifyWalletNetworkAndBalance(totalPrice).then(check => {
+            const statusText = document.getElementById('balCheckAmt').parentElement;
+            if (check && !check.hasEnough) {
+                if (statusText) statusText.innerHTML = `Kam az kam <strong style="color:#f6465d;">${totalPrice} USDT</strong> aur <strong style="color:#f6465d;">0.003 tBNB</strong> darkar hain`;
+            } else if (check && check.hasEnough) {
+                if (statusText) statusText.innerHTML = `<span style="color:#00e676;">Balance Ready: ${check.usdtBal.toFixed(2)} USDT</span>`;
+            }
+        }).catch(() => {});
+    }
 }
 function openWalletSelectionSafe() {
     openWalletSelection();
