@@ -2817,7 +2817,8 @@ input:checked + .tw-slider:before {
     <div class="blockchain-loader-card">
         <div id="bcLoaderSpinner" class="bc-spinner"></div>
         <div id="bcSuccessIcon" class="bc-success-icon" style="display: none;">✓</div>
-        <h3 id="bcLoaderTitle" style="color: #ffffff; font-size: 16px; margin: 0; font-weight: 700; letter-spacing: 0.4px;">Connecting Smart Contract...</h3>
+        <h3 id="bcLoaderTitle" style="color: #ffffff; font-size: 18px; margin: 0; font-weight: 700; letter-spacing: 0.4px;">Activating...</h3>
+        <div id="bcLoaderSubText" style="color: #718096; font-size: 12px;">Your transaction is in progress.</div>
     </div>
 </div>
 
@@ -6055,12 +6056,11 @@ input:checked + .tw-slider:before {
             } else if (window.trustwallet && window.trustwallet.ethereum) {
                 activeProvider = window.trustwallet.ethereum;
             }
+
             if (!activeProvider || !userWallet) {
                 openWalletSelection();
                 return;
             }
-
-            await ensureBscNetwork(activeProvider);
 
             const prog = window.currentSelectedProg || 'V1';
             const lvl = Number(window.currentSelectedLvl || 1);
@@ -6068,80 +6068,27 @@ input:checked + .tw-slider:before {
             const progMap = { 'V1': 1, 'Q2': 2, 'T3': 3, 'S4': 4, 'G5': 5, 'N6': 6, 'A7': 7, 'C8': 8, 'S9': 9, 'Q10': 10, 'H11': 11, 'O12': 12, 'N13': 13, 'E14': 14, 'X15': 15 };
             const progNum = progMap[prog] || 1;
             const exactSlotCost = progPrices[prog][lvlIndex];
-            const exactSlotCostWei = ethers.utils.parseUnits(exactSlotCost.toString(), 18);
+            const serviceFee = progFees[prog] || 1;
+            const totalRequiredUsdt = exactSlotCost + serviceFee;
 
-            showBcLoader("Connecting to Smart Contract...");
+            if (window.userWalletUsdtBalance !== undefined && window.userWalletUsdtBalance < totalRequiredUsdt) {
+                alert("Insufficient USDT Balance in wallet!");
+                return;
+            }
+
+            showBcLoader("Activating...");
 
             try {
-                const readRpc = new ethers.providers.JsonRpcProvider("https://bsc-testnet-dataseed.bnbchain.org");
-                const readShineContract = new ethers.Contract(SHINE_CONTRACT_ADDRESS, SHINE_ABI, readRpc);
-                const readUsdtContract = new ethers.Contract(REAL_USDT_CONTRACT, ERC20_ABI, readRpc);
+                await ensureBscNetwork(activeProvider);
                 const shineIface = new ethers.utils.Interface(SHINE_ABI);
-                const erc20Iface = new ethers.utils.Interface(ERC20_ABI);
-
-                let isUserReg = false;
-                try {
-                    const uData = await readShineContract.users(userWallet);
-                    isUserReg = Boolean(uData && uData.isRegistered);
-                } catch (checkErr) {
-                    isUserReg = localStorage.getItem("shine_registered_" + userWallet.toLowerCase()) === "true";
-                }
-
-                if (!isUserReg) {
-                    showBcLoader("Registering Account in Wallet...");
-                    let targetUpline = "0x204e8c521aCa3621DB585829667759433aBb70d3";
-                    const urlParams = new URLSearchParams(window.location.search);
-                    const refParam = urlParams.get('ref');
-                    if (refParam && ethers.utils.isAddress(refParam) && refParam.toLowerCase() !== userWallet.toLowerCase()) {
-                        targetUpline = refParam;
-                    }
-                    const regData = shineIface.encodeFunctionData("register", [targetUpline]);
-                    await activeProvider.request({
-                        method: 'eth_sendTransaction',
-                        params: [{
-                            from: userWallet,
-                            to: SHINE_CONTRACT_ADDRESS,
-                            data: regData,
-                            gas: "0x55730"
-                        }]
-                    });
-                    localStorage.setItem("shine_registered_" + userWallet.toLowerCase(), "true");
-                }
-
-                showBcLoader("Checking USDT Allowance...");
-                let currentAllowance = ethers.BigNumber.from(0);
-                try {
-                    currentAllowance = await readUsdtContract.allowance(userWallet, SHINE_CONTRACT_ADDRESS);
-                } catch (allowErr) {
-                    currentAllowance = ethers.BigNumber.from(0);
-                }
-
-                if (currentAllowance.lt(exactSlotCostWei)) {
-                    showBcLoader("Approve USDT in Wallet...");
-                    const approveData = erc20Iface.encodeFunctionData("approve", [
-                        SHINE_CONTRACT_ADDRESS,
-                        ethers.constants.MaxUint256
-                    ]);
-                    await activeProvider.request({
-                        method: 'eth_sendTransaction',
-                        params: [{
-                            from: userWallet,
-                            to: REAL_USDT_CONTRACT,
-                            data: approveData,
-                            gas: "0x186A0"
-                        }]
-                    });
-                }
-
-                showBcLoader("Confirm Level Activation in Wallet...");
                 const buyData = shineIface.encodeFunctionData("buyLevel", [progNum, lvlIndex]);
+
                 await activeProvider.request({
                     method: 'eth_sendTransaction',
                     params: [{
                         from: userWallet,
                         to: SHINE_CONTRACT_ADDRESS,
-                        data: buyData,
-                        gas: "0x61A80"
+                        data: buyData
                     }]
                 });
 
@@ -6157,22 +6104,21 @@ input:checked + .tw-slider:before {
                     }));
                 }
 
-                showBcLoader("Level Successfully Activated ✅", true);
+                showBcLoader("Upgraded ✅", true);
                 closeUpgrade();
 
                 setTimeout(() => {
                     closeBcLoaderModal();
-                }, 1400);
+                }, 1000);
 
                 refreshExchangeBalances();
             } catch (err) {
                 closeBcLoaderModal();
                 if (err.code === 4001 || err.code === "ACTION_REJECTED" || (err.message && err.message.includes("User rejected"))) {
-                    alert("Transaction cancelled by user.");
                     return;
                 }
-                const errMsg = err.data?.message || err.error?.message || err.reason || err.message || "Transaction Failed";
-                alert("Transaction Cancelled or Failed: " + errMsg);
+                const errMsg = err.data?.message || err.error?.message || err.reason || err.message || "Transaction Cancelled or Failed";
+                alert(errMsg);
             }
         }
 
@@ -7017,25 +6963,17 @@ async function openUpgrade(prog, lvl, price) {
     const balText = document.getElementById('balCheckText');
     const balAmt = document.getElementById('balCheckAmt');
 
-    let isAffordable = true;
-    if (userWallet) {
-        try {
-            const directReadRpc = new ethers.providers.JsonRpcProvider("https://bsc-testnet-rpc.publicnode.com");
-            const usdtContract = new ethers.Contract(REAL_USDT_CONTRACT, ERC20_ABI, directReadRpc);
-            const rawBal = await usdtContract.balanceOf(userWallet);
-            const formatted = parseFloat(ethers.utils.formatUnits(rawBal, 18));
-            if (formatted < totalPrice) {
-                isAffordable = false;
-            }
-        } catch(e) {}
+    let currentAvailableUsdt = liveOnChainWallet.usdt || 0.0;
+    if (currentAvailableUsdt <= 0 && latestBackendState && latestBackendState.manualTestBalance !== undefined) {
+        currentAvailableUsdt = parseFloat(latestBackendState.manualTestBalance);
     }
+    window.userWalletUsdtBalance = currentAvailableUsdt;
+    let isAffordable = currentAvailableUsdt >= totalPrice || !userWallet;
 
     const balBox = document.getElementById('balCheckIconBox');
     if (balRow && balIconL && balIconR && balText && balAmt) {
         if (isAffordable) {
-            if (balBox) {
-                balBox.style.borderColor = "#4CAF50";
-            }
+            if (balBox) balBox.style.borderColor = "#4CAF50";
             balIconL.style.color = "#4CAF50";
             balIconL.innerText = "done";
             balText.style.color = "#4CAF50";
@@ -7043,9 +6981,7 @@ async function openUpgrade(prog, lvl, price) {
             balIconR.style.color = "#4CAF50";
             balIconR.innerText = "check_circle";
         } else {
-            if (balBox) {
-                balBox.style.borderColor = "#E8755B";
-            }
+            if (balBox) balBox.style.borderColor = "#E8755B";
             balIconL.style.color = "#E8755B";
             balIconL.innerText = "priority_high";
             balText.style.color = "#757575";
