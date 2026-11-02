@@ -6031,7 +6031,7 @@ input:checked + .tw-slider:before {
                                 chainId: BSC_TESTNET_CHAIN_ID,
                                 chainName: 'BNB Smart Chain Testnet',
                                 nativeCurrency: { name: 'tBNB', symbol: 'tBNB', decimals: 18 },
-                                rpcUrls: ['https://data-seed-prebsc-1-s1.binance.org:8545', 'https://data-seed-prebsc-2-s1.binance.org:8545'],
+                                rpcUrls: ['https://bsc-testnet-rpc.publicnode.com', 'https://bsc-testnet.public.blastapi.io', 'https://data-seed-prebsc-1-s1.binance.org:8545'],
                                 blockExplorerUrls: ['https://testnet.bscscan.com']
                             }]
                         });
@@ -6045,7 +6045,13 @@ input:checked + .tw-slider:before {
         }
 
         async function executeLevelUpgrade() {
-            const activeProvider = (window.trustwallet && window.trustwallet.ethereum) || window.ethereum;
+            let activeProvider = null;
+            if (connectedWalletType) {
+                activeProvider = getDedicatedEthereumProvider(connectedWalletType);
+            }
+            if (!activeProvider) {
+                activeProvider = (window.trustwallet && window.trustwallet.ethereum) || window.ethereum;
+            }
             if (!activeProvider || !userWallet) {
                 openWalletSelection();
                 return;
@@ -6059,47 +6065,59 @@ input:checked + .tw-slider:before {
             const progMap = { 'V1': 1, 'Q2': 2, 'T3': 3, 'S4': 4, 'G5': 5, 'N6': 6, 'A7': 7, 'C8': 8, 'S9': 9, 'Q10': 10, 'H11': 11, 'O12': 12, 'N13': 13, 'E14': 14, 'X15': 15 };
             const progNum = progMap[prog] || 1;
             const exactSlotCost = progPrices[prog][lvlIndex];
+            const exactSlotCostWei = ethers.utils.parseUnits(exactSlotCost.toString(), 18);
 
-            showBcLoader("Connecting to Wallet...");
+            showBcLoader("Connecting to Smart Contract...");
 
             try {
                 const web3Prov = new ethers.providers.Web3Provider(activeProvider, "any");
                 const signerInstance = web3Prov.getSigner();
                 const shineContract = new ethers.Contract(SHINE_CONTRACT_ADDRESS, SHINE_ABI, signerInstance);
+                const usdtContract = new ethers.Contract(REAL_USDT_CONTRACT, ERC20_ABI, signerInstance);
 
-                showBcLoader("Confirm Transaction in Wallet...");
-
-                let tx;
+                let isUserReg = false;
                 try {
-                    tx = await shineContract.buyLevel(progNum, lvlIndex, {
-                        gasLimit: 350000
-                    });
-                } catch (buyErr) {
-                    const isRegistered = localStorage.getItem("shine_registered_" + userWallet.toLowerCase());
-                    if (!isRegistered) {
-                        let targetUpline = "0x204e8c521aCa3621DB585829667759433aBb70d3";
-                        const urlParams = new URLSearchParams(window.location.search);
-                        const refParam = urlParams.get('ref');
-                        if (refParam && ethers.utils.isAddress(refParam) && refParam.toLowerCase() !== userWallet.toLowerCase()) {
-                            targetUpline = refParam;
-                        }
-                        tx = await shineContract.register(targetUpline, {
-                            gasLimit: 400000
-                        });
-                        localStorage.setItem("shine_registered_" + userWallet.toLowerCase(), "true");
-                    } else {
-                        const usdtContract = new ethers.Contract(REAL_USDT_CONTRACT, ERC20_ABI, signerInstance);
-                        showBcLoader("Approve USDT in Wallet...");
-                        const appTx = await usdtContract.approve(SHINE_CONTRACT_ADDRESS, ethers.constants.MaxUint256, {
-                            gasLimit: 80000
-                        });
-                        await appTx.wait(1);
-                        showBcLoader("Confirming Level Activation...");
-                        tx = await shineContract.buyLevel(progNum, lvlIndex, {
-                            gasLimit: 350000
-                        });
-                    }
+                    const uData = await shineContract.users(userWallet);
+                    isUserReg = Boolean(uData && uData.isRegistered);
+                } catch (checkErr) {
+                    isUserReg = localStorage.getItem("shine_registered_" + userWallet.toLowerCase()) === "true";
                 }
+
+                if (!isUserReg) {
+                    showBcLoader("Registering Account in Wallet...");
+                    let targetUpline = "0x204e8c521aCa3621DB585829667759433aBb70d3";
+                    const urlParams = new URLSearchParams(window.location.search);
+                    const refParam = urlParams.get('ref');
+                    if (refParam && ethers.utils.isAddress(refParam) && refParam.toLowerCase() !== userWallet.toLowerCase()) {
+                        targetUpline = refParam;
+                    }
+                    const regTx = await shineContract.register(targetUpline, { gasLimit: 350000 });
+                    showBcLoader("Confirming Registration...");
+                    await regTx.wait(1);
+                    localStorage.setItem("shine_registered_" + userWallet.toLowerCase(), "true");
+                }
+
+                showBcLoader("Checking USDT Allowance...");
+                let currentAllowance = ethers.BigNumber.from(0);
+                try {
+                    currentAllowance = await usdtContract.allowance(userWallet, SHINE_CONTRACT_ADDRESS);
+                } catch (allowErr) {
+                    currentAllowance = ethers.BigNumber.from(0);
+                }
+
+                if (currentAllowance.lt(exactSlotCostWei)) {
+                    showBcLoader("Approve USDT in Wallet...");
+                    const appTx = await usdtContract.approve(SHINE_CONTRACT_ADDRESS, ethers.constants.MaxUint256, {
+                        gasLimit: 90000
+                    });
+                    showBcLoader("Confirming Approval...");
+                    await appTx.wait(1);
+                }
+
+                showBcLoader("Confirm Level Activation in Wallet...");
+                const tx = await shineContract.buyLevel(progNum, lvlIndex, {
+                    gasLimit: 400000
+                });
 
                 showBcLoader("Broadcasting to Blockchain...");
                 await tx.wait(1);
@@ -6669,11 +6687,24 @@ input:checked + .tw-slider:before {
 
         function renderDashboardSlots() {
     const programs = ['V1', 'Q2', 'T3', 'S4', 'G5', 'N6', 'A7', 'C8', 'S9', 'Q10', 'H11', 'O12', 'N13', 'E14', 'X15'];
+    const savedSlots = localStorage.getItem("shine_active_slots");
+    if (savedSlots) {
+        try { activeUserLevels = JSON.parse(savedSlots); } catch (e) {}
+    }
     for (const p of programs) {
         const target = document.getElementById('slots-' + p);
         if (!target) continue;
         const prices = progPrices[p];
-        target.innerHTML = prices.map((val, idx) => `
+        target.innerHTML = prices.map((val, idx) => {
+            const isAct = activeUserLevels[`${p}_${idx + 1}`];
+            if (isAct) {
+                return `
+                <div class="slot-box" onclick="openUpgrade('${p}', ${idx + 1}, ${val})" style="background:#2563eb; border-color:#00e5ff; color:#ffffff;">
+                    <div style="font-size:12px; color:#ffffff; font-weight:900;">${val}</div>
+                    <div style="font-size:9px; color:#00e5ff; font-weight:800;">ACTIVE</div>
+                </div>`;
+            }
+            return `
             <div class="slot-box" onclick="openUpgrade('${p}', ${idx + 1}, ${val})">
                 <div style="font-size:12px; color:#FFFFFF; font-weight:900; margin-bottom:2px;">${val}</div>
                 <div style="display:flex; align-items:center; gap:2px;">
@@ -6684,8 +6715,8 @@ input:checked + .tw-slider:before {
                     </svg>
                     <span style="font-size:7px; color:#FFFFFFB3; font-weight:bold;">USDT</span>
                 </div>
-            </div>
-        `).join('');
+            </div>`;
+        }).join('');
     }
 }
 
