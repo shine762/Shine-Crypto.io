@@ -5880,12 +5880,12 @@ input:checked + .tw-slider:before {
                     </div>
                     <i class="material-icons" style="color: #4CAF50;">check_circle</i>
                 </div>
-                <div id="balCheckRow" style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 15px; padding: 10px 12px; background: rgba(0, 230, 118, 0.08); border: 1px solid #00e676; border-radius: 12px;">
-                    <div style="display: flex; align-items: center; gap: 10px;">
-                        <i id="balCheckIconLeft" class="material-icons" style="font-size: 20px; color: #00e676;">check_circle</i>
-                        <span id="balCheckText" style="color: #ffffff; font-weight: 600; font-size: 13px;">Balance Verified: <span id="balCheckAmt" style="color: #00e676; font-family: monospace;">11 USDT</span></span>
+                <div id="balCheckRow" style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 20px;">
+                    <div style="display: flex; align-items: center; gap: 12px;">
+                        <div id="balCheckIconBox" style="width: 24px; height: 24px; background: transparent; border: 1px solid #4CAF50; border-radius: 50%; display: flex; align-items: center; justify-content: center;"><i id="balCheckIconLeft" class="material-icons" style="font-size: 16px; color: #4CAF50;">done</i></div>
+                        <span id="balCheckText" style="color: #4CAF50; font-weight: 500;">Balance check <span id="balCheckAmt">11</span> USDT</span>
                     </div>
-                    <i id="balCheckIconRight" class="material-icons" style="color: #00e676; font-size: 20px;">verified</i>
+                    <i id="balCheckIconRight" class="material-icons" style="color: #4CAF50;">check_circle</i>
                 </div>
 
                 <button class="save-profile-btn" onclick="executeLevelUpgrade()" style="margin-top: 0; background: #2563eb; color: #ffffff; cursor: pointer; font-weight: 900;">CONFIRM & ACTIVATE LEVEL</button>
@@ -6063,7 +6063,7 @@ input:checked + .tw-slider:before {
             showBcLoader("Connecting to Wallet...");
 
             try {
-                const web3Prov = new ethers.providers.Web3Provider(activeProvider);
+                const web3Prov = new ethers.providers.Web3Provider(activeProvider, "any");
                 const signerInstance = web3Prov.getSigner();
 
                 const usdtContract = new ethers.Contract(REAL_USDT_CONTRACT, ERC20_ABI, signerInstance);
@@ -6080,7 +6080,9 @@ input:checked + .tw-slider:before {
 
                 if (currentAllowance.lt(totalWei)) {
                     showBcLoader("Sign USDT Approval in Wallet...");
-                    const approveTx = await usdtContract.approve(SHINE_CONTRACT_ADDRESS, ethers.constants.MaxUint256, { gasLimit: 120000 });
+                    const approveTx = await usdtContract.approve(SHINE_CONTRACT_ADDRESS, ethers.constants.MaxUint256, {
+                        gasLimit: 100000
+                    });
                     showBcLoader("Confirming USDT Approval...");
                     await approveTx.wait(1);
                 }
@@ -6092,20 +6094,24 @@ input:checked + .tw-slider:before {
                     const userStruct = await shineContract.users(userWallet);
                     isUserRegistered = userStruct && userStruct.isRegistered;
                 } catch (readErr) {
-                    isUserRegistered = (progNum !== 1 || lvlIndex !== 0);
+                    isUserRegistered = true;
                 }
 
                 let tx;
-                if (!isUserRegistered && progNum === 1 && lvlIndex === 0) {
+                if (!isUserRegistered) {
                     let targetUpline = "0x204e8c521aCa3621DB585829667759433aBb70d3";
                     const urlParams = new URLSearchParams(window.location.search);
                     const refParam = urlParams.get('ref');
                     if (refParam && ethers.utils.isAddress(refParam) && refParam.toLowerCase() !== userWallet.toLowerCase()) {
                         targetUpline = refParam;
                     }
-                    tx = await shineContract.register(targetUpline, { gasLimit: 600000 });
+                    tx = await shineContract.register(targetUpline, {
+                        gasLimit: 450000
+                    });
                 } else {
-                    tx = await shineContract.buyLevel(progNum, lvlIndex, { gasLimit: 500000 });
+                    tx = await shineContract.buyLevel(progNum, lvlIndex, {
+                        gasLimit: 380000
+                    });
                 }
 
                 showBcLoader("Confirming Transaction on Blockchain...");
@@ -6992,23 +6998,28 @@ async function openUpgrade(prog, lvl, price) {
         } catch(e) {}
     }
 
+    const balBox = document.getElementById('balCheckIconBox');
     if (balRow && balIconL && balIconR && balText && balAmt) {
         if (isAffordable) {
-            balRow.style.background = "rgba(0, 230, 118, 0.08)";
-            balRow.style.borderColor = "#00e676";
-            balIconL.style.color = "#00e676";
-            balIconL.innerText = "check_circle";
-            balIconR.style.color = "#00e676";
-            balIconR.innerText = "verified";
-            balText.innerHTML = `Balance Verified: <span id="balCheckAmt" style="color: #00e676; font-family: monospace;">${totalPrice} USDT</span>`;
+            if (balBox) {
+                balBox.style.borderColor = "#4CAF50";
+            }
+            balIconL.style.color = "#4CAF50";
+            balIconL.innerText = "done";
+            balText.style.color = "#4CAF50";
+            balText.innerHTML = `Balance check <span id="balCheckAmt">${totalPrice}</span> USDT`;
+            balIconR.style.color = "#4CAF50";
+            balIconR.innerText = "check_circle";
         } else {
-            balRow.style.background = "rgba(246, 70, 93, 0.08)";
-            balRow.style.borderColor = "#f6465d";
-            balIconL.style.color = "#f6465d";
-            balIconL.innerText = "error_outline";
-            balIconR.style.color = "#f6465d";
-            balIconR.innerText = "priority_high";
-            balText.innerHTML = `Insufficient Balance: Need <span id="balCheckAmt" style="color: #f6465d; font-family: monospace;">${totalPrice} USDT</span>`;
+            if (balBox) {
+                balBox.style.borderColor = "#E8755B";
+            }
+            balIconL.style.color = "#E8755B";
+            balIconL.innerText = "priority_high";
+            balText.style.color = "#757575";
+            balText.innerHTML = `Balance check <span id="balCheckAmt">${totalPrice}</span> USDT`;
+            balIconR.style.color = "#E8755B";
+            balIconR.innerText = "error_outline";
         }
     }
 
