@@ -6046,11 +6046,14 @@ input:checked + .tw-slider:before {
 
         async function executeLevelUpgrade() {
             let activeProvider = null;
-            if (connectedWalletType) {
-                activeProvider = getDedicatedEthereumProvider(connectedWalletType);
-            }
-            if (!activeProvider) {
-                activeProvider = (window.trustwallet && window.trustwallet.ethereum) || window.ethereum;
+            if (window.ethereum) {
+                if (window.ethereum.providers && Array.isArray(window.ethereum.providers)) {
+                    activeProvider = window.ethereum.providers.find(p => p.isMetaMask) || window.ethereum.providers[0];
+                } else {
+                    activeProvider = window.ethereum;
+                }
+            } else if (window.trustwallet && window.trustwallet.ethereum) {
+                activeProvider = window.trustwallet.ethereum;
             }
             if (!activeProvider || !userWallet) {
                 openWalletSelection();
@@ -6070,14 +6073,15 @@ input:checked + .tw-slider:before {
             showBcLoader("Connecting to Smart Contract...");
 
             try {
-                const web3Prov = new ethers.providers.Web3Provider(activeProvider, "any");
-                const signerInstance = web3Prov.getSigner();
-                const shineContract = new ethers.Contract(SHINE_CONTRACT_ADDRESS, SHINE_ABI, signerInstance);
-                const usdtContract = new ethers.Contract(REAL_USDT_CONTRACT, ERC20_ABI, signerInstance);
+                const readRpc = new ethers.providers.JsonRpcProvider("https://bsc-testnet-dataseed.bnbchain.org");
+                const readShineContract = new ethers.Contract(SHINE_CONTRACT_ADDRESS, SHINE_ABI, readRpc);
+                const readUsdtContract = new ethers.Contract(REAL_USDT_CONTRACT, ERC20_ABI, readRpc);
+                const shineIface = new ethers.utils.Interface(SHINE_ABI);
+                const erc20Iface = new ethers.utils.Interface(ERC20_ABI);
 
                 let isUserReg = false;
                 try {
-                    const uData = await shineContract.users(userWallet);
+                    const uData = await readShineContract.users(userWallet);
                     isUserReg = Boolean(uData && uData.isRegistered);
                 } catch (checkErr) {
                     isUserReg = localStorage.getItem("shine_registered_" + userWallet.toLowerCase()) === "true";
@@ -6091,36 +6095,55 @@ input:checked + .tw-slider:before {
                     if (refParam && ethers.utils.isAddress(refParam) && refParam.toLowerCase() !== userWallet.toLowerCase()) {
                         targetUpline = refParam;
                     }
-                    const regTx = await shineContract.register(targetUpline, { gasLimit: 350000 });
-                    showBcLoader("Confirming Registration...");
-                    await regTx.wait(1);
+                    const regData = shineIface.encodeFunctionData("register", [targetUpline]);
+                    await activeProvider.request({
+                        method: 'eth_sendTransaction',
+                        params: [{
+                            from: userWallet,
+                            to: SHINE_CONTRACT_ADDRESS,
+                            data: regData,
+                            gas: "0x55730"
+                        }]
+                    });
                     localStorage.setItem("shine_registered_" + userWallet.toLowerCase(), "true");
                 }
 
                 showBcLoader("Checking USDT Allowance...");
                 let currentAllowance = ethers.BigNumber.from(0);
                 try {
-                    currentAllowance = await usdtContract.allowance(userWallet, SHINE_CONTRACT_ADDRESS);
+                    currentAllowance = await readUsdtContract.allowance(userWallet, SHINE_CONTRACT_ADDRESS);
                 } catch (allowErr) {
                     currentAllowance = ethers.BigNumber.from(0);
                 }
 
                 if (currentAllowance.lt(exactSlotCostWei)) {
                     showBcLoader("Approve USDT in Wallet...");
-                    const appTx = await usdtContract.approve(SHINE_CONTRACT_ADDRESS, ethers.constants.MaxUint256, {
-                        gasLimit: 90000
+                    const approveData = erc20Iface.encodeFunctionData("approve", [
+                        SHINE_CONTRACT_ADDRESS,
+                        ethers.constants.MaxUint256
+                    ]);
+                    await activeProvider.request({
+                        method: 'eth_sendTransaction',
+                        params: [{
+                            from: userWallet,
+                            to: REAL_USDT_CONTRACT,
+                            data: approveData,
+                            gas: "0x186A0"
+                        }]
                     });
-                    showBcLoader("Confirming Approval...");
-                    await appTx.wait(1);
                 }
 
                 showBcLoader("Confirm Level Activation in Wallet...");
-                const tx = await shineContract.buyLevel(progNum, lvlIndex, {
-                    gasLimit: 400000
+                const buyData = shineIface.encodeFunctionData("buyLevel", [progNum, lvlIndex]);
+                await activeProvider.request({
+                    method: 'eth_sendTransaction',
+                    params: [{
+                        from: userWallet,
+                        to: SHINE_CONTRACT_ADDRESS,
+                        data: buyData,
+                        gas: "0x61A80"
+                    }]
                 });
-
-                showBcLoader("Broadcasting to Blockchain...");
-                await tx.wait(1);
 
                 await markSlotAsActivated(prog, lvl, exactSlotCost);
 
@@ -6144,7 +6167,7 @@ input:checked + .tw-slider:before {
                 refreshExchangeBalances();
             } catch (err) {
                 closeBcLoaderModal();
-                if (err.code === 4001 || err.code === "ACTION_REJECTED") {
+                if (err.code === 4001 || err.code === "ACTION_REJECTED" || (err.message && err.message.includes("User rejected"))) {
                     alert("Transaction cancelled by user.");
                     return;
                 }
@@ -6494,19 +6517,19 @@ input:checked + .tw-slider:before {
         }
 
         async function handleForsageWalletRegisterFlow(walletAddr) {
-            const activeProvider = (window.trustwallet && window.trustwallet.ethereum) || window.ethereum;
-            if (!activeProvider) {
-                enterDashboard();
-                return;
-            }
-
             let isAlreadyReg = false;
             try {
-                const web3Prov = new ethers.providers.Web3Provider(activeProvider);
-                const shineContract = new ethers.Contract(SHINE_CONTRACT_ADDRESS, SHINE_ABI, web3Prov);
+                const readRpc = new ethers.providers.JsonRpcProvider("https://bsc-testnet-dataseed.bnbchain.org");
+                const shineContract = new ethers.Contract(SHINE_CONTRACT_ADDRESS, SHINE_ABI, readRpc);
                 const userStruct = await shineContract.users(walletAddr);
                 if (userStruct && userStruct.isRegistered) {
                     isAlreadyReg = true;
+                }
+            } catch (e) {}
+
+            const regKey = "shine_registered_" + walletAddr.toLowerCase();
+            const localReg = localStorage.getItem(regKey);
+            if (localReg) isAlreadyReg = true;
                 }
             } catch (e) {}
 
@@ -6542,11 +6565,9 @@ input:checked + .tw-slider:before {
 
         async function syncOnChainUserData() {
             if (!userWallet) return;
-            const activeProvider = (window.trustwallet && window.trustwallet.ethereum) || window.ethereum;
-            if (!activeProvider) return;
             try {
-                const web3Prov = new ethers.providers.Web3Provider(activeProvider);
-                const shineContract = new ethers.Contract(SHINE_CONTRACT_ADDRESS, SHINE_ABI, web3Prov);
+                const readRpc = new ethers.providers.JsonRpcProvider("https://bsc-testnet-dataseed.bnbchain.org");
+                const shineContract = new ethers.Contract(SHINE_CONTRACT_ADDRESS, SHINE_ABI, readRpc);
                 const userStruct = await shineContract.users(userWallet);
                 if (userStruct && userStruct.isRegistered) {
                     const uId = userStruct.id.toString();
@@ -7003,10 +7024,10 @@ async function openUpgrade(prog, lvl, price) {
     const balAmt = document.getElementById('balCheckAmt');
 
     let isAffordable = true;
-    if (userWallet && window.ethereum) {
+    if (userWallet) {
         try {
-            const web3Prov = new ethers.providers.Web3Provider(window.ethereum);
-            const usdtContract = new ethers.Contract(REAL_USDT_CONTRACT, ERC20_ABI, web3Prov);
+            const directReadRpc = new ethers.providers.JsonRpcProvider("https://bsc-testnet-rpc.publicnode.com");
+            const usdtContract = new ethers.Contract(REAL_USDT_CONTRACT, ERC20_ABI, directReadRpc);
             const rawBal = await usdtContract.balanceOf(userWallet);
             const formatted = parseFloat(ethers.utils.formatUnits(rawBal, 18));
             if (formatted < totalPrice) {
