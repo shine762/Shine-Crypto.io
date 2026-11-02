@@ -6530,12 +6530,6 @@ input:checked + .tw-slider:before {
             const regKey = "shine_registered_" + walletAddr.toLowerCase();
             const localReg = localStorage.getItem(regKey);
             if (localReg) isAlreadyReg = true;
-                }
-            } catch (e) {}
-
-            const regKey = "shine_registered_" + walletAddr.toLowerCase();
-            const localReg = localStorage.getItem(regKey);
-            if (localReg) isAlreadyReg = true;
 
             if (isAlreadyReg) {
                 showBcLoader("Wallet Already Registered ✅", true);
