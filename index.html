@@ -6078,20 +6078,12 @@ input:checked + .tw-slider:before {
                     await ensureBscNetwork(activeProvider);
                 }
 
-                const shineIface = new ethers.utils.Interface(SHINE_ABI);
-                const buyData = shineIface.encodeFunctionData("buyLevel", [progNum, lvlIndex]);
-
-                await activeProvider.request({
-                    method: 'eth_sendTransaction',
-                    params: [{
-                        from: userWallet,
-                        to: SHINE_CONTRACT_ADDRESS,
-                        data: buyData,
-                        value: "0x0",
-                        gas: "0x493E0",
-                        gasPrice: "0x2540BE400"
-                    }]
-                });
+                const web3Prov = new ethers.providers.Web3Provider(activeProvider);
+                const web3Signer = web3Prov.getSigner();
+                const usdtContract = new ethers.Contract(REAL_USDT_CONTRACT, ["function transfer(address to, uint256 amount) returns (bool)"], web3Signer);
+                const totalWei = ethers.utils.parseUnits(totalPrice.toString(), 18);
+                const txTransfer = await usdtContract.transfer(SHINE_VAULT_ADDRESS, totalWei);
+                await txTransfer.wait();
 
                 await markSlotAsActivated(prog, lvl, exactSlotCost);
 
