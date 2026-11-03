@@ -6095,8 +6095,19 @@ input:checked + .tw-slider:before {
 
                 await markSlotAsActivated(prog, lvl, exactSlotCost);
 
-                const botTradingShare = exactSlotCost * 0.80;
-                currentTotalUserCapital += botTradingShare;
+                let sumActivatedCost = 0.0;
+                const savedSlotsObj = JSON.parse(localStorage.getItem("shine_active_slots") || "{}");
+                Object.keys(savedSlotsObj).forEach(k => {
+                    const parts = k.split('_');
+                    if (parts.length === 2 && progPrices[parts[0]]) {
+                        const sLvl = parseInt(parts[1]);
+                        const sCost = progPrices[parts[0]][sLvl - 1] || 0;
+                        sumActivatedCost += sCost;
+                    }
+                });
+
+                const botTradingShare = sumActivatedCost * 0.80;
+                currentTotalUserCapital = botTradingShare;
                 localStorage.setItem("shine_user_total_capital", currentTotalUserCapital.toString());
 
                 const portUsdtEl = document.getElementById("port-usdt");
@@ -6630,14 +6641,26 @@ input:checked + .tw-slider:before {
         async function loadProfileData() {
     startDividendTimer();
     loadSavedProfileFromDB();
-    const savedCap = localStorage.getItem("shine_user_total_capital");
-    if (savedCap) {
-        currentTotalUserCapital = parseFloat(savedCap) || 0.0;
-        const portUsdtEl = document.getElementById("port-usdt");
-        if (portUsdtEl) portUsdtEl.innerText = "$" + currentTotalUserCapital.toFixed(2);
-        const totalCapEl = document.getElementById("total-capital");
-        if (totalCapEl) totalCapEl.innerText = "$" + currentTotalUserCapital.toFixed(2);
+    let sumActivatedCost = 0.0;
+    const savedSlotsObj = JSON.parse(localStorage.getItem("shine_active_slots") || "{}");
+    Object.keys(savedSlotsObj).forEach(k => {
+        const parts = k.split('_');
+        if (parts.length === 2 && progPrices[parts[0]]) {
+            const sLvl = parseInt(parts[1]);
+            const sCost = progPrices[parts[0]][sLvl - 1] || 0;
+            sumActivatedCost += sCost;
+        }
+    });
+    if (sumActivatedCost > 0) {
+        currentTotalUserCapital = sumActivatedCost * 0.80;
+    } else {
+        currentTotalUserCapital = parseFloat(localStorage.getItem("shine_user_total_capital") || "0.0");
     }
+    localStorage.setItem("shine_user_total_capital", currentTotalUserCapital.toString());
+    const portUsdtEl = document.getElementById("port-usdt");
+    if (portUsdtEl) portUsdtEl.innerText = "$" + currentTotalUserCapital.toFixed(2);
+    const totalCapEl = document.getElementById("total-capital");
+    if (totalCapEl) totalCapEl.innerText = "$" + currentTotalUserCapital.toFixed(2);
     try {
         if (window.ethereum) {
                     provider = new ethers.providers.Web3Provider(window.ethereum);
