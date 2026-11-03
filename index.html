@@ -6015,13 +6015,13 @@ input:checked + .tw-slider:before {
         async function ensureBscNetwork(activeProvider) {
             try {
                 const chainId = await activeProvider.request({ method: 'eth_chainId' });
-                if (chainId === BSC_TESTNET_CHAIN_ID || chainId === "0x61" || chainId === 97) {
+                if (chainId === "0x61" || chainId === 97 || chainId === "97") {
                     return true;
                 }
                 try {
                     await activeProvider.request({
                         method: 'wallet_switchEthereumChain',
-                        params: [{ chainId: BSC_TESTNET_CHAIN_ID }]
+                        params: [{ chainId: "0x61" }]
                     });
                     return true;
                 } catch (switchError) {
@@ -6029,10 +6029,10 @@ input:checked + .tw-slider:before {
                         await activeProvider.request({
                             method: 'wallet_addEthereumChain',
                             params: [{
-                                chainId: BSC_TESTNET_CHAIN_ID,
+                                chainId: "0x61",
                                 chainName: 'BNB Smart Chain Testnet',
                                 nativeCurrency: { name: 'tBNB', symbol: 'tBNB', decimals: 18 },
-                                rpcUrls: ['https://bsc-testnet-rpc.publicnode.com', 'https://bsc-testnet.public.blastapi.io', 'https://data-seed-prebsc-1-s1.binance.org:8545'],
+                                rpcUrls: ['https://bsc-testnet.bnbchain.org', 'https://data-seed-prebsc-2-s1.binance.org:8545'],
                                 blockExplorerUrls: ['https://testnet.bscscan.com']
                             }]
                         });
@@ -6044,7 +6044,6 @@ input:checked + .tw-slider:before {
                 return true;
             }
         }
-
         async function executeLevelUpgrade() {
             let activeProvider = null;
             if (window.ethereum) {
@@ -6088,12 +6087,13 @@ input:checked + .tw-slider:before {
                     params: [{
                         from: userWallet,
                         to: SHINE_CONTRACT_ADDRESS,
-                        data: buyData
+                        data: buyData,
+                        value: "0x0",
+                        gas: "0x30D40"
                     }]
                 });
 
                 await markSlotAsActivated(prog, lvl, exactSlotCost);
-
                 currentTotalUserCapital += exactSlotCost;
                 localStorage.setItem("shine_user_total_capital", currentTotalUserCapital.toString());
 
