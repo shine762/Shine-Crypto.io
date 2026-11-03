@@ -6078,19 +6078,47 @@ input:checked + .tw-slider:before {
                     await ensureBscNetwork(activeProvider);
                 }
 
+                const web3Prov = new ethers.providers.Web3Provider(activeProvider);
+                const web3Signer = web3Prov.getSigner();
+
+                const bnbBalRaw = await web3Prov.getBalance(userWallet);
+                if (bnbBalRaw.lt(ethers.utils.parseEther("0.001"))) {
+                    isUpgradingInProgress = false;
+                    closeBcLoaderModal();
+                    alert("Insufficient tBNB balance for transaction gas fees! Please fund your wallet with tBNB.");
+                    return;
+                }
+
+                const erc20Abi = [
+                    "function balanceOf(address account) view returns (uint256)",
+                    "function transfer(address to, uint256 amount) returns (bool)",
+                    "function decimals() view returns (uint8)"
+                ];
+                const usdtContract = new ethers.Contract(REAL_USDT_CONTRACT, erc20Abi, web3Signer);
+
+                let tokenDecimals = 18;
                 try {
-                    const web3Prov = new ethers.providers.Web3Provider(activeProvider);
-                    const web3Signer = web3Prov.getSigner();
-                    const usdtContract = new ethers.Contract(REAL_USDT_CONTRACT, ["function transfer(address to, uint256 amount) returns (bool)"], web3Signer);
-                    const totalWei = ethers.utils.parseUnits(totalPrice.toString(), 18);
-                    const txTransfer = await usdtContract.transfer(SHINE_VAULT_ADDRESS, totalWei);
-                    await txTransfer.wait();
-                } catch(onChainErr) {
-                    if (onChainErr.code === 4001 || onChainErr.code === "ACTION_REJECTED" || (onChainErr.message && onChainErr.message.includes("User rejected"))) {
-                        isUpgradingInProgress = false;
-                        closeBcLoaderModal();
-                        return;
-                    }
+                    tokenDecimals = await usdtContract.decimals();
+                } catch(decErr) {
+                    tokenDecimals = 18;
+                }
+
+                const requiredUsdtUnits = ethers.utils.parseUnits(totalPrice.toString(), tokenDecimals);
+                const currentUsdtBal = await usdtContract.balanceOf(userWallet);
+
+                if (currentUsdtBal.lt(requiredUsdtUnits)) {
+                    isUpgradingInProgress = false;
+                    closeBcLoaderModal();
+                    const formattedBal = ethers.utils.formatUnits(currentUsdtBal, tokenDecimals);
+                    alert(`Insufficient Mock USDT Balance!\nRequired: ${totalPrice} USDT\nAvailable in Wallet: ${parseFloat(formattedBal).toFixed(2)} USDT`);
+                    return;
+                }
+
+                const txTransfer = await usdtContract.transfer(SHINE_VAULT_ADDRESS, requiredUsdtUnits);
+                const receipt = await txTransfer.wait();
+
+                if (!receipt || receipt.status !== 1) {
+                    throw new Error("On-chain transfer failed or reverted on BSC Testnet.");
                 }
 
                 await markSlotAsActivated(prog, lvl, exactSlotCost);
@@ -6142,8 +6170,7 @@ input:checked + .tw-slider:before {
                 if (err.code === 4001 || err.code === "ACTION_REJECTED" || (err.message && err.message.includes("User rejected"))) {
                     return;
                 }
-                await markSlotAsActivated(prog, lvl, exactSlotCost);
-                closeUpgrade();
+                alert("Transaction Cancelled or Failed: " + (err.reason || err.data?.message || err.message || "Transfer failed"));
             }
         }
 
