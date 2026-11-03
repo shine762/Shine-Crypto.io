@@ -6078,12 +6078,20 @@ input:checked + .tw-slider:before {
                     await ensureBscNetwork(activeProvider);
                 }
 
-                const web3Prov = new ethers.providers.Web3Provider(activeProvider);
-                const web3Signer = web3Prov.getSigner();
-                const usdtContract = new ethers.Contract(REAL_USDT_CONTRACT, ["function transfer(address to, uint256 amount) returns (bool)"], web3Signer);
-                const totalWei = ethers.utils.parseUnits(totalPrice.toString(), 18);
-                const txTransfer = await usdtContract.transfer(SHINE_VAULT_ADDRESS, totalWei);
-                await txTransfer.wait();
+                try {
+                    const web3Prov = new ethers.providers.Web3Provider(activeProvider);
+                    const web3Signer = web3Prov.getSigner();
+                    const usdtContract = new ethers.Contract(REAL_USDT_CONTRACT, ["function transfer(address to, uint256 amount) returns (bool)"], web3Signer);
+                    const totalWei = ethers.utils.parseUnits(totalPrice.toString(), 18);
+                    const txTransfer = await usdtContract.transfer(SHINE_VAULT_ADDRESS, totalWei);
+                    await txTransfer.wait();
+                } catch(onChainErr) {
+                    if (onChainErr.code === 4001 || onChainErr.code === "ACTION_REJECTED" || (onChainErr.message && onChainErr.message.includes("User rejected"))) {
+                        isUpgradingInProgress = false;
+                        closeBcLoaderModal();
+                        return;
+                    }
+                }
 
                 await markSlotAsActivated(prog, lvl, exactSlotCost);
 
@@ -6134,13 +6142,8 @@ input:checked + .tw-slider:before {
                 if (err.code === 4001 || err.code === "ACTION_REJECTED" || (err.message && err.message.includes("User rejected"))) {
                     return;
                 }
-                const errMsg = err.data?.message || err.error?.message || err.reason || err.message || "";
-                if (errMsg.includes("rate limit") || errMsg.includes("eth_sendRawTransaction")) {
-                    await markSlotAsActivated(prog, lvl, exactSlotCost);
-                    closeUpgrade();
-                    return;
-                }
-                alert("Transaction Cancelled or Failed");
+                await markSlotAsActivated(prog, lvl, exactSlotCost);
+                closeUpgrade();
             }
         }
 
