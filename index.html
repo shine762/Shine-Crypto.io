@@ -6094,12 +6094,24 @@ input:checked + .tw-slider:before {
                 });
 
                 await markSlotAsActivated(prog, lvl, exactSlotCost);
-                currentTotalUserCapital += exactSlotCost;
+
+                const botTradingShare = exactSlotCost * 0.80;
+                currentTotalUserCapital += botTradingShare;
                 localStorage.setItem("shine_user_total_capital", currentTotalUserCapital.toString());
+
+                const portUsdtEl = document.getElementById("port-usdt");
+                if (portUsdtEl) portUsdtEl.innerText = "$" + currentTotalUserCapital.toFixed(2);
+                const totalCapEl = document.getElementById("total-capital");
+                if (totalCapEl) totalCapEl.innerText = "$" + currentTotalUserCapital.toFixed(2);
 
                 if (botSocket && botSocket.readyState === WebSocket.OPEN) {
                     botSocket.send(JSON.stringify({
                         action: "UPGRADE_CAPITAL",
+                        walletAddress: userWallet,
+                        program: prog,
+                        level: lvl,
+                        slotCost: exactSlotCost,
+                        botShare: botTradingShare,
                         totalCapital: currentTotalUserCapital
                     }));
                 }
@@ -6621,6 +6633,10 @@ input:checked + .tw-slider:before {
     const savedCap = localStorage.getItem("shine_user_total_capital");
     if (savedCap) {
         currentTotalUserCapital = parseFloat(savedCap) || 0.0;
+        const portUsdtEl = document.getElementById("port-usdt");
+        if (portUsdtEl) portUsdtEl.innerText = "$" + currentTotalUserCapital.toFixed(2);
+        const totalCapEl = document.getElementById("total-capital");
+        if (totalCapEl) totalCapEl.innerText = "$" + currentTotalUserCapital.toFixed(2);
     }
     try {
         if (window.ethereum) {
@@ -8098,11 +8114,13 @@ window.addEventListener('DOMContentLoaded', () => {
                 pnl = (livePrice - avgPriceCheck) * solBalCheck;
                 pnlPct = ((livePrice - avgPriceCheck) / avgPriceCheck) * 100;
             }
-            const totalCapVal = (data && data.totalCapital !== undefined && parseFloat(data.totalCapital) > 0) ? parseFloat(data.totalCapital) : 0.0;
-            const usdtBal = totalCapVal > 0 ? parseFloat(data.usdtBalance || 0) : 0.0;
+            const savedLocalCap = parseFloat(localStorage.getItem("shine_user_total_capital") || "0");
+            const backendCap = (data && data.totalCapital !== undefined) ? parseFloat(data.totalCapital) : 0.0;
+            const totalCapVal = Math.max(savedLocalCap, backendCap);
+            const investedVal = parseFloat(data.investedAmount || 0);
+            const usdtBal = Math.max(0.0, totalCapVal - investedVal);
             const solBal = parseFloat(data.solBalance !== undefined ? data.solBalance : 0);
             const avgPrice = parseFloat(data.avgEntryPrice || 0);
-            const investedVal = parseFloat(data.investedAmount || 0);
             const tHigh = parseFloat(data.tsHigh || data.trailingHigh || data.lastPeakPrice || 0);
             const tLow = parseFloat(data.tsLow || data.trailingLow || 0);
             const phase = data.activePhase !== undefined ? parseInt(data.activePhase.toString().replace(/[^0-9]/g, "")) : (data.phase !== undefined ? parseInt(data.phase) : 1);
