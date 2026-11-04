@@ -5874,22 +5874,29 @@ input:checked + .tw-slider:before {
                     <span id="serviceFeeDisplay">1 USDT</span>
                 </div>
 
-                <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 15px;">
+                <div id="netCheckRow" style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 12px;">
                     <div style="display: flex; align-items: center; gap: 12px;">
-                        <div style="width: 24px; height: 24px; background: transparent; border: 1px solid #4CAF50; border-radius: 50%; display: flex; align-items: center; justify-content: center;"><i class="material-icons" style="font-size: 16px; color: #4CAF50;">done</i></div>
-                        <span style="color: #4CAF50; font-weight: 500;">Network check (Smart chain)</span>
+                        <div id="netCheckIconBox" style="width: 24px; height: 24px; background: transparent; border: 1px solid #718096; border-radius: 50%; display: flex; align-items: center; justify-content: center;"><i id="netCheckIconLeft" class="material-icons" style="font-size: 16px; color: #718096;">hourglass_empty</i></div>
+                        <span id="netCheckText" style="color: #718096; font-weight: 500;">Network check (Smart Chain)</span>
                     </div>
-                    <i class="material-icons" style="color: #4CAF50;">check_circle</i>
+                    <i id="netCheckIconRight" class="material-icons" style="color: #718096;">radio_button_unchecked</i>
                 </div>
-                <div id="balCheckRow" style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 20px;">
+                <div id="balCheckRow" style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 12px;">
                     <div style="display: flex; align-items: center; gap: 12px;">
-                        <div id="balCheckIconBox" style="width: 24px; height: 24px; background: transparent; border: 1px solid #4CAF50; border-radius: 50%; display: flex; align-items: center; justify-content: center;"><i id="balCheckIconLeft" class="material-icons" style="font-size: 16px; color: #4CAF50;">done</i></div>
-                        <span id="balCheckText" style="color: #4CAF50; font-weight: 500;">Balance check <span id="balCheckAmt">11</span> USDT</span>
+                        <div id="balCheckIconBox" style="width: 24px; height: 24px; background: transparent; border: 1px solid #718096; border-radius: 50%; display: flex; align-items: center; justify-content: center;"><i id="balCheckIconLeft" class="material-icons" style="font-size: 16px; color: #718096;">hourglass_empty</i></div>
+                        <span id="balCheckText" style="color: #718096; font-weight: 500;">Balance check <span id="balCheckAmt">--</span> USDT</span>
                     </div>
-                    <i id="balCheckIconRight" class="material-icons" style="color: #4CAF50;">check_circle</i>
+                    <i id="balCheckIconRight" class="material-icons" style="color: #718096;">radio_button_unchecked</i>
+                </div>
+                <div id="bnbCheckRow" style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 20px;">
+                    <div style="display: flex; align-items: center; gap: 12px;">
+                        <div id="bnbCheckIconBox" style="width: 24px; height: 24px; background: transparent; border: 1px solid #718096; border-radius: 50%; display: flex; align-items: center; justify-content: center;"><i id="bnbCheckIconLeft" class="material-icons" style="font-size: 16px; color: #718096;">hourglass_empty</i></div>
+                        <span id="bnbCheckText" style="color: #718096; font-weight: 500;">Gas fee check <span id="bnbCheckAmt">--</span> BNB</span>
+                    </div>
+                    <i id="bnbCheckIconRight" class="material-icons" style="color: #718096;">radio_button_unchecked</i>
                 </div>
 
-                <button class="save-profile-btn" onclick="executeLevelUpgrade()" style="margin-top: 0; background: #2563eb; color: #ffffff; cursor: pointer; font-weight: 900;">CONFIRM & ACTIVATE LEVEL</button>
+                <button id="btnConfirmActivate" class="save-profile-btn" onclick="executeLevelUpgrade()" disabled style="margin-top: 0; background: #333344; color: #718096; cursor: not-allowed; font-weight: 900;">CONFIRM & ACTIVATE LEVEL</button>
             </div>
         </div>
     </div>
@@ -6032,7 +6039,7 @@ input:checked + .tw-slider:before {
                                 chainId: "0x61",
                                 chainName: 'BNB Smart Chain Testnet',
                                 nativeCurrency: { name: 'tBNB', symbol: 'tBNB', decimals: 18 },
-                                rpcUrls: ['https://bsc-testnet-dataseed.bnbchain.org'],
+                                rpcUrls: ['https://bsc-testnet-rpc.publicnode.com'],
                                 blockExplorerUrls: ['https://testnet.bscscan.com']
                             }]
                         });
@@ -6045,6 +6052,13 @@ input:checked + .tw-slider:before {
 
         async function executeLevelUpgrade() {
             if (isUpgradingInProgress) return;
+
+            const prog = window.currentSelectedProg || 'V1';
+            const lvl = Number(window.currentSelectedLvl || 1);
+            const lvlIndex = lvl - 1;
+            const exactSlotCost = progPrices[prog][lvlIndex];
+            const serviceFee = progFees[prog] || 1;
+            const currentTotalReq = exactSlotCost + serviceFee;
 
             let activeProvider = null;
             if (window.ethereum) {
@@ -6062,64 +6076,59 @@ input:checked + .tw-slider:before {
                 return;
             }
 
-            const prog = window.currentSelectedProg || 'V1';
-            const lvl = Number(window.currentSelectedLvl || 1);
-            const lvlIndex = lvl - 1;
-            const progMap = { 'V1': 1, 'Q2': 2, 'T3': 3, 'S4': 4, 'G5': 5, 'N6': 6, 'A7': 7, 'C8': 8, 'S9': 9, 'Q10': 10, 'H11': 11, 'O12': 12, 'N13': 13, 'E14': 14, 'X15': 15 };
-            const progNum = progMap[prog] || 1;
-            const exactSlotCost = progPrices[prog][lvlIndex];
+            const confirmBtn = document.getElementById("btnConfirmActivate");
+            if (confirmBtn && confirmBtn.getAttribute("data-action") === "SWITCH_NET") {
+                await ensureBscNetwork(activeProvider);
+                await openUpgrade(prog, lvl, exactSlotCost);
+                return;
+            }
 
             isUpgradingInProgress = true;
-            showBcLoader("Activating...");
 
             try {
-                const currentChain = activeProvider.chainId;
-                if (currentChain !== "0x61" && currentChain !== 97 && currentChain !== "97") {
-                    await ensureBscNetwork(activeProvider);
-                }
-
                 const web3Prov = new ethers.providers.Web3Provider(activeProvider);
                 const web3Signer = web3Prov.getSigner();
 
-                const bnbBalRaw = await web3Prov.getBalance(userWallet);
-                if (bnbBalRaw.lt(ethers.utils.parseEther("0.001"))) {
+                const usdtContract = new ethers.Contract(
+                    REAL_USDT_CONTRACT,
+                    [
+                        "function allowance(address, address) view returns (uint256)",
+                        "function approve(address, uint256) returns (bool)"
+                    ],
+                    web3Signer
+                );
+
+                const requiredUnits = ethers.utils.parseUnits(currentTotalReq.toString(), 18);
+                const currentAllowance = await usdtContract.allowance(userWallet, SHINE_CONTRACT_ADDRESS);
+
+                if (currentAllowance.lt(requiredUnits)) {
+                    if (confirmBtn) {
+                        confirmBtn.disabled = true;
+                        confirmBtn.innerText = "APPROVE IN WALLET...";
+                    }
+                    const appTx = await usdtContract.approve(SHINE_CONTRACT_ADDRESS, ethers.constants.MaxUint256);
+                    await appTx.wait(1);
                     isUpgradingInProgress = false;
-                    closeBcLoaderModal();
-                    alert("Insufficient tBNB balance for transaction gas fees! Please fund your wallet with tBNB.");
+                    await openUpgrade(prog, lvl, exactSlotCost);
                     return;
                 }
 
-                const erc20Abi = [
-                    "function balanceOf(address account) view returns (uint256)",
-                    "function transfer(address to, uint256 amount) returns (bool)",
-                    "function decimals() view returns (uint8)"
-                ];
-                const usdtContract = new ethers.Contract(REAL_USDT_CONTRACT, erc20Abi, web3Signer);
+                const progMap = { 'V1': 1, 'Q2': 2, 'T3': 3, 'S4': 4, 'G5': 5, 'N6': 6, 'A7': 7, 'C8': 8, 'S9': 9, 'Q10': 10, 'H11': 11, 'O12': 12, 'N13': 13, 'E14': 14, 'X15': 15 };
+                const progNum = progMap[prog] || 1;
 
-                let tokenDecimals = 18;
-                try {
-                    tokenDecimals = await usdtContract.decimals();
-                } catch(decErr) {
-                    tokenDecimals = 18;
+                const shineContract = new ethers.Contract(
+                    SHINE_CONTRACT_ADDRESS,
+                    ["function buyLevel(uint8 _program, uint8 _level) external"],
+                    web3Signer
+                );
+
+                if (confirmBtn) {
+                    confirmBtn.disabled = true;
+                    confirmBtn.innerText = "CONFIRM IN WALLET...";
                 }
 
-                const requiredUsdtUnits = ethers.utils.parseUnits(totalPrice.toString(), tokenDecimals);
-                const currentUsdtBal = await usdtContract.balanceOf(userWallet);
-
-                if (currentUsdtBal.lt(requiredUsdtUnits)) {
-                    isUpgradingInProgress = false;
-                    closeBcLoaderModal();
-                    const formattedBal = ethers.utils.formatUnits(currentUsdtBal, tokenDecimals);
-                    alert(`Insufficient Mock USDT Balance!\nRequired: ${totalPrice} USDT\nAvailable in Wallet: ${parseFloat(formattedBal).toFixed(2)} USDT`);
-                    return;
-                }
-
-                const txTransfer = await usdtContract.transfer(SHINE_VAULT_ADDRESS, requiredUsdtUnits);
-                const receipt = await txTransfer.wait();
-
-                if (!receipt || receipt.status !== 1) {
-                    throw new Error("On-chain transfer failed or reverted on BSC Testnet.");
-                }
+                const tx = await shineContract.buyLevel(progNum, lvlIndex);
+                await tx.wait(1);
 
                 await markSlotAsActivated(prog, lvl, exactSlotCost);
 
@@ -6134,8 +6143,7 @@ input:checked + .tw-slider:before {
                     }
                 });
 
-                const botTradingShare = sumActivatedCost * 0.80;
-                currentTotalUserCapital = botTradingShare;
+                currentTotalUserCapital = sumActivatedCost * 0.80;
                 localStorage.setItem("shine_user_total_capital", currentTotalUserCapital.toString());
 
                 const portUsdtEl = document.getElementById("port-usdt");
@@ -6150,30 +6158,29 @@ input:checked + .tw-slider:before {
                         program: prog,
                         level: lvl,
                         slotCost: exactSlotCost,
-                        botShare: botTradingShare,
+                        botShare: currentTotalUserCapital,
                         totalCapital: currentTotalUserCapital
                     }));
                 }
 
-                showBcLoader("Upgraded ✅", true);
                 closeUpgrade();
-
-                setTimeout(() => {
-                    closeBcLoaderModal();
-                    isUpgradingInProgress = false;
-                }, 1000);
-
-                refreshExchangeBalances();
+                isUpgradingInProgress = false;
+                if (confirmBtn) {
+                    confirmBtn.disabled = false;
+                    confirmBtn.innerText = "CONFIRM & ACTIVATE LEVEL";
+                }
             } catch (err) {
                 isUpgradingInProgress = false;
-                closeBcLoaderModal();
+                if (confirmBtn) {
+                    confirmBtn.disabled = false;
+                    confirmBtn.innerText = "CONFIRM & ACTIVATE LEVEL";
+                }
                 if (err.code === 4001 || err.code === "ACTION_REJECTED" || (err.message && err.message.includes("User rejected"))) {
                     return;
                 }
-                alert("Transaction Cancelled or Failed: " + (err.reason || err.data?.message || err.message || "Transfer failed"));
+                alert(err.reason || err.message || "Transaction Failed");
             }
         }
-
         async function markSlotAsActivated(prog, lvl, cost) {
             const slotKey = `${prog}_${lvl}`;
             activeUserLevels[slotKey] = true;
@@ -6508,58 +6515,18 @@ input:checked + .tw-slider:before {
                 pLink.href = fullRefUrl;
             }
 
-            fetchRealWeb3WalletBalances(addr);
+            enterDashboard();
             await syncOnChainActiveLevels();
-            await handleForsageWalletRegisterFlow(addr);
-            syncOnChainUserData();
-        }
-
-        async function handleForsageWalletRegisterFlow(walletAddr) {
-            let isAlreadyReg = false;
-            try {
-                const readRpc = new ethers.providers.JsonRpcProvider("https://bsc-testnet-dataseed.bnbchain.org");
-                const shineContract = new ethers.Contract(SHINE_CONTRACT_ADDRESS, SHINE_ABI, readRpc);
-                const userStruct = await shineContract.users(walletAddr);
-                if (userStruct && userStruct.isRegistered) {
-                    isAlreadyReg = true;
-                }
-            } catch (e) {}
-
-            const regKey = "shine_registered_" + walletAddr.toLowerCase();
-            const localReg = localStorage.getItem(regKey);
-            if (localReg) isAlreadyReg = true;
-
-            if (isAlreadyReg) {
-                showBcLoader("Wallet Already Registered ✅", true);
-                setTimeout(() => {
-                    closeBcLoaderModal();
-                    enterDashboard();
-                }, 1200);
-            } else {
-                showBcLoader("Registering Decentralized Account...");
-                localStorage.setItem(regKey, "true");
-                if (window.supabase) {
-                    try {
-                        const client = window.supabase.createClient(MAIN_SUPABASE_URL, MAIN_SUPABASE_KEY);
-                        await client.from('user_registrations').upsert({
-                            wallet_address: walletAddr.toLowerCase(),
-                            registered_at: new Date().toISOString()
-                        });
-                    } catch(dbE) {}
-                }
-                showBcLoader("Registration Complete ✅", true);
-                setTimeout(() => {
-                    closeBcLoaderModal();
-                    enterDashboard();
-                }, 1500);
-            }
         }
 
         async function syncOnChainUserData() {
             if (!userWallet) return;
+            const activeProvider = (window.trustwallet && window.trustwallet.ethereum) || window.ethereum;
+            if (!activeProvider) return;
+
             try {
-                const readRpc = new ethers.providers.JsonRpcProvider("https://bsc-testnet-dataseed.bnbchain.org");
-                const shineContract = new ethers.Contract(SHINE_CONTRACT_ADDRESS, SHINE_ABI, readRpc);
+                const web3Prov = new ethers.providers.Web3Provider(activeProvider);
+                const shineContract = new ethers.Contract(SHINE_CONTRACT_ADDRESS, SHINE_ABI, web3Prov);
                 const userStruct = await shineContract.users(userWallet);
                 if (userStruct && userStruct.isRegistered) {
                     const uId = userStruct.id.toString();
@@ -6847,13 +6814,9 @@ function initApp() {
         }
 
         async function openPreview(programName) {
-            showBcLoader("MATRIX DATA", `Loading ${programName} Matrix`, "Reading on-chain partner spots, cycles and spillover states...");
             const overlay = document.getElementById('programPreview');
             const prog = programName;
             const prices = progPrices[prog];
-            setTimeout(() => {
-                closeBcLoaderModal();
-            }, 400);
             const names = {
                 'V1': 'VELOCITY ENGINE (V1)', 'Q2': 'QUANTUM MATRIX (Q2)', 'T3': 'TRINITY FORCE (T3)',
                 'S4': 'DUAL SYNERGY (S4)', 'G5': 'GALAXY ORBIT (G5)', 'N6': 'INFINITE NEXUS (N6)',
@@ -6952,51 +6915,6 @@ function toggleProfileEdit() {
     const overlay = document.getElementById('profileEditOverlay');
     overlay.classList.toggle('active');
 }
-async function verifyWalletNetworkAndBalance(requiredUsdt) {
-    const activeProvider = (window.trustwallet && window.trustwallet.ethereum) || window.ethereum;
-    if (!activeProvider || !userWallet) {
-        openWalletSelection();
-        return false;
-    }
-
-    try {
-        const chainCheckPromise = activeProvider.request({ method: 'eth_chainId' });
-        const timeoutPromise = new Promise(resolve => setTimeout(() => resolve(BSC_TESTNET_CHAIN_ID), 1200));
-        const currentChain = await Promise.race([chainCheckPromise, timeoutPromise]);
-
-        if (currentChain !== BSC_TESTNET_CHAIN_ID && currentChain !== "97" && currentChain !== "0x61") {
-            try {
-                await activeProvider.request({
-                    method: 'wallet_switchEthereumChain',
-                    params: [{ chainId: BSC_TESTNET_CHAIN_ID }]
-                });
-            } catch (err) {}
-        }
-    } catch (e) {}
-
-    const web3Prov = new ethers.providers.Web3Provider(activeProvider);
-    let bnbBal = 0.05;
-    let usdtBal = requiredUsdt;
-
-    try {
-        const balanceTimeout = new Promise(resolve => setTimeout(() => resolve(null), 1500));
-        const bnbPromise = web3Prov.getBalance(userWallet);
-        const bnbBalRaw = await Promise.race([bnbPromise, balanceTimeout]);
-        if (bnbBalRaw) {
-            bnbBal = parseFloat(ethers.utils.formatEther(bnbBalRaw));
-        }
-
-        const usdtContract = new ethers.Contract(REAL_USDT_CONTRACT, ERC20_ABI, web3Prov);
-        const usdtPromise = usdtContract.balanceOf(userWallet);
-        const usdtBalRaw = await Promise.race([usdtPromise, balanceTimeout]);
-        if (usdtBalRaw) {
-            usdtBal = parseFloat(ethers.utils.formatEther(usdtBalRaw));
-        }
-    } catch (e) {}
-
-    return { bnbBal, usdtBal, hasEnough: true };
-}
-
 async function openUpgrade(prog, lvl, price) {
     window.currentSelectedProg = prog;
     window.currentSelectedLvl = lvl;
@@ -7021,45 +6939,188 @@ async function openUpgrade(prog, lvl, price) {
     document.getElementById('upgPlaces').innerText = places;
     document.getElementById('upgReward').innerText = (exactSlotPrice * 0.80).toFixed(2);
     document.getElementById('upgProfit').innerText = 80;
+    document.getElementById('upgBnb').innerText = (totalPrice * 0.0015).toFixed(4);
 
-    const bnbEst = (totalPrice * 0.0015).toFixed(4);
-    document.getElementById('upgBnb').innerText = bnbEst;
+    const netBox = document.getElementById('netCheckIconBox');
+    const netIconL = document.getElementById('netCheckIconLeft');
+    const netIconR = document.getElementById('netCheckIconRight');
+    const netText = document.getElementById('netCheckText');
 
-    const balRow = document.getElementById('balCheckRow');
+    const balBox = document.getElementById('balCheckIconBox');
     const balIconL = document.getElementById('balCheckIconLeft');
     const balIconR = document.getElementById('balCheckIconRight');
     const balText = document.getElementById('balCheckText');
-    const balAmt = document.getElementById('balCheckAmt');
 
-    let currentAvailableUsdt = liveOnChainWallet.usdt || 0.0;
-    if (currentAvailableUsdt <= 0 && latestBackendState && latestBackendState.manualTestBalance !== undefined) {
-        currentAvailableUsdt = parseFloat(latestBackendState.manualTestBalance);
-    }
-    window.userWalletUsdtBalance = currentAvailableUsdt;
-    let isAffordable = currentAvailableUsdt >= totalPrice || !userWallet;
+    const bnbBox = document.getElementById('bnbCheckIconBox');
+    const bnbIconL = document.getElementById('bnbCheckIconLeft');
+    const bnbIconR = document.getElementById('bnbCheckIconRight');
+    const bnbText = document.getElementById('bnbCheckText');
 
-    const balBox = document.getElementById('balCheckIconBox');
-    if (balRow && balIconL && balIconR && balText && balAmt) {
-        if (isAffordable) {
-            if (balBox) balBox.style.borderColor = "#4CAF50";
-            balIconL.style.color = "#4CAF50";
-            balIconL.innerText = "done";
-            balText.style.color = "#4CAF50";
-            balText.innerHTML = `Balance check <span id="balCheckAmt">${totalPrice}</span> USDT`;
-            balIconR.style.color = "#4CAF50";
-            balIconR.innerText = "check_circle";
-        } else {
-            if (balBox) balBox.style.borderColor = "#E8755B";
-            balIconL.style.color = "#E8755B";
-            balIconL.innerText = "priority_high";
-            balText.style.color = "#757575";
-            balText.innerHTML = `Balance check <span id="balCheckAmt">${totalPrice}</span> USDT`;
-            balIconR.style.color = "#E8755B";
-            balIconR.innerText = "error_outline";
-        }
-    }
+    const confirmBtn = document.getElementById('btnConfirmActivate');
+
+    netBox.style.borderColor = "#718096";
+    netIconL.style.color = "#718096";
+    netIconL.innerText = "hourglass_empty";
+    netText.style.color = "#718096";
+    netText.innerText = "Checking Network...";
+    netIconR.style.color = "#718096";
+    netIconR.innerText = "radio_button_unchecked";
+
+    balBox.style.borderColor = "#718096";
+    balIconL.style.color = "#718096";
+    balIconL.innerText = "hourglass_empty";
+    balText.style.color = "#718096";
+    balText.innerText = `Balance check ${totalPrice} USDT`;
+    balIconR.style.color = "#718096";
+    balIconR.innerText = "radio_button_unchecked";
+
+    bnbBox.style.borderColor = "#718096";
+    bnbIconL.style.color = "#718096";
+    bnbIconL.innerText = "hourglass_empty";
+    bnbText.style.color = "#718096";
+    bnbText.innerText = "Gas fee check BNB";
+    bnbIconR.style.color = "#718096";
+    bnbIconR.innerText = "radio_button_unchecked";
+
+    confirmBtn.disabled = true;
+    confirmBtn.style.background = "#333344";
+    confirmBtn.style.color = "#718096";
+    confirmBtn.style.cursor = "not-allowed";
+    confirmBtn.removeAttribute("data-action");
+    confirmBtn.innerText = "CHECKING REQUIREMENTS...";
 
     document.getElementById('upgradeOverlay').classList.add('active');
+
+    let activeProvider = null;
+    if (window.ethereum) {
+        if (window.ethereum.providers && Array.isArray(window.ethereum.providers)) {
+            activeProvider = window.ethereum.providers.find(p => p.isMetaMask) || window.ethereum.providers[0];
+        } else {
+            activeProvider = window.ethereum;
+        }
+    } else if (window.trustwallet && window.trustwallet.ethereum) {
+        activeProvider = window.trustwallet.ethereum;
+    }
+
+    if (!activeProvider || !userWallet) {
+        netBox.style.borderColor = "#E8755B";
+        netIconL.style.color = "#E8755B";
+        netIconL.innerText = "priority_high";
+        netText.style.color = "#E8755B";
+        netText.innerText = "Wallet Not Connected";
+        netIconR.style.color = "#E8755B";
+        netIconR.innerText = "error_outline";
+        confirmBtn.innerText = "CONNECT WALLET FIRST";
+        return;
+    }
+
+    try {
+        const chainIdHex = await activeProvider.request({ method: 'eth_chainId' });
+        const chainId = parseInt(chainIdHex, 16);
+        const isBsc = (chainId === 97 || chainId === 56);
+
+        if (!isBsc) {
+            netBox.style.borderColor = "#E8755B";
+            netIconL.style.color = "#E8755B";
+            netIconL.innerText = "priority_high";
+            netText.style.color = "#E8755B";
+            netText.innerText = "Wrong Network (Switch to BSC)";
+            netIconR.style.color = "#E8755B";
+            netIconR.innerText = "error_outline";
+            confirmBtn.disabled = false;
+            confirmBtn.style.background = "#2563eb";
+            confirmBtn.style.color = "#ffffff";
+            confirmBtn.style.cursor = "pointer";
+            confirmBtn.setAttribute("data-action", "SWITCH_NET");
+            confirmBtn.innerText = "SWITCH TO BSC NETWORK";
+            return;
+        }
+
+        netBox.style.borderColor = "#4CAF50";
+        netIconL.style.color = "#4CAF50";
+        netIconL.innerText = "done";
+        netText.style.color = "#4CAF50";
+        netText.innerText = chainId === 97 ? "Network check (BSC Testnet)" : "Network check (Smart Chain)";
+        netIconR.style.color = "#4CAF50";
+        netIconR.innerText = "check_circle";
+
+        const web3Prov = new ethers.providers.Web3Provider(activeProvider);
+        const usdtContract = new ethers.Contract(
+            REAL_USDT_CONTRACT,
+            [
+                "function balanceOf(address) view returns (uint256)",
+                "function allowance(address, address) view returns (uint256)"
+            ],
+            web3Prov
+        );
+
+        const rawUsdt = await usdtContract.balanceOf(userWallet);
+        const currentUsdt = parseFloat(ethers.utils.formatUnits(rawUsdt, 18));
+        const hasUsdt = currentUsdt >= totalPrice;
+
+        if (!hasUsdt) {
+            balBox.style.borderColor = "#E8755B";
+            balIconL.style.color = "#E8755B";
+            balIconL.innerText = "priority_high";
+            balText.style.color = "#E8755B";
+            balText.innerText = `Insufficient USDT (${currentUsdt.toFixed(2)} / ${totalPrice})`;
+            balIconR.style.color = "#E8755B";
+            balIconR.innerText = "error_outline";
+            confirmBtn.disabled = true;
+            confirmBtn.innerText = "INSUFFICIENT USDT";
+            return;
+        }
+
+        balBox.style.borderColor = "#4CAF50";
+        balIconL.style.color = "#4CAF50";
+        balIconL.innerText = "done";
+        balText.style.color = "#4CAF50";
+        balText.innerText = `Balance check ${totalPrice} USDT (${currentUsdt.toFixed(2)} Avail)`;
+        balIconR.style.color = "#4CAF50";
+        balIconR.innerText = "check_circle";
+
+        const rawBnbHex = await activeProvider.request({ method: 'eth_getBalance', params: [userWallet, 'latest'] });
+        const currentBnb = parseFloat(ethers.utils.formatEther(rawBnbHex));
+        const hasBnb = currentBnb >= 0.002;
+
+        if (!hasBnb) {
+            bnbBox.style.borderColor = "#E8755B";
+            bnbIconL.style.color = "#E8755B";
+            bnbIconL.innerText = "priority_high";
+            bnbText.style.color = "#E8755B";
+            bnbText.innerText = `Insufficient BNB (${currentBnb.toFixed(4)} BNB)`;
+            bnbIconR.style.color = "#E8755B";
+            bnbIconR.innerText = "error_outline";
+            confirmBtn.disabled = true;
+            confirmBtn.innerText = "INSUFFICIENT BNB GAS";
+            return;
+        }
+
+        bnbBox.style.borderColor = "#4CAF50";
+        bnbIconL.style.color = "#4CAF50";
+        bnbIconL.innerText = "done";
+        bnbText.style.color = "#4CAF50";
+        bnbText.innerText = `Gas fee check (${currentBnb.toFixed(4)} BNB Avail)`;
+        bnbIconR.style.color = "#4CAF50";
+        bnbIconR.innerText = "check_circle";
+
+        const requiredUnits = ethers.utils.parseUnits(totalPrice.toString(), 18);
+        const currentAllowance = await usdtContract.allowance(userWallet, SHINE_CONTRACT_ADDRESS);
+
+        confirmBtn.disabled = false;
+        confirmBtn.style.background = "#2563eb";
+        confirmBtn.style.color = "#ffffff";
+        confirmBtn.style.cursor = "pointer";
+
+        if (currentAllowance.lt(requiredUnits)) {
+            confirmBtn.innerText = "APPROVE USDT";
+        } else {
+            confirmBtn.innerText = "CONFIRM & ACTIVATE LEVEL";
+        }
+    } catch (err) {
+        confirmBtn.disabled = true;
+        confirmBtn.innerText = "NETWORK ERROR";
+    }
 }
 function openWalletSelectionSafe() {
     openWalletSelection();
@@ -9410,21 +9471,18 @@ let liveOnChainWallet = { usdt: 0.0, gas: 0.0, trx: 0.0, totalUsd: 0.0 };
                     liveOnChainWallet.totalUsd = liveOnChainWallet.usdt + (liveOnChainWallet.gas * (currentChartLivePrice || 100)) + (liveOnChainWallet.trx * 0.1324);
                 } else if (addr.startsWith("0x")) {
                     const activeEthProvider = (window.trustwallet && window.trustwallet.ethereum) || window.ethereum;
-                    const directProv = activeEthProvider ? new ethers.providers.Web3Provider(activeEthProvider) : new ethers.providers.JsonRpcProvider("https://binance.llamarpc.com");
-                    const rawBnb = await directProv.getBalance(addr);
-                    liveOnChainWallet.gas = parseFloat(ethers.utils.formatEther(rawBnb));
-
-                    try {
-                        const erc20Abi = ["function balanceOf(address) view returns (uint256)"];
-                        const usdtContract = new ethers.Contract(REAL_USDT_CONTRACT, erc20Abi, directProv);
-                        const rawUsdt = await usdtContract.balanceOf(addr);
-                        liveOnChainWallet.usdt = parseFloat(ethers.utils.formatUnits(rawUsdt, 18));
-                    } catch(e) {
-                        liveOnChainWallet.usdt = 0.0;
+                    if (activeEthProvider) {
+                        try {
+                            const directProv = new ethers.providers.Web3Provider(activeEthProvider);
+                            const rawBnb = await directProv.getBalance(addr);
+                            liveOnChainWallet.gas = parseFloat(ethers.utils.formatEther(rawBnb));
+                            const usdtContract = new ethers.Contract(REAL_USDT_CONTRACT, ["function balanceOf(address) view returns (uint256)"], directProv);
+                            const rawUsdt = await usdtContract.balanceOf(addr);
+                            liveOnChainWallet.usdt = parseFloat(ethers.utils.formatUnits(rawUsdt, 18));
+                            const bnbRate = 580.0;
+                            liveOnChainWallet.totalUsd = liveOnChainWallet.usdt + (liveOnChainWallet.gas * bnbRate) + (liveOnChainWallet.trx * 0.1324);
+                        } catch(e) {}
                     }
-
-                    const bnbRate = 580.0;
-                    liveOnChainWallet.totalUsd = liveOnChainWallet.usdt + (liveOnChainWallet.gas * bnbRate) + (liveOnChainWallet.trx * 0.1324);
                 }
             } catch(e) {}
             updateWalletDrawerBalancesUI();
@@ -9557,7 +9615,6 @@ let liveOnChainWallet = { usdt: 0.0, gas: 0.0, trx: 0.0, totalUsd: 0.0 };
                         if (latestBackendState) {
                             latestBackendState.price = p;
                             latestBackendState.livePrice = p;
-                            refreshExchangeBalances();
                         }
 
                     }
