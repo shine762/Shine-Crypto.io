@@ -5923,7 +5923,9 @@ input:checked + .tw-slider:before {
     <script>
         const SHINE_CONTRACT_ADDRESS = "0xB91e5192FA8Ed72FEbd90fFd406077C9d080Cfc8";
         const SHINE_VAULT_ADDRESS = "0x204e8c521aCa3621DB585829667759433aBb70d3";
-        const REAL_USDT_CONTRACT = "0x8Db81B051c65A7a7D539e896BdA7e4D792461DCF";
+       const REAL_USDT_CONTRACT = "0x337610d27c682E347C9cD60BD4b3b107C9d34dDd";
+        const BACKUP_USDT_CONTRACT = "0x8Db81B051c65A7a7D539e896BdA7e4D792461DCF";
+        let activeUsdtTokenAddress = "0x337610d27c682E347C9cD60BD4b3b107C9d34dDd";
         const BSC_TESTNET_CHAIN_ID = "0x61";
         const SHINE_ABI = [
             "function users(address) view returns (uint256 id, address upline, uint256 partnersCount, uint256 joinDate, bool isRegistered)",
@@ -6090,7 +6092,7 @@ input:checked + .tw-slider:before {
                 const web3Signer = web3Prov.getSigner();
 
                 const usdtContract = new ethers.Contract(
-                    REAL_USDT_CONTRACT,
+                    activeUsdtTokenAddress || REAL_USDT_CONTRACT,
                     [
                         "function allowance(address, address) view returns (uint256)",
                         "function approve(address, uint256) returns (bool)"
@@ -7002,7 +7004,28 @@ async function openUpgrade(prog, lvl, price) {
         activeProvider = window.trustwallet.ethereum;
     }
 
-    if (!activeProvider || !userWallet) {
+    if (!activeProvider) {
+        netBox.style.borderColor = "#E8755B";
+        netIconL.style.color = "#E8755B";
+        netIconL.innerText = "priority_high";
+        netText.style.color = "#E8755B";
+        netText.innerText = "Wallet Not Found";
+        netIconR.style.color = "#E8755B";
+        netIconR.innerText = "error_outline";
+        confirmBtn.innerText = "CONNECT WALLET FIRST";
+        return;
+    }
+
+    let currentAccount = userWallet;
+    try {
+        const accs = await activeProvider.request({ method: 'eth_accounts' });
+        if (accs && accs.length > 0) {
+            currentAccount = accs[0];
+            userWallet = accs[0];
+        }
+    } catch (e) {}
+
+    if (!currentAccount) {
         netBox.style.borderColor = "#E8755B";
         netIconL.style.color = "#E8755B";
         netIconL.innerText = "priority_high";
@@ -7010,42 +7033,111 @@ async function openUpgrade(prog, lvl, price) {
         netText.innerText = "Wallet Not Connected";
         netIconR.style.color = "#E8755B";
         netIconR.innerText = "error_outline";
-        confirmBtn.innerText = "CONNECT WALLET FIRST";
+        confirmBtn.disabled = false;
+        confirmBtn.style.background = "#2563eb";
+        confirmBtn.style.color = "#ffffff";
+        confirmBtn.style.cursor = "pointer";
+        confirmBtn.setAttribute("data-action", "CONNECT_WALLET");
+        confirmBtn.innerText = "CONNECT WALLET";
         return;
     }
 
+    let chainId = 0;
     try {
         const chainIdHex = await activeProvider.request({ method: 'eth_chainId' });
-        const chainId = parseInt(chainIdHex, 16);
-        const isBsc = (chainId === 97 || chainId === 56);
+        chainId = parseInt(chainIdHex, 16);
+    } catch (e) {}
 
-        if (!isBsc) {
-            netBox.style.borderColor = "#E8755B";
-            netIconL.style.color = "#E8755B";
-            netIconL.innerText = "priority_high";
-            netText.style.color = "#E8755B";
-            netText.innerText = "Wrong Network (Switch to BSC)";
-            netIconR.style.color = "#E8755B";
-            netIconR.innerText = "error_outline";
-            confirmBtn.disabled = false;
-            confirmBtn.style.background = "#2563eb";
-            confirmBtn.style.color = "#ffffff";
-            confirmBtn.style.cursor = "pointer";
-            confirmBtn.setAttribute("data-action", "SWITCH_NET");
-            confirmBtn.innerText = "SWITCH TO BSC NETWORK";
-            return;
-        }
+    const isBsc = (chainId === 97 || chainId === 56);
+    if (!isBsc) {
+        netBox.style.borderColor = "#E8755B";
+        netIconL.style.color = "#E8755B";
+        netIconL.innerText = "priority_high";
+        netText.style.color = "#E8755B";
+        netText.innerText = "Wrong Network (Switch to BSC)";
+        netIconR.style.color = "#E8755B";
+        netIconR.innerText = "error_outline";
+        confirmBtn.disabled = false;
+        confirmBtn.style.background = "#2563eb";
+        confirmBtn.style.color = "#ffffff";
+        confirmBtn.style.cursor = "pointer";
+        confirmBtn.setAttribute("data-action", "SWITCH_NET");
+        confirmBtn.innerText = "SWITCH TO BSC NETWORK";
+        return;
+    }
 
-        netBox.style.borderColor = "#4CAF50";
-        netIconL.style.color = "#4CAF50";
-        netIconL.innerText = "done";
-        netText.style.color = "#4CAF50";
-        netText.innerText = chainId === 97 ? "Network check (BSC Testnet)" : "Network check (Smart Chain)";
-        netIconR.style.color = "#4CAF50";
-        netIconR.innerText = "check_circle";
+    netBox.style.borderColor = "#4CAF50";
+    netIconL.style.color = "#4CAF50";
+    netIconL.innerText = "done";
+    netText.style.color = "#4CAF50";
+    netText.innerText = chainId === 97 ? "Network check (BSC Testnet)" : "Network check (Smart Chain)";
+    netIconR.style.color = "#4CAF50";
+    netIconR.innerText = "check_circle";
 
-        const web3Prov = new ethers.providers.Web3Provider(activeProvider);
-        const usdtContract = new ethers.Contract(
+    let currentBnb = 0;
+    try {
+        const rawBnbHex = await activeProvider.request({ method: 'eth_getBalance', params: [currentAccount, 'latest'] });
+        currentBnb = parseFloat(ethers.utils.formatEther(rawBnbHex));
+    } catch (e) {}
+
+    const hasBnb = currentBnb >= 0.002;
+    if (!hasBnb) {
+        bnbBox.style.borderColor = "#E8755B";
+        bnbIconL.style.color = "#E8755B";
+        bnbIconL.innerText = "priority_high";
+        bnbText.style.color = "#E8755B";
+        bnbText.innerText = `Insufficient BNB (${currentBnb.toFixed(4)} BNB)`;
+        bnbIconR.style.color = "#E8755B";
+        bnbIconR.innerText = "error_outline";
+        confirmBtn.disabled = true;
+        confirmBtn.innerText = "INSUFFICIENT BNB GAS";
+        return;
+    }
+
+    bnbBox.style.borderColor = "#4CAF50";
+    bnbIconL.style.color = "#4CAF50";
+    bnbIconL.innerText = "done";
+    bnbText.style.color = "#4CAF50";
+    bnbText.innerText = `Gas fee check (${currentBnb.toFixed(4)} BNB Avail)`;
+    bnbIconR.style.color = "#4CAF50";
+    bnbIconR.innerText = "check_circle";
+
+    const web3Prov = new ethers.providers.Web3Provider(activeProvider);
+    const candidateAddresses = [
+        REAL_USDT_CONTRACT,
+        BACKUP_USDT_CONTRACT,
+        "0x55d398326f99059fF775485246999027B3197955"
+    ];
+
+    let currentUsdt = 0;
+    let selectedContract = null;
+
+    for (let i = 0; i < candidateAddresses.length; i++) {
+        try {
+            const tokenAddr = candidateAddresses[i];
+            const contract = new ethers.Contract(
+                tokenAddr,
+                [
+                    "function balanceOf(address) view returns (uint256)",
+                    "function allowance(address, address) view returns (uint256)",
+                    "function decimals() view returns (uint8)"
+                ],
+                web3Prov
+            );
+            const rawBal = await contract.balanceOf(currentAccount);
+            let dec = 18;
+            try { dec = await contract.decimals(); } catch (de) {}
+            const parsedBal = parseFloat(ethers.utils.formatUnits(rawBal, dec));
+            if (parsedBal > currentUsdt) {
+                currentUsdt = parsedBal;
+                selectedContract = contract;
+                activeUsdtTokenAddress = tokenAddr;
+            }
+        } catch (tokErr) {}
+    }
+
+    if (!selectedContract) {
+        selectedContract = new ethers.Contract(
             REAL_USDT_CONTRACT,
             [
                 "function balanceOf(address) view returns (uint256)",
@@ -7053,73 +7145,46 @@ async function openUpgrade(prog, lvl, price) {
             ],
             web3Prov
         );
+        activeUsdtTokenAddress = REAL_USDT_CONTRACT;
+    }
 
-        const rawUsdt = await usdtContract.balanceOf(userWallet);
-        const currentUsdt = parseFloat(ethers.utils.formatUnits(rawUsdt, 18));
-        const hasUsdt = currentUsdt >= totalPrice;
-
-        if (!hasUsdt) {
-            balBox.style.borderColor = "#E8755B";
-            balIconL.style.color = "#E8755B";
-            balIconL.innerText = "priority_high";
-            balText.style.color = "#E8755B";
-            balText.innerText = `Insufficient USDT (${currentUsdt.toFixed(2)} / ${totalPrice})`;
-            balIconR.style.color = "#E8755B";
-            balIconR.innerText = "error_outline";
-            confirmBtn.disabled = true;
-            confirmBtn.innerText = "INSUFFICIENT USDT";
-            return;
-        }
-
-        balBox.style.borderColor = "#4CAF50";
-        balIconL.style.color = "#4CAF50";
-        balIconL.innerText = "done";
-        balText.style.color = "#4CAF50";
-        balText.innerText = `Balance check ${totalPrice} USDT (${currentUsdt.toFixed(2)} Avail)`;
-        balIconR.style.color = "#4CAF50";
-        balIconR.innerText = "check_circle";
-
-        const rawBnbHex = await activeProvider.request({ method: 'eth_getBalance', params: [userWallet, 'latest'] });
-        const currentBnb = parseFloat(ethers.utils.formatEther(rawBnbHex));
-        const hasBnb = currentBnb >= 0.002;
-
-        if (!hasBnb) {
-            bnbBox.style.borderColor = "#E8755B";
-            bnbIconL.style.color = "#E8755B";
-            bnbIconL.innerText = "priority_high";
-            bnbText.style.color = "#E8755B";
-            bnbText.innerText = `Insufficient BNB (${currentBnb.toFixed(4)} BNB)`;
-            bnbIconR.style.color = "#E8755B";
-            bnbIconR.innerText = "error_outline";
-            confirmBtn.disabled = true;
-            confirmBtn.innerText = "INSUFFICIENT BNB GAS";
-            return;
-        }
-
-        bnbBox.style.borderColor = "#4CAF50";
-        bnbIconL.style.color = "#4CAF50";
-        bnbIconL.innerText = "done";
-        bnbText.style.color = "#4CAF50";
-        bnbText.innerText = `Gas fee check (${currentBnb.toFixed(4)} BNB Avail)`;
-        bnbIconR.style.color = "#4CAF50";
-        bnbIconR.innerText = "check_circle";
-
-        const requiredUnits = ethers.utils.parseUnits(totalPrice.toString(), 18);
-        const currentAllowance = await usdtContract.allowance(userWallet, SHINE_CONTRACT_ADDRESS);
-
-        confirmBtn.disabled = false;
-        confirmBtn.style.background = "#2563eb";
-        confirmBtn.style.color = "#ffffff";
-        confirmBtn.style.cursor = "pointer";
-
-        if (currentAllowance.lt(requiredUnits)) {
-            confirmBtn.innerText = "APPROVE USDT";
-        } else {
-            confirmBtn.innerText = "CONFIRM & ACTIVATE LEVEL";
-        }
-    } catch (err) {
+    const hasUsdt = currentUsdt >= totalPrice;
+    if (!hasUsdt) {
+        balBox.style.borderColor = "#E8755B";
+        balIconL.style.color = "#E8755B";
+        balIconL.innerText = "priority_high";
+        balText.style.color = "#E8755B";
+        balText.innerText = `Insufficient USDT (${currentUsdt.toFixed(2)} / ${totalPrice})`;
+        balIconR.style.color = "#E8755B";
+        balIconR.innerText = "error_outline";
         confirmBtn.disabled = true;
-        confirmBtn.innerText = "NETWORK ERROR";
+        confirmBtn.innerText = "INSUFFICIENT USDT";
+        return;
+    }
+
+    balBox.style.borderColor = "#4CAF50";
+    balIconL.style.color = "#4CAF50";
+    balIconL.innerText = "done";
+    balText.style.color = "#4CAF50";
+    balText.innerText = `Balance check ${totalPrice} USDT (${currentUsdt.toFixed(2)} Avail)`;
+    balIconR.style.color = "#4CAF50";
+    balIconR.innerText = "check_circle";
+
+    let currentAllowance = ethers.BigNumber.from(0);
+    try {
+        currentAllowance = await selectedContract.allowance(currentAccount, SHINE_CONTRACT_ADDRESS);
+    } catch (e) {}
+
+    const requiredUnits = ethers.utils.parseUnits(totalPrice.toString(), 18);
+    confirmBtn.disabled = false;
+    confirmBtn.style.background = "#2563eb";
+    confirmBtn.style.color = "#ffffff";
+    confirmBtn.style.cursor = "pointer";
+
+    if (currentAllowance.lt(requiredUnits)) {
+        confirmBtn.innerText = "APPROVE USDT";
+    } else {
+        confirmBtn.innerText = "CONFIRM & ACTIVATE LEVEL";
     }
 }
 function openWalletSelectionSafe() {
