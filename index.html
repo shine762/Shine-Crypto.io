@@ -2970,7 +2970,7 @@ input:checked + .tw-slider:before {
             </section>
             <div id="expandedProfile" class="expanded-profile" style="padding: 0 16px 20px;">
                 <div class="wallet-address-row">
-                    <span id="displayWallet">0xE5af...2Ed7</span>
+                    <span id="displayWallet">Not Connected</span>
                     <i class="material-icons" style="font-size: 16px; color: #757575; cursor: pointer;" onclick="copyWallet()">content_copy</i>
                 </div>
                 <div class="invited-by-row">
@@ -5572,7 +5572,7 @@ input:checked + .tw-slider:before {
             <div style="width: 100%; margin-top: 24px; display: flex; flex-direction: column; gap: 20px;">
                 <div class="input-group" style="margin-bottom: 0;">
                     <label style="color: white; font-weight: 500;">Old Wallet Address *</label>
-                    <input type="text" value="0x99b23c8039e98a119eaed74e4f3fe" readonly style="background: #151515; border-color: #2A2A2A; color: #757575;">
+                    <input type="text" id="oldWalletAddressInput" placeholder="Connect wallet" readonly style="background: #151515; border-color: #2A2A2A; color: #757575;">
                 </div>
                 <div class="input-group" style="margin-bottom: 0;">
                     <label style="color: white; font-weight: 500;">New Wallet Address *</label>
@@ -6079,6 +6079,11 @@ input:checked + .tw-slider:before {
             }
 
             const confirmBtn = document.getElementById("btnConfirmActivate");
+            if (confirmBtn && confirmBtn.getAttribute("data-action") === "CONNECT_WALLET") {
+                await activeProvider.request({ method: 'eth_requestAccounts' });
+                await openUpgrade(prog, lvl, exactSlotCost);
+                return;
+            }
             if (confirmBtn && confirmBtn.getAttribute("data-action") === "SWITCH_NET") {
                 await ensureBscNetwork(activeProvider);
                 await openUpgrade(prog, lvl, exactSlotCost);
