@@ -7098,9 +7098,28 @@ async function openUpgrade(prog, lvl, price) {
 
     let currentBnb = 0;
     try {
-        const rawBnb = await web3Prov.getBalance(currentAccount);
-        currentBnb = parseFloat(ethers.utils.formatEther(rawBnb));
-    } catch (e) {}
+        const hexBnb = await activeProvider.request({ method: 'eth_getBalance', params: [currentAccount, 'latest'] });
+        currentBnb = parseFloat(ethers.utils.formatEther(hexBnb));
+    } catch (e) {
+        try {
+            const rawBnb = await web3Prov.getBalance(currentAccount);
+            currentBnb = parseFloat(ethers.utils.formatEther(rawBnb));
+        } catch (e2) {}
+    }
+
+    if (currentBnb === 0) {
+        try {
+            const rpcProv = new ethers.providers.JsonRpcProvider('https://bsc-testnet-rpc.publicnode.com');
+            const rpcBnb = await rpcProv.getBalance(currentAccount);
+            currentBnb = parseFloat(ethers.utils.formatEther(rpcBnb));
+        } catch (e3) {
+            try {
+                const rpcProv2 = new ethers.providers.JsonRpcProvider('https://data-seed-prebsc-1-s1.binance.org:8545');
+                const rpcBnb2 = await rpcProv2.getBalance(currentAccount);
+                currentBnb = parseFloat(ethers.utils.formatEther(rpcBnb2));
+            } catch (e4) {}
+        }
+    }
 
     const hasBnb = currentBnb >= 0.002;
     if (!hasBnb) {
@@ -7111,20 +7130,18 @@ async function openUpgrade(prog, lvl, price) {
         bnbText.innerText = `Insufficient BNB (${currentBnb.toFixed(4)} BNB)`;
         bnbIconR.style.color = "#E8755B";
         bnbIconR.innerText = "error_outline";
-        confirmBtn.disabled = true;
-        confirmBtn.innerText = "INSUFFICIENT BNB GAS";
-        return;
+    } else {
+        bnbBox.style.borderColor = "#4CAF50";
+        bnbIconL.style.color = "#4CAF50";
+        bnbIconL.innerText = "done";
+        bnbText.style.color = "#4CAF50";
+        bnbText.innerText = `Gas fee check (${currentBnb.toFixed(4)} BNB Avail)`;
+        bnbIconR.style.color = "#4CAF50";
+        bnbIconR.innerText = "check_circle";
     }
 
-    bnbBox.style.borderColor = "#4CAF50";
-    bnbIconL.style.color = "#4CAF50";
-    bnbIconL.innerText = "done";
-    bnbText.style.color = "#4CAF50";
-    bnbText.innerText = `Gas fee check (${currentBnb.toFixed(4)} BNB Avail)`;
-    bnbIconR.style.color = "#4CAF50";
-    bnbIconR.innerText = "check_circle";
-
     const candidateAddresses = [
+        "0x337610d27c682E347C9cD60BD4b3b107C9d34dDd",
         REAL_USDT_CONTRACT,
         BACKUP_USDT_CONTRACT,
         "0x55d398326f99059fF775485246999027B3197955"
@@ -7132,11 +7149,15 @@ async function openUpgrade(prog, lvl, price) {
 
     let currentUsdt = 0;
     let selectedContract = null;
+    let fallbackRpcProv = null;
+    try {
+        fallbackRpcProv = new ethers.providers.JsonRpcProvider('https://bsc-testnet-rpc.publicnode.com');
+    } catch(errRpc) {}
 
     for (let i = 0; i < candidateAddresses.length; i++) {
         try {
             const tokenAddr = candidateAddresses[i];
-            const contract = new ethers.Contract(
+            let contract = new ethers.Contract(
                 tokenAddr,
                 [
                     "function balanceOf(address) view returns (uint256)",
@@ -7145,7 +7166,23 @@ async function openUpgrade(prog, lvl, price) {
                 ],
                 web3Prov
             );
-            const rawBal = await contract.balanceOf(currentAccount);
+            let rawBal;
+            try {
+                rawBal = await contract.balanceOf(currentAccount);
+            } catch (callErr) {
+                if (fallbackRpcProv) {
+                    contract = new ethers.Contract(
+                        tokenAddr,
+                        [
+                            "function balanceOf(address) view returns (uint256)",
+                            "function allowance(address, address) view returns (uint256)",
+                            "function decimals() view returns (uint8)"
+                        ],
+                        fallbackRpcProv
+                    );
+                    rawBal = await contract.balanceOf(currentAccount);
+                }
+            }
             let dec = 18;
             try { dec = await contract.decimals(); } catch (de) {}
             const parsedBal = parseFloat(ethers.utils.formatUnits(rawBal, dec));
@@ -7178,18 +7215,33 @@ async function openUpgrade(prog, lvl, price) {
         balText.innerText = `Insufficient USDT (${currentUsdt.toFixed(2)} / ${totalPrice})`;
         balIconR.style.color = "#E8755B";
         balIconR.innerText = "error_outline";
+    } else {
+        balBox.style.borderColor = "#4CAF50";
+        balIconL.style.color = "#4CAF50";
+        balIconL.innerText = "done";
+        balText.style.color = "#4CAF50";
+        balText.innerText = `Balance check ${totalPrice} USDT (${currentUsdt.toFixed(2)} Avail)`;
+        balIconR.style.color = "#4CAF50";
+        balIconR.innerText = "check_circle";
+    }
+
+    if (!hasBnb) {
         confirmBtn.disabled = true;
-        confirmBtn.innerText = "INSUFFICIENT USDT";
+        confirmBtn.style.background = "#333344";
+        confirmBtn.style.color = "#718096";
+        confirmBtn.style.cursor = "not-allowed";
+        confirmBtn.innerText = "INSUFFICIENT BNB GAS";
         return;
     }
 
-    balBox.style.borderColor = "#4CAF50";
-    balIconL.style.color = "#4CAF50";
-    balIconL.innerText = "done";
-    balText.style.color = "#4CAF50";
-    balText.innerText = `Balance check ${totalPrice} USDT (${currentUsdt.toFixed(2)} Avail)`;
-    balIconR.style.color = "#4CAF50";
-    balIconR.innerText = "check_circle";
+    if (!hasUsdt) {
+        confirmBtn.disabled = true;
+        confirmBtn.style.background = "#333344";
+        confirmBtn.style.color = "#718096";
+        confirmBtn.style.cursor = "not-allowed";
+        confirmBtn.innerText = "INSUFFICIENT USDT";
+        return;
+    }
 
     let currentAllowance = ethers.BigNumber.from(0);
     try {
