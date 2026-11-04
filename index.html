@@ -5923,9 +5923,9 @@ input:checked + .tw-slider:before {
     <script>
         const SHINE_CONTRACT_ADDRESS = "0xB91e5192FA8Ed72FEbd90fFd406077C9d080Cfc8";
         const SHINE_VAULT_ADDRESS = "0x204e8c521aCa3621DB585829667759433aBb70d3";
-       const REAL_USDT_CONTRACT = "0x337610d27c682E347C9cD60BD4b3b107C9d34dDd";
-        const BACKUP_USDT_CONTRACT = "0x8Db81B051c65A7a7D539e896BdA7e4D792461DCF";
-        let activeUsdtTokenAddress = "0x337610d27c682E347C9cD60BD4b3b107C9d34dDd";
+       const REAL_USDT_CONTRACT = "0x8Db81B051c65A7a7D539e896BdA7e4D792461DCF";
+        const BACKUP_USDT_CONTRACT = "0x337610d27c682E347C9cD60BD4b3b107C9d34dDd";
+        let activeUsdtTokenAddress = "0x8Db81B051c65A7a7D539e896BdA7e4D792461DCF";
         const BSC_TESTNET_CHAIN_ID = "0x61";
         const SHINE_ABI = [
             "function users(address) view returns (uint256 id, address upline, uint256 partnersCount, uint256 joinDate, bool isRegistered)",
@@ -7016,16 +7016,28 @@ async function openUpgrade(prog, lvl, price) {
         return;
     }
 
+    const web3Prov = new ethers.providers.Web3Provider(activeProvider);
+
     let currentAccount = userWallet;
     try {
-        const accs = await activeProvider.request({ method: 'eth_accounts' });
+        const accs = await web3Prov.listAccounts();
         if (accs && accs.length > 0) {
             currentAccount = accs[0];
             userWallet = accs[0];
         }
     } catch (e) {}
 
-    if (!currentAccount) {
+    if (!currentAccount || !ethers.utils.isAddress(currentAccount)) {
+        try {
+            const requestedAccs = await activeProvider.request({ method: 'eth_requestAccounts' });
+            if (requestedAccs && requestedAccs.length > 0) {
+                currentAccount = requestedAccs[0];
+                userWallet = requestedAccs[0];
+            }
+        } catch (e) {}
+    }
+
+    if (!currentAccount || !ethers.utils.isAddress(currentAccount)) {
         netBox.style.borderColor = "#E8755B";
         netIconL.style.color = "#E8755B";
         netIconL.innerText = "priority_high";
@@ -7044,9 +7056,14 @@ async function openUpgrade(prog, lvl, price) {
 
     let chainId = 0;
     try {
-        const chainIdHex = await activeProvider.request({ method: 'eth_chainId' });
-        chainId = parseInt(chainIdHex, 16);
-    } catch (e) {}
+        const net = await web3Prov.getNetwork();
+        chainId = net.chainId;
+    } catch (e) {
+        try {
+            const chainIdHex = await activeProvider.request({ method: 'eth_chainId' });
+            chainId = parseInt(chainIdHex, 16);
+        } catch (e2) {}
+    }
 
     const isBsc = (chainId === 97 || chainId === 56);
     if (!isBsc) {
@@ -7076,8 +7093,8 @@ async function openUpgrade(prog, lvl, price) {
 
     let currentBnb = 0;
     try {
-        const rawBnbHex = await activeProvider.request({ method: 'eth_getBalance', params: [currentAccount, 'latest'] });
-        currentBnb = parseFloat(ethers.utils.formatEther(rawBnbHex));
+        const rawBnb = await web3Prov.getBalance(currentAccount);
+        currentBnb = parseFloat(ethers.utils.formatEther(rawBnb));
     } catch (e) {}
 
     const hasBnb = currentBnb >= 0.002;
@@ -7102,7 +7119,6 @@ async function openUpgrade(prog, lvl, price) {
     bnbIconR.style.color = "#4CAF50";
     bnbIconR.innerText = "check_circle";
 
-    const web3Prov = new ethers.providers.Web3Provider(activeProvider);
     const candidateAddresses = [
         REAL_USDT_CONTRACT,
         BACKUP_USDT_CONTRACT,
