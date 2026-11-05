@@ -6101,52 +6101,7 @@ input:checked + .tw-slider:before {
                 const tokenTarget = activeUsdtTokenAddress || "0x337610d27c682E347C9cD60BD4b3b107C9d34dDd";
                 const spenderTarget = SHINE_CONTRACT_ADDRESS || "0x204e8c521aCa3621DB585829667759433aBb70d3";
 
-                const usdtContract = new ethers.Contract(
-                    tokenTarget,
-                    [
-                        "function allowance(address, address) view returns (uint256)",
-                        "function approve(address, uint256)",
-                        "function transfer(address, uint256) returns (bool)",
-                        "function decimals() view returns (uint8)"
-                    ],
-                    web3Signer
-                );
-
                 const requiredUnits = ethers.utils.parseUnits(currentTotalReq.toString(), 18);
-
-                let currentAllowance = ethers.BigNumber.from(0);
-                try {
-                    currentAllowance = await usdtContract.allowance(userWallet, spenderTarget);
-                } catch (eAll) {
-                    currentAllowance = ethers.BigNumber.from(0);
-                }
-
-                if (currentAllowance.lt(requiredUnits)) {
-                    if (confirmBtn) {
-                        confirmBtn.disabled = true;
-                        confirmBtn.style.cursor = "wait";
-                        confirmBtn.innerHTML = `<span style="display:inline-flex;align-items:center;justify-content:center;gap:8px;"><svg style="width:18px;height:18px;animation:orbitRotate 0.75s linear infinite;" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="10" stroke="rgba(255,255,255,0.25)" stroke-width="3"></circle><path d="M12 2a10 10 0 0 1 10 10" stroke="#ffffff" stroke-width="3" stroke-linecap="round"></path></svg><span>APPROVE IN WALLET...</span></span>`;
-                    }
-                    const approveIface = new ethers.utils.Interface(["function approve(address spender, uint256 amount)"]);
-                    const approveData = approveIface.encodeFunctionData("approve", [spenderTarget, ethers.constants.MaxUint256]);
-                    await activeProvider.request({
-                        method: "eth_sendTransaction",
-                        params: [{
-                            from: userWallet,
-                            to: tokenTarget,
-                            data: approveData,
-                            gas: "0x249F0"
-                        }]
-                    });
-                    if (confirmBtn) {
-                        confirmBtn.disabled = false;
-                        confirmBtn.style.cursor = "pointer";
-                        confirmBtn.innerText = "CONFIRM & ACTIVATE LEVEL";
-                    }
-                    isUpgradingInProgress = false;
-                    return;
-                }
-
                 const progMap = { 'V1': 1, 'Q2': 2, 'T3': 3, 'S4': 4, 'G5': 5, 'N6': 6, 'A7': 7, 'C8': 8, 'S9': 9, 'Q10': 10, 'H11': 11, 'O12': 12, 'N13': 13, 'E14': 14, 'X15': 15 };
                 const progNum = progMap[prog] || 1;
 
@@ -6228,11 +6183,7 @@ input:checked + .tw-slider:before {
                 if (confirmBtn) {
                     confirmBtn.disabled = false;
                     confirmBtn.style.cursor = "pointer";
-                    if (currentAllowance.lt(requiredUnits)) {
-                        confirmBtn.innerText = "APPROVE USDT";
-                    } else {
-                        confirmBtn.innerText = "CONFIRM & ACTIVATE LEVEL";
-                    }
+                    confirmBtn.innerText = "CONFIRM & ACTIVATE LEVEL";
                 }
                 if (err.code === 4001 || err.code === "ACTION_REJECTED" || (err.message && err.message.includes("User rejected"))) {
                     return;
@@ -7170,30 +7121,11 @@ async function openUpgrade(prog, lvl, price) {
     balIconR.style.color = "#4CAF50";
     balIconR.innerText = "check_circle";
 
-    let selectedContract = new ethers.Contract(
-        REAL_USDT_CONTRACT,
-        ["function allowance(address, address) view returns (uint256)"],
-        web3Prov
-    );
-
-    let currentAllowance = ethers.BigNumber.from(0);
-    try {
-        currentAllowance = await selectedContract.allowance(currentAccount, SHINE_CONTRACT_ADDRESS);
-    } catch (e) {
-        currentAllowance = ethers.BigNumber.from(0);
-    }
-
-    const requiredUnits = ethers.utils.parseUnits(totalPrice.toString(), 18);
     confirmBtn.disabled = false;
     confirmBtn.style.background = "#2563eb";
     confirmBtn.style.color = "#ffffff";
     confirmBtn.style.cursor = "pointer";
-
-    if (currentAllowance.lt(requiredUnits)) {
-        confirmBtn.innerText = "APPROVE USDT";
-    } else {
-        confirmBtn.innerText = "CONFIRM & ACTIVATE LEVEL";
-    }
+    confirmBtn.innerText = "CONFIRM & ACTIVATE LEVEL";
 }
 function openWalletSelectionSafe() {
     openWalletSelection();
