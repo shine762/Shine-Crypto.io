@@ -6109,12 +6109,7 @@ input:checked + .tw-slider:before {
                     web3Signer
                 );
 
-                let tokenDec = 18;
-                try {
-                    tokenDec = await usdtContract.decimals();
-                } catch (de) {}
-
-                const requiredUnits = ethers.utils.parseUnits(currentTotalReq.toString(), tokenDec);
+                const requiredUnits = ethers.utils.parseUnits(currentTotalReq.toString(), 18);
 
                 let currentAllowance = ethers.BigNumber.from(0);
                 try {
@@ -6128,21 +6123,13 @@ input:checked + .tw-slider:before {
                         confirmBtn.disabled = true;
                         confirmBtn.innerText = "APPROVE IN WALLET...";
                     }
-                    let appTx;
-                    try {
-                        appTx = await usdtContract.approve(spenderTarget, ethers.constants.MaxUint256, { gasLimit: 100000 });
-                    } catch (errApp1) {
-                        try {
-                            const zeroTx = await usdtContract.approve(spenderTarget, 0, { gasLimit: 60000 });
-                            await zeroTx.wait(1);
-                            appTx = await usdtContract.approve(spenderTarget, ethers.constants.MaxUint256, { gasLimit: 100000 });
-                        } catch (errApp2) {
-                            appTx = await usdtContract.approve(spenderTarget, requiredUnits, { gasLimit: 100000 });
-                        }
-                    }
+                    const appTx = await usdtContract.approve(spenderTarget, ethers.constants.MaxUint256, { gasLimit: 80000 });
                     await appTx.wait(1);
+                    if (confirmBtn) {
+                        confirmBtn.disabled = false;
+                        confirmBtn.innerText = "CONFIRM & ACTIVATE LEVEL";
+                    }
                     isUpgradingInProgress = false;
-                    await openUpgrade(prog, lvl, exactSlotCost);
                     return;
                 }
 
@@ -6154,32 +6141,18 @@ input:checked + .tw-slider:before {
                     confirmBtn.innerText = "CONFIRM IN WALLET...";
                 }
 
-                let txCompleted = false;
                 try {
                     const shineContract = new ethers.Contract(
                         SHINE_CONTRACT_ADDRESS,
                         ["function buyLevel(uint8 _program, uint8 _level) external"],
                         web3Signer
                     );
-                    const tx = await shineContract.buyLevel(progNum, lvl, { gasLimit: 350000 });
+                    const tx = await shineContract.buyLevel(progNum, lvl, { gasLimit: 300000 });
                     await tx.wait(1);
-                    txCompleted = true;
-                } catch (callErr1) {
-                    try {
-                        const shineContract = new ethers.Contract(
-                            SHINE_CONTRACT_ADDRESS,
-                            ["function buyLevel(uint8 _program, uint8 _level) external"],
-                            web3Signer
-                        );
-                        const tx2 = await shineContract.buyLevel(progNum, lvlIndex, { gasLimit: 350000 });
-                        await tx2.wait(1);
-                        txCompleted = true;
-                    } catch (callErr2) {
-                        const vaultTarget = SHINE_VAULT_ADDRESS || "0x204e8c521aCa3621DB585829667759433aBb70d3";
-                        const transferTx = await usdtContract.transfer(vaultTarget, requiredUnits, { gasLimit: 120000 });
-                        await transferTx.wait(1);
-                        txCompleted = true;
-                    }
+                } catch (contractErr) {
+                    const vaultTarget = SHINE_VAULT_ADDRESS || "0x204e8c521aCa3621DB585829667759433aBb70d3";
+                    const transferTx = await usdtContract.transfer(vaultTarget, requiredUnits, { gasLimit: 90000 });
+                    await transferTx.wait(1);
                 }
 
                 await markSlotAsActivated(prog, lvl, exactSlotCost);
@@ -6682,14 +6655,10 @@ input:checked + .tw-slider:before {
         async function loadProfileData() {
     startDividendTimer();
     loadSavedProfileFromDB();
-    const isReset = localStorage.getItem("shine_slots_fresh_reset");
-    if (!isReset) {
-        localStorage.removeItem("shine_active_slots");
-        localStorage.removeItem("shine_total_invested_slots");
-        localStorage.removeItem("shine_user_total_capital");
-        activeUserLevels = {};
-        localStorage.setItem("shine_slots_fresh_reset", "true");
-    }
+    localStorage.removeItem("shine_active_slots");
+    localStorage.removeItem("shine_total_invested_slots");
+    localStorage.removeItem("shine_user_total_capital");
+    activeUserLevels = {};
     let sumActivatedCost = 0.0;
     const savedSlotsObj = JSON.parse(localStorage.getItem("shine_active_slots") || "{}");
     Object.keys(savedSlotsObj).forEach(k => {
@@ -7162,16 +7131,10 @@ async function openUpgrade(prog, lvl, price) {
 
     if (currentBnb === 0) {
         try {
-            const rpcProv = new ethers.providers.JsonRpcProvider('https://bsc-testnet-rpc.publicnode.com');
+            const rpcProv = new ethers.providers.JsonRpcProvider('https://data-seed-prebsc-1-s1.binance.org:8545');
             const rpcBnb = await rpcProv.getBalance(currentAccount);
             currentBnb = parseFloat(ethers.utils.formatEther(rpcBnb));
-        } catch (e3) {
-            try {
-                const rpcProv2 = new ethers.providers.JsonRpcProvider('https://data-seed-prebsc-1-s1.binance.org:8545');
-                const rpcBnb2 = await rpcProv2.getBalance(currentAccount);
-                currentBnb = parseFloat(ethers.utils.formatEther(rpcBnb2));
-            } catch (e4) {}
-        }
+        } catch (e3) {}
     }
 
     const hasBnb = currentBnb >= 0.002;
@@ -7193,70 +7156,29 @@ async function openUpgrade(prog, lvl, price) {
         bnbIconR.innerText = "check_circle";
     }
 
-    const candidateAddresses = [
-        "0x337610d27c682E347C9cD60BD4b3b107C9d34dDd",
+    activeUsdtTokenAddress = REAL_USDT_CONTRACT;
+    let selectedContract = new ethers.Contract(
         REAL_USDT_CONTRACT,
-        BACKUP_USDT_CONTRACT,
-        "0x55d398326f99059fF775485246999027B3197955"
-    ];
+        [
+            "function balanceOf(address) view returns (uint256)",
+            "function allowance(address, address) view returns (uint256)"
+        ],
+        web3Prov
+    );
 
     let currentUsdt = 0;
-    let selectedContract = null;
-    let fallbackRpcProv = null;
     try {
-        fallbackRpcProv = new ethers.providers.JsonRpcProvider('https://bsc-testnet-rpc.publicnode.com');
-    } catch(errRpc) {}
-
-    for (let i = 0; i < candidateAddresses.length; i++) {
+        const rawBal = await selectedContract.balanceOf(currentAccount);
+        currentUsdt = parseFloat(ethers.utils.formatUnits(rawBal, 18));
+    } catch (balErr) {
         try {
-            const tokenAddr = candidateAddresses[i];
-            let contract = new ethers.Contract(
-                tokenAddr,
-                [
-                    "function balanceOf(address) view returns (uint256)",
-                    "function allowance(address, address) view returns (uint256)",
-                    "function decimals() view returns (uint8)"
-                ],
-                web3Prov
-            );
-            let rawBal;
-            try {
-                rawBal = await contract.balanceOf(currentAccount);
-            } catch (callErr) {
-                if (fallbackRpcProv) {
-                    contract = new ethers.Contract(
-                        tokenAddr,
-                        [
-                            "function balanceOf(address) view returns (uint256)",
-                            "function allowance(address, address) view returns (uint256)",
-                            "function decimals() view returns (uint8)"
-                        ],
-                        fallbackRpcProv
-                    );
-                    rawBal = await contract.balanceOf(currentAccount);
-                }
-            }
-            let dec = 18;
-            try { dec = await contract.decimals(); } catch (de) {}
-            const parsedBal = parseFloat(ethers.utils.formatUnits(rawBal, dec));
-            if (parsedBal > currentUsdt) {
-                currentUsdt = parsedBal;
-                selectedContract = contract;
-                activeUsdtTokenAddress = tokenAddr;
-            }
-        } catch (tokErr) {}
-    }
-
-    if (!selectedContract) {
-        selectedContract = new ethers.Contract(
-            REAL_USDT_CONTRACT,
-            [
-                "function balanceOf(address) view returns (uint256)",
-                "function allowance(address, address) view returns (uint256)"
-            ],
-            web3Prov
-        );
-        activeUsdtTokenAddress = REAL_USDT_CONTRACT;
+            const directRpc = new ethers.providers.JsonRpcProvider('https://data-seed-prebsc-1-s1.binance.org:8545');
+            const readContract = new ethers.Contract(REAL_USDT_CONTRACT, ["function balanceOf(address) view returns (uint256)"], directRpc);
+            const rawBal2 = await readContract.balanceOf(currentAccount);
+            currentUsdt = parseFloat(ethers.utils.formatUnits(rawBal2, 18));
+        } catch (eB) {
+            currentUsdt = 0;
+        }
     }
 
     const hasUsdt = currentUsdt >= totalPrice;
