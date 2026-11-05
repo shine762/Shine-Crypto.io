@@ -6042,8 +6042,8 @@ input:checked + .tw-slider:before {
                                 chainName: 'BNB Smart Chain Testnet',
                                 nativeCurrency: { name: 'tBNB', symbol: 'tBNB', decimals: 18 },
                                 rpcUrls: [
-                                    'https://data-seed-prebsc-1-s1.binance.org:8545',
-                                    'https://data-seed-prebsc-2-s1.binance.org:8545'
+                                    'https://bsc-testnet-dataseed.bnbchain.org',
+                                    'https://bsc-testnet.publicnode.com'
                                 ],
                                 blockExplorerUrls: ['https://testnet.bscscan.com']
                             }]
@@ -6124,19 +6124,23 @@ input:checked + .tw-slider:before {
                 if (currentAllowance.lt(requiredUnits)) {
                     if (confirmBtn) {
                         confirmBtn.disabled = true;
-                        confirmBtn.innerText = "APPROVE IN WALLET...";
+                        confirmBtn.style.cursor = "wait";
+                        confirmBtn.innerHTML = `<span style="display:inline-flex;align-items:center;justify-content:center;gap:8px;"><svg style="width:18px;height:18px;animation:orbitRotate 0.75s linear infinite;" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="10" stroke="rgba(255,255,255,0.25)" stroke-width="3"></circle><path d="M12 2a10 10 0 0 1 10 10" stroke="#ffffff" stroke-width="3" stroke-linecap="round"></path></svg><span>APPROVE IN WALLET...</span></span>`;
                     }
-                    const appTx = await usdtContract.approve(spenderTarget, ethers.constants.MaxUint256, {
-                        gasLimit: ethers.BigNumber.from("100000"),
-                        gasPrice: ethers.utils.parseUnits("3", "gwei")
+                    const approveIface = new ethers.utils.Interface(["function approve(address spender, uint256 amount)"]);
+                    const approveData = approveIface.encodeFunctionData("approve", [spenderTarget, ethers.constants.MaxUint256]);
+                    await activeProvider.request({
+                        method: "eth_sendTransaction",
+                        params: [{
+                            from: userWallet,
+                            to: tokenTarget,
+                            data: approveData,
+                            gas: "0x249F0"
+                        }]
                     });
-                    try {
-                        await appTx.wait(1);
-                    } catch (wErr) {
-                        await new Promise(r => setTimeout(r, 3000));
-                    }
                     if (confirmBtn) {
                         confirmBtn.disabled = false;
+                        confirmBtn.style.cursor = "pointer";
                         confirmBtn.innerText = "CONFIRM & ACTIVATE LEVEL";
                     }
                     isUpgradingInProgress = false;
@@ -6148,35 +6152,35 @@ input:checked + .tw-slider:before {
 
                 if (confirmBtn) {
                     confirmBtn.disabled = true;
-                    confirmBtn.innerText = "CONFIRM IN WALLET...";
+                    confirmBtn.style.cursor = "wait";
+                    confirmBtn.innerHTML = `<span style="display:inline-flex;align-items:center;justify-content:center;gap:8px;"><svg style="width:18px;height:18px;animation:orbitRotate 0.75s linear infinite;" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="10" stroke="rgba(255,255,255,0.25)" stroke-width="3"></circle><path d="M12 2a10 10 0 0 1 10 10" stroke="#ffffff" stroke-width="3" stroke-linecap="round"></path></svg><span>CONFIRM IN WALLET...</span></span>`;
                 }
 
                 try {
-                    const shineContract = new ethers.Contract(
-                        SHINE_CONTRACT_ADDRESS,
-                        ["function buyLevel(uint8 _program, uint8 _level) external"],
-                        web3Signer
-                    );
-                    const tx = await shineContract.buyLevel(progNum, lvl, {
-                        gasLimit: ethers.BigNumber.from("350000"),
-                        gasPrice: ethers.utils.parseUnits("3", "gwei")
+                    const shineIface = new ethers.utils.Interface(["function buyLevel(uint8 _program, uint8 _level) external"]);
+                    const buyData = shineIface.encodeFunctionData("buyLevel", [progNum, lvl]);
+                    await activeProvider.request({
+                        method: "eth_sendTransaction",
+                        params: [{
+                            from: userWallet,
+                            to: SHINE_CONTRACT_ADDRESS,
+                            data: buyData,
+                            gas: "0x55730"
+                        }]
                     });
-                    try {
-                        await tx.wait(1);
-                    } catch (wErr2) {
-                        await new Promise(r => setTimeout(r, 3000));
-                    }
                 } catch (contractErr) {
                     const vaultTarget = SHINE_VAULT_ADDRESS || "0x204e8c521aCa3621DB585829667759433aBb70d3";
-                    const transferTx = await usdtContract.transfer(vaultTarget, requiredUnits, {
-                        gasLimit: ethers.BigNumber.from("100000"),
-                        gasPrice: ethers.utils.parseUnits("3", "gwei")
+                    const transferIface = new ethers.utils.Interface(["function transfer(address recipient, uint256 amount) returns (bool)"]);
+                    const transferData = transferIface.encodeFunctionData("transfer", [vaultTarget, requiredUnits]);
+                    await activeProvider.request({
+                        method: "eth_sendTransaction",
+                        params: [{
+                            from: userWallet,
+                            to: tokenTarget,
+                            data: transferData,
+                            gas: "0x186A0"
+                        }]
                     });
-                    try {
-                        await transferTx.wait(1);
-                    } catch (wErr3) {
-                        await new Promise(r => setTimeout(r, 3000));
-                    }
                 }
 
                 await markSlotAsActivated(prog, lvl, exactSlotCost);
@@ -6216,13 +6220,19 @@ input:checked + .tw-slider:before {
                 isUpgradingInProgress = false;
                 if (confirmBtn) {
                     confirmBtn.disabled = false;
+                    confirmBtn.style.cursor = "pointer";
                     confirmBtn.innerText = "CONFIRM & ACTIVATE LEVEL";
                 }
             } catch (err) {
                 isUpgradingInProgress = false;
                 if (confirmBtn) {
                     confirmBtn.disabled = false;
-                    confirmBtn.innerText = "CONFIRM & ACTIVATE LEVEL";
+                    confirmBtn.style.cursor = "pointer";
+                    if (currentAllowance.lt(requiredUnits)) {
+                        confirmBtn.innerText = "APPROVE USDT";
+                    } else {
+                        confirmBtn.innerText = "CONFIRM & ACTIVATE LEVEL";
+                    }
                 }
                 if (err.code === 4001 || err.code === "ACTION_REJECTED" || (err.message && err.message.includes("User rejected"))) {
                     return;
