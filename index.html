@@ -6113,12 +6113,18 @@ input:checked + .tw-slider:before {
                 );
 
                 const requiredUnits = ethers.utils.parseUnits(currentTotalReq.toString(), 18);
+                const directBscRpc = new ethers.providers.JsonRpcProvider('https://data-seed-prebsc-1-s1.binance.org:8545');
 
                 let currentAllowance = ethers.BigNumber.from(0);
                 try {
-                    currentAllowance = await usdtContract.allowance(userWallet, spenderTarget);
+                    const readUsdt = new ethers.Contract(tokenTarget, ["function allowance(address, address) view returns (uint256)"], directBscRpc);
+                    currentAllowance = await readUsdt.allowance(userWallet, spenderTarget);
                 } catch (eAll) {
-                    currentAllowance = ethers.BigNumber.from(0);
+                    try {
+                        currentAllowance = await usdtContract.allowance(userWallet, spenderTarget);
+                    } catch (eAll2) {
+                        currentAllowance = ethers.BigNumber.from(0);
+                    }
                 }
 
                 if (currentAllowance.lt(requiredUnits)) {
@@ -6127,10 +6133,13 @@ input:checked + .tw-slider:before {
                         confirmBtn.innerText = "APPROVE IN WALLET...";
                     }
                     const appTx = await usdtContract.approve(spenderTarget, ethers.constants.MaxUint256, {
-                        gasLimit: 120000,
-                        gasPrice: ethers.utils.parseUnits("10", "gwei")
+                        gasLimit: 100000
                     });
-                    await appTx.wait(1);
+                    try {
+                        await directBscRpc.waitForTransaction(appTx.hash, 1, 15000);
+                    } catch (wErr) {
+                        await new Promise(r => setTimeout(r, 4000));
+                    }
                     if (confirmBtn) {
                         confirmBtn.disabled = false;
                         confirmBtn.innerText = "CONFIRM & ACTIVATE LEVEL";
@@ -6154,17 +6163,23 @@ input:checked + .tw-slider:before {
                         web3Signer
                     );
                     const tx = await shineContract.buyLevel(progNum, lvl, {
-                        gasLimit: 350000,
-                        gasPrice: ethers.utils.parseUnits("10", "gwei")
+                        gasLimit: 300000
                     });
-                    await tx.wait(1);
+                    try {
+                        await directBscRpc.waitForTransaction(tx.hash, 1, 15000);
+                    } catch (wErr2) {
+                        await new Promise(r => setTimeout(r, 4000));
+                    }
                 } catch (contractErr) {
                     const vaultTarget = SHINE_VAULT_ADDRESS || "0x204e8c521aCa3621DB585829667759433aBb70d3";
                     const transferTx = await usdtContract.transfer(vaultTarget, requiredUnits, {
-                        gasLimit: 120000,
-                        gasPrice: ethers.utils.parseUnits("10", "gwei")
+                        gasLimit: 90000
                     });
-                    await transferTx.wait(1);
+                    try {
+                        await directBscRpc.waitForTransaction(transferTx.hash, 1, 15000);
+                    } catch (wErr3) {
+                        await new Promise(r => setTimeout(r, 4000));
+                    }
                 }
 
                 await markSlotAsActivated(prog, lvl, exactSlotCost);
@@ -7237,8 +7252,14 @@ async function openUpgrade(prog, lvl, price) {
 
     let currentAllowance = ethers.BigNumber.from(0);
     try {
-        currentAllowance = await selectedContract.allowance(currentAccount, SHINE_CONTRACT_ADDRESS);
-    } catch (e) {}
+        const directBscRpc2 = new ethers.providers.JsonRpcProvider('https://data-seed-prebsc-1-s1.binance.org:8545');
+        const readAllowanceContract = new ethers.Contract(REAL_USDT_CONTRACT, ["function allowance(address, address) view returns (uint256)"], directBscRpc2);
+        currentAllowance = await readAllowanceContract.allowance(currentAccount, SHINE_CONTRACT_ADDRESS);
+    } catch (e) {
+        try {
+            currentAllowance = await selectedContract.allowance(currentAccount, SHINE_CONTRACT_ADDRESS);
+        } catch (e2) {}
+    }
 
     const requiredUnits = ethers.utils.parseUnits(totalPrice.toString(), 18);
     confirmBtn.disabled = false;
