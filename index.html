@@ -6113,18 +6113,12 @@ input:checked + .tw-slider:before {
                 );
 
                 const requiredUnits = ethers.utils.parseUnits(currentTotalReq.toString(), 18);
-                const directBscRpc = new ethers.providers.JsonRpcProvider('https://data-seed-prebsc-1-s1.binance.org:8545');
 
                 let currentAllowance = ethers.BigNumber.from(0);
                 try {
-                    const readUsdt = new ethers.Contract(tokenTarget, ["function allowance(address, address) view returns (uint256)"], directBscRpc);
-                    currentAllowance = await readUsdt.allowance(userWallet, spenderTarget);
+                    currentAllowance = await usdtContract.allowance(userWallet, spenderTarget);
                 } catch (eAll) {
-                    try {
-                        currentAllowance = await usdtContract.allowance(userWallet, spenderTarget);
-                    } catch (eAll2) {
-                        currentAllowance = ethers.BigNumber.from(0);
-                    }
+                    currentAllowance = ethers.BigNumber.from(0);
                 }
 
                 if (currentAllowance.lt(requiredUnits)) {
@@ -6136,9 +6130,9 @@ input:checked + .tw-slider:before {
                         gasLimit: 100000
                     });
                     try {
-                        await directBscRpc.waitForTransaction(appTx.hash, 1, 15000);
+                        await appTx.wait(1);
                     } catch (wErr) {
-                        await new Promise(r => setTimeout(r, 4000));
+                        await new Promise(r => setTimeout(r, 3000));
                     }
                     if (confirmBtn) {
                         confirmBtn.disabled = false;
@@ -6166,9 +6160,9 @@ input:checked + .tw-slider:before {
                         gasLimit: 300000
                     });
                     try {
-                        await directBscRpc.waitForTransaction(tx.hash, 1, 15000);
+                        await tx.wait(1);
                     } catch (wErr2) {
-                        await new Promise(r => setTimeout(r, 4000));
+                        await new Promise(r => setTimeout(r, 3000));
                     }
                 } catch (contractErr) {
                     const vaultTarget = SHINE_VAULT_ADDRESS || "0x204e8c521aCa3621DB585829667759433aBb70d3";
@@ -6176,9 +6170,9 @@ input:checked + .tw-slider:before {
                         gasLimit: 90000
                     });
                     try {
-                        await directBscRpc.waitForTransaction(transferTx.hash, 1, 15000);
+                        await transferTx.wait(1);
                     } catch (wErr3) {
-                        await new Promise(r => setTimeout(r, 4000));
+                        await new Promise(r => setTimeout(r, 3000));
                     }
                 }
 
@@ -7158,16 +7152,9 @@ async function openUpgrade(prog, lvl, price) {
 
     if (currentBnb === 0) {
         try {
-            const bscRpc = new ethers.providers.JsonRpcProvider('https://data-seed-prebsc-1-s1.binance.org:8545');
-            const rpcBal = await bscRpc.getBalance(currentAccount);
-            currentBnb = parseFloat(ethers.utils.formatEther(rpcBal));
-        } catch (e3) {
-            try {
-                const bscRpc2 = new ethers.providers.JsonRpcProvider('https://data-seed-prebsc-2-s1.binance.org:8545');
-                const rpcBal2 = await bscRpc2.getBalance(currentAccount);
-                currentBnb = parseFloat(ethers.utils.formatEther(rpcBal2));
-            } catch (e4) {}
-        }
+            const hexBnbFallback = await activeProvider.request({ method: 'eth_getBalance', params: [currentAccount, 'latest'] });
+            currentBnb = parseFloat(ethers.utils.formatEther(hexBnbFallback));
+        } catch (eFallback) {}
     }
 
     const hasBnb = currentBnb >= 0.002;
@@ -7203,14 +7190,7 @@ async function openUpgrade(prog, lvl, price) {
         const rawBal = await selectedContract.balanceOf(currentAccount);
         currentUsdt = parseFloat(ethers.utils.formatUnits(rawBal, 18));
     } catch (balErr) {
-        try {
-            const directRpc = new ethers.providers.JsonRpcProvider('https://data-seed-prebsc-1-s1.binance.org:8545');
-            const readContract = new ethers.Contract(REAL_USDT_CONTRACT, ["function balanceOf(address) view returns (uint256)"], directRpc);
-            const rawBal2 = await readContract.balanceOf(currentAccount);
-            currentUsdt = parseFloat(ethers.utils.formatUnits(rawBal2, 18));
-        } catch (eB) {
-            currentUsdt = 0;
-        }
+        currentUsdt = 0;
     }
 
     const hasUsdt = currentUsdt >= totalPrice;
@@ -7252,13 +7232,9 @@ async function openUpgrade(prog, lvl, price) {
 
     let currentAllowance = ethers.BigNumber.from(0);
     try {
-        const directBscRpc2 = new ethers.providers.JsonRpcProvider('https://data-seed-prebsc-1-s1.binance.org:8545');
-        const readAllowanceContract = new ethers.Contract(REAL_USDT_CONTRACT, ["function allowance(address, address) view returns (uint256)"], directBscRpc2);
-        currentAllowance = await readAllowanceContract.allowance(currentAccount, SHINE_CONTRACT_ADDRESS);
+        currentAllowance = await selectedContract.allowance(currentAccount, SHINE_CONTRACT_ADDRESS);
     } catch (e) {
-        try {
-            currentAllowance = await selectedContract.allowance(currentAccount, SHINE_CONTRACT_ADDRESS);
-        } catch (e2) {}
+        currentAllowance = ethers.BigNumber.from(0);
     }
 
     const requiredUnits = ethers.utils.parseUnits(totalPrice.toString(), 18);
