@@ -7132,13 +7132,27 @@ async function openUpgrade(prog, lvl, price) {
 
     let currentBnb = 0;
     try {
-        const hexBnb = await activeProvider.request({ method: 'eth_getBalance', params: [currentAccount, 'latest'] });
-        currentBnb = parseFloat(ethers.utils.formatEther(hexBnb));
+        const rawBnb = await web3Prov.getBalance(currentAccount);
+        currentBnb = parseFloat(ethers.utils.formatEther(rawBnb));
     } catch (e) {
         try {
-            const rawBnb = await web3Prov.getBalance(currentAccount);
-            currentBnb = parseFloat(ethers.utils.formatEther(rawBnb));
+            const hexBnb = await activeProvider.request({ method: 'eth_getBalance', params: [currentAccount, 'latest'] });
+            currentBnb = parseFloat(ethers.utils.formatEther(hexBnb));
         } catch (e2) {}
+    }
+
+    if (currentBnb === 0) {
+        try {
+            const bscRpc = new ethers.providers.JsonRpcProvider('https://data-seed-prebsc-1-s1.binance.org:8545');
+            const rpcBal = await bscRpc.getBalance(currentAccount);
+            currentBnb = parseFloat(ethers.utils.formatEther(rpcBal));
+        } catch (e3) {
+            try {
+                const bscRpc2 = new ethers.providers.JsonRpcProvider('https://data-seed-prebsc-2-s1.binance.org:8545');
+                const rpcBal2 = await bscRpc2.getBalance(currentAccount);
+                currentBnb = parseFloat(ethers.utils.formatEther(rpcBal2));
+            } catch (e4) {}
+        }
     }
 
     const hasBnb = currentBnb >= 0.002;
