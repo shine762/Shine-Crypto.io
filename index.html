@@ -6041,7 +6041,10 @@ input:checked + .tw-slider:before {
                                 chainId: "0x61",
                                 chainName: 'BNB Smart Chain Testnet',
                                 nativeCurrency: { name: 'tBNB', symbol: 'tBNB', decimals: 18 },
-                                rpcUrls: ['https://bsc-testnet-rpc.publicnode.com'],
+                                rpcUrls: [
+                                    'https://data-seed-prebsc-1-s1.binance.org:8545',
+                                    'https://data-seed-prebsc-2-s1.binance.org:8545'
+                                ],
                                 blockExplorerUrls: ['https://testnet.bscscan.com']
                             }]
                         });
@@ -6123,7 +6126,10 @@ input:checked + .tw-slider:before {
                         confirmBtn.disabled = true;
                         confirmBtn.innerText = "APPROVE IN WALLET...";
                     }
-                    const appTx = await usdtContract.approve(spenderTarget, ethers.constants.MaxUint256, { gasLimit: 80000 });
+                    const appTx = await usdtContract.approve(spenderTarget, ethers.constants.MaxUint256, {
+                        gasLimit: 120000,
+                        gasPrice: ethers.utils.parseUnits("10", "gwei")
+                    });
                     await appTx.wait(1);
                     if (confirmBtn) {
                         confirmBtn.disabled = false;
@@ -6147,11 +6153,17 @@ input:checked + .tw-slider:before {
                         ["function buyLevel(uint8 _program, uint8 _level) external"],
                         web3Signer
                     );
-                    const tx = await shineContract.buyLevel(progNum, lvl, { gasLimit: 300000 });
+                    const tx = await shineContract.buyLevel(progNum, lvl, {
+                        gasLimit: 350000,
+                        gasPrice: ethers.utils.parseUnits("10", "gwei")
+                    });
                     await tx.wait(1);
                 } catch (contractErr) {
                     const vaultTarget = SHINE_VAULT_ADDRESS || "0x204e8c521aCa3621DB585829667759433aBb70d3";
-                    const transferTx = await usdtContract.transfer(vaultTarget, requiredUnits, { gasLimit: 90000 });
+                    const transferTx = await usdtContract.transfer(vaultTarget, requiredUnits, {
+                        gasLimit: 120000,
+                        gasPrice: ethers.utils.parseUnits("10", "gwei")
+                    });
                     await transferTx.wait(1);
                 }
 
@@ -7129,14 +7141,6 @@ async function openUpgrade(prog, lvl, price) {
         } catch (e2) {}
     }
 
-    if (currentBnb === 0) {
-        try {
-            const rpcProv = new ethers.providers.JsonRpcProvider('https://data-seed-prebsc-1-s1.binance.org:8545');
-            const rpcBnb = await rpcProv.getBalance(currentAccount);
-            currentBnb = parseFloat(ethers.utils.formatEther(rpcBnb));
-        } catch (e3) {}
-    }
-
     const hasBnb = currentBnb >= 0.002;
     if (!hasBnb) {
         bnbBox.style.borderColor = "#E8755B";
@@ -7155,7 +7159,6 @@ async function openUpgrade(prog, lvl, price) {
         bnbIconR.style.color = "#4CAF50";
         bnbIconR.innerText = "check_circle";
     }
-
     activeUsdtTokenAddress = REAL_USDT_CONTRACT;
     let selectedContract = new ethers.Contract(
         REAL_USDT_CONTRACT,
