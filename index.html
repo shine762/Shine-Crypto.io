@@ -5936,7 +5936,8 @@ input:checked + .tw-slider:before {
             "function isUserLevelActive(address _user, uint8 _program, uint8 _level) view returns (bool)",
             "function rootOwner() view returns (address)",
             "function getLevelCost(uint8 _program, uint8 _level) view returns (uint256)",
-            "function getServiceFee(uint8 _program) view returns (uint256)"
+            "function getServiceFee(uint8 _program) view returns (uint256)",
+            "function idToAddress(uint256) view returns (address)"
         ];
         const ERC20_ABI = [
             "function balanceOf(address account) view returns (uint256)",
@@ -6060,8 +6061,8 @@ input:checked + .tw-slider:before {
 
             const prog = window.currentSelectedProg || 'V1';
             const lvl = Number(window.currentSelectedLvl || 1);
-            const lvlIndex = lvl - 1;
-            const exactSlotCost = progPrices[prog][lvlIndex];
+            const contractLvl = lvl - 1;
+            const exactSlotCost = progPrices[prog][contractLvl];
             const serviceFee = progFees[prog] || 1;
             const currentTotalReq = exactSlotCost + serviceFee;
 
@@ -6098,8 +6099,8 @@ input:checked + .tw-slider:before {
             try {
                 const web3Prov = new ethers.providers.Web3Provider(activeProvider);
                 const web3Signer = web3Prov.getSigner();
-                const tokenTarget = activeUsdtTokenAddress || "0x337610d27c682E347C9cD60BD4b3b107C9d34dDd";
-                const spenderTarget = SHINE_CONTRACT_ADDRESS || "0x204e8c521aCa3621DB585829667759433aBb70d3";
+                const shineContract = new ethers.Contract(SHINE_CONTRACT_ADDRESS, SHINE_ABI, web3Signer);
+                const usdtContract = new ethers.Contract(activeUsdtTokenAddress, ERC20_ABI, web3Signer);
 
                 const requiredUnits = ethers.utils.parseUnits(currentTotalReq.toString(), 18);
                 const progMap = { 'V1': 1, 'Q2': 2, 'T3': 3, 'S4': 4, 'G5': 5, 'N6': 6, 'A7': 7, 'C8': 8, 'S9': 9, 'Q10': 10, 'H11': 11, 'O12': 12, 'N13': 13, 'E14': 14, 'X15': 15 };
@@ -6108,37 +6109,46 @@ input:checked + .tw-slider:before {
                 if (confirmBtn) {
                     confirmBtn.disabled = true;
                     confirmBtn.style.cursor = "wait";
-                    confirmBtn.innerHTML = `<span style="display:inline-flex;align-items:center;justify-content:center;gap:8px;"><svg style="width:18px;height:18px;animation:orbitRotate 0.75s linear infinite;" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="10" stroke="rgba(255,255,255,0.25)" stroke-width="3"></circle><path d="M12 2a10 10 0 0 1 10 10" stroke="#ffffff" stroke-width="3" stroke-linecap="round"></path></svg><span>CONFIRM IN WALLET...</span></span>`;
+                    confirmBtn.innerHTML = `<span>PROCESSING WALLET...</span>`;
                 }
 
-                try {
-                    const shineIface = new ethers.utils.Interface(["function buyLevel(uint8 _program, uint8 _level) external"]);
-                    const buyData = shineIface.encodeFunctionData("buyLevel", [progNum, lvl]);
-                    await activeProvider.request({
-                        method: "eth_sendTransaction",
-                        params: [{
-                            from: userWallet,
-                            to: SHINE_CONTRACT_ADDRESS,
-                            data: buyData,
-                            gas: "0x55730"
-                        }]
-                    });
-                } catch (contractErr) {
-                    const vaultTarget = SHINE_VAULT_ADDRESS || "0x204e8c521aCa3621DB585829667759433aBb70d3";
-                    const transferIface = new ethers.utils.Interface(["function transfer(address recipient, uint256 amount) returns (bool)"]);
-                    const transferData = transferIface.encodeFunctionData("transfer", [vaultTarget, requiredUnits]);
-                    await activeProvider.request({
-                        method: "eth_sendTransaction",
-                        params: [{
-                            from: userWallet,
-                            to: tokenTarget,
-                            data: transferData,
-                            gas: "0x186A0"
-                        }]
-                    });
+                const userStruct = await shineContract.users(userWallet);
+                const isRegistered = userStruct.isRegistered;
+
+                const currentAllowance = await usdtContract.allowance(userWallet, SHINE_CONTRACT_ADDRESS);
+                if (currentAllowance.lt(requiredUnits)) {
+                    if (confirmBtn) confirmBtn.innerHTML = `<span>APPROVE USDT IN WALLET...</span>`;
+                    const approveTx = await usdtContract.approve(SHINE_CONTRACT_ADDRESS, ethers.constants.MaxUint256);
+                    await approveTx.wait();
                 }
 
-                await markSlotAsActivated(prog, lvl, exactSlotCost);
+                if (!isRegistered) {
+                    let uplineAddr = ethers.constants.AddressZero;
+                    const urlParams = new URLSearchParams(window.location.search);
+                    const refParam = urlParams.get('ref');
+                    if (refParam) {
+                        if (ethers.utils.isAddress(refParam)) {
+                            uplineAddr = refParam;
+                        } else if (!isNaN(refParam) && Number(refParam) > 0) {
+                            try {
+                                uplineAddr = await shineContract.idToAddress(Number(refParam));
+                            } catch(e) {}
+                        }
+                    }
+                    if (!uplineAddr || uplineAddr === ethers.constants.AddressZero) {
+                        uplineAddr = await shineContract.rootOwner();
+                    }
+
+                    if (confirmBtn) confirmBtn.innerHTML = `<span>CONFIRM REGISTRATION IN WALLET...</span>`;
+                    const regTx = await shineContract.register(uplineAddr);
+                    await regTx.wait();
+                    await markSlotAsActivated('V1', 1, 10);
+                } else {
+                    if (confirmBtn) confirmBtn.innerHTML = `<span>CONFIRM UPGRADE IN WALLET...</span>`;
+                    const buyTx = await shineContract.buyLevel(progNum, contractLvl);
+                    await buyTx.wait();
+                    await markSlotAsActivated(prog, lvl, exactSlotCost);
+                }
 
                 let sumActivatedCost = 0.0;
                 const savedSlotsObj = JSON.parse(localStorage.getItem("shine_active_slots") || "{}");
@@ -6170,6 +6180,9 @@ input:checked + .tw-slider:before {
                         totalCapital: currentTotalUserCapital
                     }));
                 }
+
+                await syncOnChainUserData();
+                await syncOnChainActiveLevels();
 
                 closeUpgrade();
                 isUpgradingInProgress = false;
@@ -6233,55 +6246,36 @@ input:checked + .tw-slider:before {
         async function syncOnChainActiveLevels() {
             if (!userWallet) return;
             try {
-                if (window.supabase) {
-                    const client = window.supabase.createClient(MAIN_SUPABASE_URL, MAIN_SUPABASE_KEY);
-                    const { data, error } = await client.from('user_activated_slots').select('*').eq('wallet_address', userWallet.toLowerCase());
-                    if (!error && Array.isArray(data) && data.length > 0) {
-                        data.forEach(item => {
-                            const pName = item.program;
-                            const lvl = parseInt(item.level);
-                            const cost = parseFloat(item.cost);
-                            const slotKey = `${pName}_${lvl}`;
-                            activeUserLevels[slotKey] = true;
-                            const targetSlots = document.querySelectorAll(`#slots-${pName} .slot-box`);
-                            if (targetSlots && targetSlots[lvl - 1]) {
-                                const targetBox = targetSlots[lvl - 1];
-                                targetBox.style.background = "#2563eb";
-                                targetBox.style.borderColor = "#00e5ff";
-                                targetBox.style.color = "#ffffff";
-                                targetBox.innerHTML = `
-                                    <div style="font-size:12px; color:#ffffff; font-weight:900;">${cost}</div>
-                                    <div style="font-size:9px; color:#00e5ff; font-weight:800;">ACTIVE</div>
-                                `;
-                            }
-                        });
-                        localStorage.setItem("shine_active_slots", JSON.stringify(activeUserLevels));
-                    }
-                }
-
-                const savedSlots = localStorage.getItem("shine_active_slots");
-                if (savedSlots) {
-                    activeUserLevels = JSON.parse(savedSlots);
-                    Object.keys(activeUserLevels).forEach(k => {
-                        const parts = k.split('_');
-                        if (parts.length === 2) {
-                            const pName = parts[0];
-                            const lvl = parseInt(parts[1]);
-                            if (progPrices[pName] && progPrices[pName][lvl - 1]) {
-                                const targetSlots = document.querySelectorAll(`#slots-${pName} .slot-box`);
-                                if (targetSlots && targetSlots[lvl - 1]) {
-                                    const targetBox = targetSlots[lvl - 1];
-                                    targetBox.style.background = "#2563eb";
-                                    targetBox.style.borderColor = "#00e5ff";
-                                    targetBox.style.color = "#ffffff";
-                                    targetBox.innerHTML = `
-                                        <div style="font-size:12px; color:#ffffff; font-weight:900;">${progPrices[pName][lvl - 1]}</div>
-                                        <div style="font-size:9px; color:#00e5ff; font-weight:800;">ACTIVE</div>
-                                    `;
+                let activeProvider = (window.trustwallet && window.trustwallet.ethereum) || window.ethereum;
+                if (activeProvider) {
+                    const web3Prov = new ethers.providers.Web3Provider(activeProvider);
+                    const shineContract = new ethers.Contract(SHINE_CONTRACT_ADDRESS, SHINE_ABI, web3Prov);
+                    const userStruct = await shineContract.users(userWallet);
+                    if (userStruct.isRegistered) {
+                        const progList = ['V1', 'Q2', 'T3', 'S4', 'G5', 'N6', 'A7', 'C8', 'S9', 'Q10', 'H11', 'O12', 'N13', 'E14', 'X15'];
+                        for (let pIdx = 0; pIdx < progList.length; pIdx++) {
+                            const pName = progList[pIdx];
+                            const pNum = pIdx + 1;
+                            for (let l = 0; l < 12; l++) {
+                                const isActive = await shineContract.isUserLevelActive(userWallet, pNum, l);
+                                if (isActive) {
+                                    const slotKey = `${pName}_${l + 1}`;
+                                    activeUserLevels[slotKey] = true;
+                                    const targetSlots = document.querySelectorAll(`#slots-${pName} .slot-box`);
+                                    if (targetSlots && targetSlots[l]) {
+                                        targetSlots[l].style.background = "#2563eb";
+                                        targetSlots[l].style.borderColor = "#00e5ff";
+                                        targetSlots[l].style.color = "#ffffff";
+                                        targetSlots[l].innerHTML = `
+                                            <div style="font-size:12px; color:#ffffff; font-weight:900;">${progPrices[pName][l]}</div>
+                                            <div style="font-size:9px; color:#00e5ff; font-weight:800;">ACTIVE</div>
+                                        `;
+                                    }
                                 }
                             }
                         }
-                    });
+                        localStorage.setItem("shine_active_slots", JSON.stringify(activeUserLevels));
+                    }
                 }
             } catch (e) {}
         }
@@ -6932,6 +6926,7 @@ function toggleProfileEdit() {
 async function openUpgrade(prog, lvl, price) {
     window.currentSelectedProg = prog;
     window.currentSelectedLvl = lvl;
+    const contractLvl = lvl - 1;
     const exactSlotPrice = Number(price);
     const serviceFee = progFees[prog] || 1;
     const totalPrice = exactSlotPrice + serviceFee;
@@ -7103,29 +7098,75 @@ async function openUpgrade(prog, lvl, price) {
     netIconR.style.color = "#4CAF50";
     netIconR.innerText = "check_circle";
 
-    bnbBox.style.borderColor = "#4CAF50";
-    bnbIconL.style.color = "#4CAF50";
-    bnbIconL.innerText = "done";
-    bnbText.style.color = "#4CAF50";
-    bnbText.innerText = "Gas fee check BNB";
-    bnbIconR.style.color = "#4CAF50";
-    bnbIconR.innerText = "check_circle";
+    const web3Signer = web3Prov.getSigner();
+    const shineContract = new ethers.Contract(SHINE_CONTRACT_ADDRESS, SHINE_ABI, web3Signer);
+    const usdtContract = new ethers.Contract(activeUsdtTokenAddress, ERC20_ABI, web3Signer);
 
-    activeUsdtTokenAddress = REAL_USDT_CONTRACT;
+    let isRegistered = false;
+    try {
+        const uStruct = await shineContract.users(currentAccount);
+        isRegistered = uStruct.isRegistered;
+    } catch(e) {}
 
-    balBox.style.borderColor = "#4CAF50";
-    balIconL.style.color = "#4CAF50";
-    balIconL.innerText = "done";
-    balText.style.color = "#4CAF50";
-    balText.innerText = `Balance check ${totalPrice} USDT`;
-    balIconR.style.color = "#4CAF50";
-    balIconR.innerText = "check_circle";
+    let bnbBal = ethers.BigNumber.from(0);
+    let usdtBal = ethers.BigNumber.from(0);
+    try {
+        bnbBal = await web3Prov.getBalance(currentAccount);
+        usdtBal = await usdtContract.balanceOf(currentAccount);
+    } catch(e) {}
+
+    const reqBnb = ethers.utils.parseEther("0.001");
+    if (bnbBal.lt(reqBnb)) {
+        bnbBox.style.borderColor = "#E8755B";
+        bnbIconL.style.color = "#E8755B";
+        bnbIconL.innerText = "priority_high";
+        bnbText.style.color = "#E8755B";
+        bnbText.innerText = "Insufficient BNB for Gas";
+        bnbIconR.style.color = "#E8755B";
+        bnbIconR.innerText = "error_outline";
+        confirmBtn.innerText = "INSUFFICIENT BNB GAS";
+        return;
+    } else {
+        bnbBox.style.borderColor = "#4CAF50";
+        bnbIconL.style.color = "#4CAF50";
+        bnbIconL.innerText = "done";
+        bnbText.style.color = "#4CAF50";
+        bnbText.innerText = "Gas fee check BNB";
+        bnbIconR.style.color = "#4CAF50";
+        bnbIconR.innerText = "check_circle";
+    }
+
+    const reqUsdt = ethers.utils.parseUnits(totalPrice.toString(), 18);
+    if (usdtBal.lt(reqUsdt)) {
+        balBox.style.borderColor = "#E8755B";
+        balIconL.style.color = "#E8755B";
+        balIconL.innerText = "priority_high";
+        balText.style.color = "#E8755B";
+        balText.innerText = `Insufficient USDT (${ethers.utils.formatUnits(usdtBal, 18).substring(0, 6)} Available)`;
+        balIconR.style.color = "#E8755B";
+        balIconR.innerText = "error_outline";
+        confirmBtn.innerText = "INSUFFICIENT USDT BALANCE";
+        return;
+    } else {
+        balBox.style.borderColor = "#4CAF50";
+        balIconL.style.color = "#4CAF50";
+        balIconL.innerText = "done";
+        balText.style.color = "#4CAF50";
+        balText.innerText = `Balance check ${totalPrice} USDT`;
+        balIconR.style.color = "#4CAF50";
+        balIconR.innerText = "check_circle";
+    }
 
     confirmBtn.disabled = false;
     confirmBtn.style.background = "#2563eb";
     confirmBtn.style.color = "#ffffff";
     confirmBtn.style.cursor = "pointer";
-    confirmBtn.innerText = "CONFIRM & ACTIVATE LEVEL";
+
+    if (!isRegistered) {
+        confirmBtn.innerText = "CONFIRM & REGISTER (11 USDT)";
+    } else {
+        confirmBtn.innerText = "CONFIRM & ACTIVATE LEVEL";
+    }
 }
 function openWalletSelectionSafe() {
     openWalletSelection();
