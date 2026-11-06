@@ -2595,88 +2595,124 @@ input:checked + .tw-slider:before {
     </div>
 </div>
 
-<div id="connectWalletModal" class="connect-overlay">
-    <div class="connect-header">
-        <div class="landing-logo"><svg width="24" height="24" viewBox="0 0 24 24" fill="white"><path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"/></svg></div>
-        <button class="connect-header-btn" onclick="openWalletSelection()">Connect wallet</button>
+<div id="connectWalletModal" class="connect-overlay" style="background:#080b12; overflow-y:auto;">
+    <div style="display:flex; justify-content:space-between; align-items:center; padding:16px 20px; background:#1e2430; border-bottom:1px solid #232b3b;">
+        <div class="landing-logo"><svg width="24" height="24" viewBox="0 0 24 24" fill="white"><path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"/></svg><span style="font-size:16px; font-weight:800; margin-left:8px;">SHINE USDT</span></div>
+        <div id="gateWalletPill" onclick="openWalletSelection()" style="background:rgba(255,255,255,0.08); border:1px solid rgba(255,255,255,0.15); color:#fff; padding:6px 14px; border-radius:20px; font-size:12px; font-family:monospace; font-weight:bold; cursor:pointer;">0xConnect</div>
     </div>
-    <div class="connect-main">
-        <h1 class="connect-title">Welcome to SHINE USDT</h1>
-        <p class="connect-subtitle">Connect your wallet to start working. First time here? Watch a tutorial to learn more</p>
-        <div class="connect-graphic" style="position: relative; height: 210px; margin-bottom: 25px; display: flex; align-items: center; justify-content: center;">
-            <svg viewBox="0 0 320 220" style="width: 100%; max-width: 320px; height: 210px; overflow: visible;">
-                <defs>
-                    <radialGradient id="walletLeatherGrad" cx="40%" cy="30%" r="80%">
-                        <stop offset="0%" stop-color="#3d2314"/>
-                        <stop offset="60%" stop-color="#24140b"/>
-                        <stop offset="100%" stop-color="#140a05"/>
-                    </radialGradient>
-                    <linearGradient id="walletFlapGrad" x1="0%" y1="0%" x2="0%" y2="100%">
-                        <stop offset="0%" stop-color="#5a341e"/>
-                        <stop offset="70%" stop-color="#381d0f"/>
-                        <stop offset="100%" stop-color="#221008"/>
-                    </linearGradient>
-                    <linearGradient id="walletGoldClasp" x1="0%" y1="0%" x2="100%" y2="100%">
-                        <stop offset="0%" stop-color="#ffe270"/>
-                        <stop offset="50%" stop-color="#d4af37"/>
-                        <stop offset="100%" stop-color="#997a15"/>
-                    </linearGradient>
-                    <radialGradient id="usdtGlowGrad" cx="50%" cy="50%" r="60%">
-                        <stop offset="0%" stop-color="rgba(38, 161, 123, 0.45)"/>
-                        <stop offset="100%" stop-color="rgba(38, 161, 123, 0)"/>
-                    </radialGradient>
-                    <filter id="shadowDepth" x="-20%" y="-20%" width="140%" height="140%">
-                        <feDropShadow dx="0" dy="12" stdDeviation="14" flood-color="#000000" flood-opacity="0.6"/>
-                    </filter>
-                    <filter id="coinGlow" x="-30%" y="-30%" width="160%" height="160%">
-                        <feDropShadow dx="0" dy="4" stdDeviation="6" flood-color="#00e5a3" flood-opacity="0.5"/>
-                    </filter>
-                </defs>
 
-                <ellipse cx="160" cy="205" rx="110" ry="14" fill="#000000" opacity="0.45"/>
-                <circle cx="160" cy="100" r="100" fill="url(#usdtGlowGrad)"/>
-
-                <g transform="translate(68, 18) rotate(-18) scale(0.68)" filter="url(#coinGlow)">
-                    <circle cx="50" cy="50" r="48" fill="#26A17B"/>
-                    <circle cx="50" cy="50" r="45" fill="none" stroke="#5eead4" stroke-width="2" opacity="0.6"/>
-                    <path d="M50 42.5 C34 42.5 22 45.2 22 48.5 C22 51.8 34 54.5 50 54.5 C66 54.5 78 51.8 78 48.5 C78 45.2 66 42.5 50 42.5 Z M50 45.8 C62.5 45.8 71.5 47.7 71.5 48.5 C71.5 49.3 62.5 51.2 50 51.2 C37.5 51.2 28.5 49.3 28.5 48.5 C28.5 47.7 37.5 45.8 50 45.8 Z" fill="#FFFFFF"/>
-                    <path d="M29 27 H71 V36 H56 V73 H44 V36 H29 Z" fill="#FFFFFF"/>
-                </g>
-
-                <g transform="translate(195, 20) rotate(16) scale(0.72)" filter="url(#coinGlow)">
-                    <circle cx="50" cy="50" r="48" fill="#26A17B"/>
-                    <circle cx="50" cy="50" r="45" fill="none" stroke="#5eead4" stroke-width="2" opacity="0.6"/>
-                    <path d="M50 42.5 C34 42.5 22 45.2 22 48.5 C22 51.8 34 54.5 50 54.5 C66 54.5 78 51.8 78 48.5 C78 45.2 66 42.5 50 42.5 Z M50 45.8 C62.5 45.8 71.5 47.7 71.5 48.5 C71.5 49.3 62.5 51.2 50 51.2 C37.5 51.2 28.5 49.3 28.5 48.5 C28.5 47.7 37.5 45.8 50 45.8 Z" fill="#FFFFFF"/>
-                    <path d="M29 27 H71 V36 H56 V73 H44 V36 H29 Z" fill="#FFFFFF"/>
-                </g>
-
-                <g transform="translate(125, 0) scale(0.76)" filter="url(#coinGlow)">
-                    <circle cx="50" cy="50" r="48" fill="#26A17B"/>
-                    <circle cx="50" cy="50" r="45" fill="none" stroke="#ffffff" stroke-width="2.5" opacity="0.8"/>
-                    <path d="M50 42.5 C34 42.5 22 45.2 22 48.5 C22 51.8 34 54.5 50 54.5 C66 54.5 78 51.8 78 48.5 C78 45.2 66 42.5 50 42.5 Z M50 45.8 C62.5 45.8 71.5 47.7 71.5 48.5 C71.5 49.3 62.5 51.2 50 51.2 C37.5 51.2 28.5 49.3 28.5 48.5 C28.5 47.7 37.5 45.8 50 45.8 Z" fill="#FFFFFF"/>
-                    <path d="M29 27 H71 V36 H56 V73 H44 V36 H29 Z" fill="#FFFFFF"/>
-                </g>
-
-                <g filter="url(#shadowDepth)">
-                    <rect x="55" y="75" width="210" height="125" rx="20" fill="url(#walletLeatherGrad)" stroke="#5a341e" stroke-width="2"/>
-                    <path d="M65 92 Q160 84 255 92" stroke="#1f1008" stroke-width="6" fill="none"/>
-                    <path d="M55 75 Q160 62 265 75 L255 125 Q160 148 65 125 Z" fill="url(#walletFlapGrad)" stroke="#6d3e24" stroke-width="2"/>
-                    <path d="M68 84 Q160 74 252 84" stroke="#ffb076" stroke-width="1.2" stroke-dasharray="4 3" fill="none" opacity="0.7"/>
-                    <rect x="145" y="118" width="30" height="24" rx="6" fill="url(#walletGoldClasp)" stroke="#665008" stroke-width="1.5"/>
-                    <rect x="153" y="127" width="14" height="6" rx="2" fill="#24140b"/>
-                </g>
-            </svg>
+    <div id="gateRegisteredCard" style="display:none; background:#2563eb; padding:30px 20px; text-align:center; box-sizing:border-box;">
+        <div style="width:68px; height:68px; background:rgba(255,255,255,0.2); border-radius:50%; margin:0 auto 12px; display:flex; align-items:center; justify-content:center;">
+            <i class="material-icons" style="font-size:40px; color:#fff;">account_circle</i>
         </div>
-        <button class="connect-btn-primary" onclick="openWalletSelection()">Connect now</button>
-        <button class="connect-btn-secondary" onclick="enterDashboard()">Watch tutorial</button>
+        <h1 id="gateUserIdDisplay" style="font-size:32px; font-weight:900; margin:0 0 8px 0; color:#fff;">ID 1</h1>
+        <div id="gateMemberNotice" style="color:rgba(255,255,255,0.85); font-size:14px; margin-bottom:24px;">0x... is a member of SHINE USDT</div>
+        <button onclick="enterDashboard()" style="width:100%; background:#000000; color:#ffffff; border:none; padding:18px 0; border-radius:14px; font-size:16px; font-weight:900; cursor:pointer;">Login to your account</button>
     </div>
-    <div class="connect-bottom" style="box-sizing: border-box; width: 100%; padding: 30px 20px;">
-        <h2 class="preview-title">Account preview</h2>
-        <p class="preview-subtitle">Look up any SHINE USDT member account in preview mode. Enter ID or wallet to preview or click Demo to view a random account.</p>
-        <div class="preview-input-group" style="display: flex; gap: 10px; width: 100%; box-sizing: border-box; align-items: center;">
-            <input type="text" class="preview-input" placeholder="Example: 1" style="flex: 1; min-width: 0; box-sizing: border-box; background: #212121; border: 1px solid #333; color: white; padding: 16px; border-radius: 12px; font-size: 16px;">
-            <button class="preview-submit-btn" onclick="enterDashboard()" style="background: #2563eb; color: #ffffff; border: none; padding: 0 24px; height: 52px; border-radius: 12px; font-weight: 800; font-size: 15px; cursor: pointer; flex-shrink: 0; display: inline-flex; align-items: center; justify-content: center; text-align: center; white-space: nowrap; box-sizing: border-box;">Preview</button>
+
+    <div id="gateUnregisteredCard" style="display:none; background:#2563eb; padding:30px 20px; text-align:center; box-sizing:border-box;">
+        <h1 style="font-size:26px; font-weight:900; margin:0 0 12px 0; color:#fff;">Register in SHINE USDT</h1>
+        <div id="gateUnregDesc" style="color:rgba(255,255,255,0.9); font-size:14px; line-height:1.5; margin-bottom:24px;">Wallet is not a member of SHINE USDT. You can use this wallet to register as a new member.</div>
+        <button onclick="startForsageRegistrationFlow()" style="width:100%; background:#000000; color:#ffffff; border:none; padding:18px 0; border-radius:14px; font-size:16px; font-weight:900; cursor:pointer; margin-bottom:12px;">Join SHINE</button>
+        <button onclick="alert('Connect wallet with minimum 11 USDT and 0.001 BNB to register.')" style="width:100%; background:rgba(255,255,255,0.15); color:#ffffff; border:none; padding:14px 0; border-radius:14px; font-size:14px; font-weight:800; cursor:pointer;">Help me</button>
+    </div>
+
+    <div style="padding:28px 20px; box-sizing:border-box; background:#080b12;">
+        <h2 style="font-size:22px; font-weight:800; color:#fff; margin:0 0 8px 0;">Account preview</h2>
+        <p style="color:#718096; font-size:13px; line-height:1.5; margin:0 0 18px 0;">Look up any SHINE USDT member account in preview mode. Enter ID or USDT address to preview.</p>
+        <div style="display:flex; gap:10px; width:100%; box-sizing:border-box;">
+            <input type="text" id="gatePreviewInput" placeholder="example: 1" style="flex:1; background:#161c28; border:1px solid #232b3b; color:#fff; padding:14px; border-radius:12px; font-size:15px; outline:none;">
+            <button onclick="previewSpecificId()" style="background:#2563eb; color:#fff; border:none; padding:0 24px; border-radius:12px; font-weight:800; font-size:14px; cursor:pointer;">Preview</button>
         </div>
+    </div>
+</div>
+
+<div id="forsageInviteModal" class="connect-overlay" style="background:#0b0e17; z-index:10005; overflow-y:auto; padding:20px 16px;">
+    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:24px;">
+        <div class="landing-logo"><svg width="24" height="24" viewBox="0 0 24 24" fill="white"><path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"/></svg><span style="font-size:15px; font-weight:800; margin-left:6px;">SHINE</span></div>
+        <div id="inviteTopWallet" style="background:#161c28; border:1px solid #232b3b; color:#00e5ff; padding:6px 12px; border-radius:20px; font-size:12px; font-family:monospace; font-weight:bold;">0x...</div>
+    </div>
+    <div style="text-align:center; padding:10px 0 20px;">
+        <div id="inviteUplineAvatar" style="width:84px; height:84px; border-radius:50%; background:#1c2436; margin:0 auto 16px; background-size:cover; background-position:center; border:2px solid #2563eb;"></div>
+        <h2 id="inviteUplineText" style="color:#ffffff; font-size:22px; font-weight:900; margin:0 0 18px 0;">ID 1 invites you to SHINE USDT</h2>
+        <div style="display:grid; grid-template-columns:1fr 1fr; gap:12px; margin-bottom:24px;">
+            <div style="background:#151b26; border-radius:16px; padding:14px; text-align:left; border:1px solid #232b3b;">
+                <div style="color:#718096; font-size:11px; font-weight:bold;">Team</div>
+                <div id="inviteUplineTeam" style="color:#ffffff; font-size:20px; font-weight:900; font-family:monospace; margin-top:4px;">0</div>
+            </div>
+            <div style="background:#151b26; border-radius:16px; padding:14px; text-align:left; border:1px solid #232b3b;">
+                <div style="color:#718096; font-size:11px; font-weight:bold;">Rewards, USDT</div>
+                <div id="inviteUplineRewards" style="color:#ffffff; font-size:20px; font-weight:900; font-family:monospace; margin-top:4px;">0.00</div>
+            </div>
+        </div>
+        <button onclick="openRegistrationChecksPage()" style="width:100%; background:#2563eb; color:#ffffff; border:none; padding:18px 0; border-radius:14px; font-size:16px; font-weight:900; cursor:pointer;">Register now</button>
+    </div>
+</div>
+
+<div id="forsageChecksModal" class="connect-overlay" style="background:#080b14; z-index:10006; overflow-y:auto; padding:20px 16px;">
+    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:20px;">
+        <button onclick="document.getElementById('forsageChecksModal').classList.remove('active')" style="background:transparent; border:none; color:#fff; cursor:pointer;"><i class="material-icons">arrow_back</i></button>
+        <span style="color:#fff; font-size:16px; font-weight:800;">Registration in SHINE USDT</span>
+        <div id="checksTopWallet" style="background:#161c28; color:#fff; padding:4px 10px; border-radius:14px; font-size:11px; font-family:monospace;">0x...</div>
+    </div>
+    <div style="margin-bottom:20px;">
+        <div style="color:#718096; font-size:12px; font-weight:bold; margin-bottom:6px;">Your upline</div>
+        <input type="text" id="regChecksUplineInput" value="1" style="width:100%; background:#161c28; border:1px solid #232b3b; color:#fff; padding:14px; border-radius:12px; font-size:16px; font-weight:900; box-sizing:border-box;">
+    </div>
+    <div style="display:flex; flex-direction:column; gap:14px; background:#111622; border-radius:18px; padding:18px; margin-bottom:24px; border:1px solid #1a2233;">
+        <div style="display:flex; align-items:center; gap:10px;">
+            <i id="chkIconWallet" class="material-icons" style="color:#00e676; font-size:22px;">check_circle</i>
+            <span id="chkTextWallet" style="color:#fff; font-size:14px; font-weight:700;">Wallet: connected</span>
+        </div>
+        <div style="display:flex; align-items:center; gap:10px;">
+            <i id="chkIconNet" class="material-icons" style="color:#00e676; font-size:22px;">check_circle</i>
+            <span id="chkTextNet" style="color:#fff; font-size:14px; font-weight:700;">Network: Smart chain</span>
+        </div>
+        <div style="display:flex; align-items:center; gap:10px;">
+            <i id="chkIconReg" class="material-icons" style="color:#00e676; font-size:22px;">check_circle</i>
+            <span id="chkTextReg" style="color:#fff; font-size:14px; font-weight:700;">Registration: available</span>
+        </div>
+        <div style="display:flex; align-items:center; gap:10px;">
+            <i id="chkIconBal" class="material-icons" style="color:#00e676; font-size:22px;">check_circle</i>
+            <span id="chkTextBal" style="color:#fff; font-size:14px; font-weight:700;">Balance: min 11 USDT or 0.001 BNB</span>
+        </div>
+        <div style="display:flex; align-items:center; gap:10px;">
+            <i id="chkIconApprove" class="material-icons" style="color:#00e676; font-size:22px;">check_circle</i>
+            <span id="chkTextApprove" style="color:#fff; font-size:14px; font-weight:700;">Approve USDT: done</span>
+        </div>
+    </div>
+    <div style="display:flex; flex-direction:column; gap:10px;">
+        <button id="btnForsageApproveOnly" onclick="executeRegistrationApproveOnly()" style="display:none; width:100%; background:#2563eb; color:#ffffff; border:none; padding:18px 0; border-radius:14px; font-size:16px; font-weight:900; cursor:pointer;">Approve USDT</button>
+        <button id="btnForsageMainReg" onclick="executeRegistrationOnContract()" style="width:100%; background:#2563eb; color:#ffffff; border:none; padding:18px 0; border-radius:14px; font-size:16px; font-weight:900; cursor:pointer;">Registration</button>
+    </div>
+</div>
+
+<div id="forsageSuccessModal" class="connect-overlay" style="background:#080b14; z-index:10007; overflow-y:auto; padding:20px 16px;">
+    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:20px;">
+        <span style="color:#00e676; font-weight:900; font-size:14px; letter-spacing:0.5px;">SHINE PROTOCOL</span>
+        <div id="successTopWallet" style="background:#161c28; color:#fff; padding:4px 10px; border-radius:14px; font-size:11px; font-family:monospace;">0x...</div>
+    </div>
+    <div style="background:radial-gradient(circle at top right, #381236 0%, #151122 100%); border:1px solid rgba(228,37,125,0.3); border-radius:20px; padding:24px 20px; margin-bottom:24px;">
+        <div style="display:flex; align-items:center; gap:8px; margin-bottom:8px;">
+            <h2 style="color:#ffffff; font-size:24px; font-weight:900; margin:0;">Program V1 activated</h2>
+            <i class="material-icons" style="color:#00e676; font-size:28px;">check_circle</i>
+        </div>
+        <p style="color:#a0aec0; font-size:14px; line-height:1.4; margin:0 0 16px 0;">Congratulations, you have successfully registered in SHINE!</p>
+        <a id="successTxLink" href="#" target="_blank" style="color:#00e5ff; font-size:13px; font-weight:bold; text-decoration:none; display:inline-flex; align-items:center; gap:4px; margin-bottom:20px;">
+            <span>Blockchain transaction</span>
+            <i class="material-icons" style="font-size:16px;">open_in_new</i>
+        </a>
+        <button onclick="enterDashboard(); syncOnChainUserData();" style="width:100%; background:#ffffff; color:#000000; border:none; padding:16px 0; border-radius:12px; font-size:15px; font-weight:900; cursor:pointer; display:flex; align-items:center; justify-content:center; gap:6px;">
+            <i class="material-icons" style="font-size:20px;">account_circle</i>
+            <span>Log in to your account</span>
+        </button>
+    </div>
+    <div style="background:#111622; border-radius:20px; padding:20px; border:1px solid #1f2737;">
+        <h3 style="color:#00e5ff; font-size:20px; font-weight:900; margin:0 0 6px 0;">SHINE Q2</h3>
+        <p style="color:#718096; font-size:13px; line-height:1.4; margin:0 0 14px 0;">Activate Q2 program to open new levels with more teamwork opportunities and more spillovers!</p>
+        <div style="color:#fff; font-size:14px; font-weight:800; font-family:monospace; margin-bottom:4px;">Q2 starting level: 130 USDT</div>
+        <div style="color:#718096; font-size:12px; font-family:monospace; margin-bottom:14px;">+ network fee 0.002 BNB</div>
+        <button onclick="enterDashboard(); openPreview('Q2');" style="width:100%; background:#2563eb; color:#fff; border:none; padding:15px 0; border-radius:12px; font-size:14px; font-weight:900; cursor:pointer;">Activate Q2</button>
     </div>
 </div>
 
@@ -5869,9 +5905,8 @@ input:checked + .tw-slider:before {
                     <span class="upgrade-amount-label">Upgrade amount</span>
                     <span class="upgrade-amount-value"><span id="totalUpgradePrice">10</span> USDT <span class="upgrade-amount-bnb">(<span id="upgBnb">0.0150</span> BNB)</span></span>
                 </div>
-                <div class="service-fee-row">
-                    <span style="display: flex; align-items: center; gap: 4px;">Service fee <i class="material-icons" style="font-size: 14px;">help_outline</i></span>
-                    <span id="serviceFeeDisplay">1 USDT</span>
+                <div class="service-fee-row" style="display: none;">
+                    <span id="serviceFeeDisplay">0</span>
                 </div>
 
                 <div id="netCheckRow" style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 12px;">
@@ -5921,23 +5956,31 @@ input:checked + .tw-slider:before {
         </div>
     </div>
     <script>
-        const SHINE_CONTRACT_ADDRESS = "0xB91e5192FA8Ed72FEbd90fFd406077C9d080Cfc8";
+        const SHINE_CONTRACT_ADDRESS = "0xDA78f4F809Afa2e5c3c7aAebe8704446e1329589";
         const SHINE_VAULT_ADDRESS = "0x204e8c521aCa3621DB585829667759433aBb70d3";
-       const REAL_USDT_CONTRACT = "0x8Db81B051c65A7a7D539e896BdA7e4D792461DCF";
-        const BACKUP_USDT_CONTRACT = "0x337610d27c682E347C9cD60BD4b3b107C9d34dDd";
+        const REAL_USDT_CONTRACT = "0x8Db81B051c65A7a7D539e896BdA7e4D792461DCF";
         let activeUsdtTokenAddress = "0x8Db81B051c65A7a7D539e896BdA7e4D792461DCF";
+        let activeShineTokenAddress = "0xa0399e5D113525d2C435519050A5EFDeE93Cbd94";
         const BSC_TESTNET_CHAIN_ID = "0x61";
         const SHINE_ABI = [
             "function users(address) view returns (uint256 id, address upline, uint256 partnersCount, uint256 joinDate, bool isRegistered)",
-            "function register(address _upline) external",
-            "function buyLevel(uint8 _program, uint8 _level) external",
+            "function register(address _upline) external payable",
+            "function buyLevel(uint8 _program, uint8 _level) external payable",
             "function distributeTradingProfit(address _user, uint256 _profitAmount) external",
             "function getMatrixState(address _user, uint8 _program, uint8 _level) view returns (address currentReferrer, address[] memory referrals, uint256 reinvestCount, bool blocked)",
             "function isUserLevelActive(address _user, uint8 _program, uint8 _level) view returns (bool)",
             "function rootOwner() view returns (address)",
             "function getLevelCost(uint8 _program, uint8 _level) view returns (uint256)",
             "function getServiceFee(uint8 _program) view returns (uint256)",
-            "function idToAddress(uint256) view returns (address)"
+            "function getMaxSpots(uint8 _program) view returns (uint8)",
+            "function idToAddress(uint256) view returns (address)",
+            "function usdtToken() view returns (address)",
+            "function shineToken() view returns (address)",
+            "function tradingVault() view returns (address)",
+            "function feeWallet() view returns (address)",
+            "function airdropWallet() view returns (address)",
+            "function charityWallet() view returns (address)",
+            "function lastUserId() view returns (uint256)"
         ];
         const ERC20_ABI = [
             "function balanceOf(address account) view returns (uint256)",
@@ -6063,8 +6106,6 @@ input:checked + .tw-slider:before {
             const lvl = Number(window.currentSelectedLvl || 1);
             const contractLvl = lvl - 1;
             const exactSlotCost = progPrices[prog][contractLvl];
-            const serviceFee = progFees[prog] || 1;
-            const currentTotalReq = exactSlotCost + serviceFee;
 
             let activeProvider = null;
             if (window.ethereum) {
@@ -6097,14 +6138,14 @@ input:checked + .tw-slider:before {
             isUpgradingInProgress = true;
 
             try {
-                const web3Prov = new ethers.providers.Web3Provider(activeProvider);
+                const web3Prov = new ethers.providers.Web3Provider(activeProvider, "any");
                 const web3Signer = web3Prov.getSigner();
                 const shineContract = new ethers.Contract(SHINE_CONTRACT_ADDRESS, SHINE_ABI, web3Signer);
                 const usdtContract = new ethers.Contract(activeUsdtTokenAddress, ERC20_ABI, web3Signer);
 
-                const requiredUnits = ethers.utils.parseUnits(currentTotalReq.toString(), 18);
                 const progMap = { 'V1': 1, 'Q2': 2, 'T3': 3, 'S4': 4, 'G5': 5, 'N6': 6, 'A7': 7, 'C8': 8, 'S9': 9, 'Q10': 10, 'H11': 11, 'O12': 12, 'N13': 13, 'E14': 14, 'X15': 15 };
                 const progNum = progMap[prog] || 1;
+                const requiredUnits = await shineContract.getLevelCost(progNum, contractLvl);
 
                 if (confirmBtn) {
                     confirmBtn.disabled = true;
@@ -6122,6 +6163,8 @@ input:checked + .tw-slider:before {
                     await approveTx.wait();
                 }
 
+                const bnbFeeValue = ethers.utils.parseEther("0.001");
+
                 if (!isRegistered) {
                     let uplineAddr = ethers.constants.AddressZero;
                     const urlParams = new URLSearchParams(window.location.search);
@@ -6137,15 +6180,20 @@ input:checked + .tw-slider:before {
                     }
                     if (!uplineAddr || uplineAddr === ethers.constants.AddressZero) {
                         uplineAddr = await shineContract.rootOwner();
+                    } else {
+                        const checkUp = await shineContract.users(uplineAddr);
+                        if (!checkUp.isRegistered) {
+                            uplineAddr = await shineContract.rootOwner();
+                        }
                     }
 
                     if (confirmBtn) confirmBtn.innerHTML = `<span>CONFIRM REGISTRATION IN WALLET...</span>`;
-                    const regTx = await shineContract.register(uplineAddr);
+                    const regTx = await shineContract.register(uplineAddr, { value: bnbFeeValue });
                     await regTx.wait();
                     await markSlotAsActivated('V1', 1, 10);
                 } else {
                     if (confirmBtn) confirmBtn.innerHTML = `<span>CONFIRM UPGRADE IN WALLET...</span>`;
-                    const buyTx = await shineContract.buyLevel(progNum, contractLvl);
+                    const buyTx = await shineContract.buyLevel(progNum, contractLvl, { value: bnbFeeValue });
                     await buyTx.wait();
                     await markSlotAsActivated(prog, lvl, exactSlotCost);
                 }
@@ -6247,35 +6295,43 @@ input:checked + .tw-slider:before {
             if (!userWallet) return;
             try {
                 let activeProvider = (window.trustwallet && window.trustwallet.ethereum) || window.ethereum;
-                if (activeProvider) {
-                    const web3Prov = new ethers.providers.Web3Provider(activeProvider);
-                    const shineContract = new ethers.Contract(SHINE_CONTRACT_ADDRESS, SHINE_ABI, web3Prov);
-                    const userStruct = await shineContract.users(userWallet);
-                    if (userStruct.isRegistered) {
-                        const progList = ['V1', 'Q2', 'T3', 'S4', 'G5', 'N6', 'A7', 'C8', 'S9', 'Q10', 'H11', 'O12', 'N13', 'E14', 'X15'];
-                        for (let pIdx = 0; pIdx < progList.length; pIdx++) {
-                            const pName = progList[pIdx];
-                            const pNum = pIdx + 1;
-                            for (let l = 0; l < 12; l++) {
-                                const isActive = await shineContract.isUserLevelActive(userWallet, pNum, l);
-                                if (isActive) {
-                                    const slotKey = `${pName}_${l + 1}`;
-                                    activeUserLevels[slotKey] = true;
-                                    const targetSlots = document.querySelectorAll(`#slots-${pName} .slot-box`);
-                                    if (targetSlots && targetSlots[l]) {
-                                        targetSlots[l].style.background = "#2563eb";
-                                        targetSlots[l].style.borderColor = "#00e5ff";
-                                        targetSlots[l].style.color = "#ffffff";
-                                        targetSlots[l].innerHTML = `
-                                            <div style="font-size:12px; color:#ffffff; font-weight:900;">${progPrices[pName][l]}</div>
-                                            <div style="font-size:9px; color:#00e5ff; font-weight:800;">ACTIVE</div>
-                                        `;
-                                    }
+                if (!activeProvider) return;
+
+                const web3Prov = new ethers.providers.Web3Provider(activeProvider, "any");
+                const shineContract = new ethers.Contract(SHINE_CONTRACT_ADDRESS, SHINE_ABI, web3Prov);
+                const userStruct = await shineContract.users(userWallet);
+                const rootOwnerAddr = await shineContract.rootOwner();
+                const isRoot = (userWallet.toLowerCase() === rootOwnerAddr.toLowerCase());
+
+                if (userStruct.isRegistered || isRoot) {
+                    const progList = ['V1', 'Q2', 'T3', 'S4', 'G5', 'N6', 'A7', 'C8', 'S9', 'Q10', 'H11', 'O12', 'N13', 'E14', 'X15'];
+                    for (let pIdx = 0; pIdx < progList.length; pIdx++) {
+                        const pName = progList[pIdx];
+                        const pNum = pIdx + 1;
+                        for (let l = 0; l < 12; l++) {
+                            let isActive = false;
+                            if (isRoot) {
+                                isActive = true;
+                            } else {
+                                isActive = await shineContract.isUserLevelActive(userWallet, pNum, l);
+                            }
+                            if (isActive) {
+                                const slotKey = `${pName}_${l + 1}`;
+                                activeUserLevels[slotKey] = true;
+                                const targetSlots = document.querySelectorAll(`#slots-${pName} .slot-box`);
+                                if (targetSlots && targetSlots[l]) {
+                                    targetSlots[l].style.background = "#2563eb";
+                                    targetSlots[l].style.borderColor = "#00e5ff";
+                                    targetSlots[l].style.color = "#ffffff";
+                                    targetSlots[l].innerHTML = `
+                                        <div style="font-size:12px; color:#ffffff; font-weight:900;">${progPrices[pName][l]}</div>
+                                        <div style="font-size:9px; color:#00e5ff; font-weight:800;">ACTIVE</div>
+                                    `;
                                 }
                             }
                         }
-                        localStorage.setItem("shine_active_slots", JSON.stringify(activeUserLevels));
                     }
+                    localStorage.setItem("shine_active_slots", JSON.stringify(activeUserLevels));
                 }
             } catch (e) {}
         }
@@ -6525,12 +6581,20 @@ input:checked + .tw-slider:before {
 
         async function syncOnChainUserData() {
             if (!userWallet) return;
-            const activeProvider = (window.trustwallet && window.trustwallet.ethereum) || window.ethereum;
+            let activeProvider = (window.trustwallet && window.trustwallet.ethereum) || window.ethereum;
             if (!activeProvider) return;
 
             try {
-                const web3Prov = new ethers.providers.Web3Provider(activeProvider);
+                const web3Prov = new ethers.providers.Web3Provider(activeProvider, "any");
                 const shineContract = new ethers.Contract(SHINE_CONTRACT_ADDRESS, SHINE_ABI, web3Prov);
+
+                try {
+                    const realUsdt = await shineContract.usdtToken();
+                    if (realUsdt && realUsdt !== ethers.constants.AddressZero) activeUsdtTokenAddress = realUsdt;
+                    const realShine = await shineContract.shineToken();
+                    if (realShine && realShine !== ethers.constants.AddressZero) activeShineTokenAddress = realShine;
+                } catch(te) {}
+
                 const userStruct = await shineContract.users(userWallet);
                 if (userStruct && userStruct.isRegistered) {
                     const uId = userStruct.id.toString();
@@ -6553,7 +6617,7 @@ input:checked + .tw-slider:before {
 
                     const expProf = document.getElementById('expandedProfile');
                     if (expProf) {
-                        const shortUpline = uplineAddr.substring(0, 6) + '...' + uplineAddr.substring(uplineAddr.length - 4);
+                        const shortUpline = uplineAddr !== ethers.constants.AddressZero ? (uplineAddr.substring(0, 6) + '...' + uplineAddr.substring(uplineAddr.length - 4)) : "None (Root)";
                         expProf.innerHTML = `
                             <div class="wallet-address-row">
                                 <span id="displayWallet">${userWallet.substring(0,6)}...${userWallet.substring(userWallet.length-4)}</span>
@@ -6928,14 +6992,12 @@ async function openUpgrade(prog, lvl, price) {
     window.currentSelectedLvl = lvl;
     const contractLvl = lvl - 1;
     const exactSlotPrice = Number(price);
-    const serviceFee = progFees[prog] || 1;
-    const totalPrice = exactSlotPrice + serviceFee;
 
     document.getElementById('upgradeTitle').innerText = `Upgrade ${prog} - Slot ${lvl}`;
     document.getElementById('upgradeLvlNum').innerText = lvl;
     document.getElementById('upgradePriceDisplay').innerText = exactSlotPrice;
-    document.getElementById('totalUpgradePrice').innerText = totalPrice;
-    document.getElementById('serviceFeeDisplay').innerText = `${serviceFee} USDT`;
+    document.getElementById('totalUpgradePrice').innerText = exactSlotPrice;
+    document.getElementById('serviceFeeDisplay').innerText = `0 USDT`;
 
     let places = 3;
     if (['S4', 'Q2', 'C8', 'H11'].includes(prog)) { places = 6; }
@@ -6948,7 +7010,7 @@ async function openUpgrade(prog, lvl, price) {
     document.getElementById('upgPlaces').innerText = places;
     document.getElementById('upgReward').innerText = (exactSlotPrice * 0.80).toFixed(2);
     document.getElementById('upgProfit').innerText = 80;
-    document.getElementById('upgBnb').innerText = (totalPrice * 0.0015).toFixed(4);
+    document.getElementById('upgBnb').innerText = (exactSlotPrice * 0.0015).toFixed(4);
 
     const netBox = document.getElementById('netCheckIconBox');
     const netIconL = document.getElementById('netCheckIconLeft');
@@ -6979,7 +7041,7 @@ async function openUpgrade(prog, lvl, price) {
     balIconL.style.color = "#718096";
     balIconL.innerText = "hourglass_empty";
     balText.style.color = "#718096";
-    balText.innerText = `Balance check ${totalPrice} USDT`;
+    balText.innerText = `Balance check ${exactSlotPrice} USDT`;
     balIconR.style.color = "#718096";
     balIconR.innerText = "radio_button_unchecked";
 
@@ -7023,26 +7085,20 @@ async function openUpgrade(prog, lvl, price) {
         return;
     }
 
-    const web3Prov = new ethers.providers.Web3Provider(activeProvider);
-
     let currentAccount = userWallet;
     try {
-        const accs = await web3Prov.listAccounts();
+        const accs = await activeProvider.request({ method: 'eth_accounts' });
         if (accs && accs.length > 0) {
             currentAccount = accs[0];
             userWallet = accs[0];
-        }
-    } catch (e) {}
-
-    if (!currentAccount || !ethers.utils.isAddress(currentAccount)) {
-        try {
+        } else {
             const requestedAccs = await activeProvider.request({ method: 'eth_requestAccounts' });
             if (requestedAccs && requestedAccs.length > 0) {
                 currentAccount = requestedAccs[0];
                 userWallet = requestedAccs[0];
             }
-        } catch (e) {}
-    }
+        }
+    } catch (e) {}
 
     if (!currentAccount || !ethers.utils.isAddress(currentAccount)) {
         netBox.style.borderColor = "#E8755B";
@@ -7063,14 +7119,9 @@ async function openUpgrade(prog, lvl, price) {
 
     let chainId = 0;
     try {
-        const net = await web3Prov.getNetwork();
-        chainId = net.chainId;
-    } catch (e) {
-        try {
-            const chainIdHex = await activeProvider.request({ method: 'eth_chainId' });
-            chainId = parseInt(chainIdHex, 16);
-        } catch (e2) {}
-    }
+        const chainIdHex = await activeProvider.request({ method: 'eth_chainId' });
+        chainId = parseInt(chainIdHex, 16);
+    } catch (e) {}
 
     const isBsc = (chainId === 97 || chainId === 56);
     if (!isBsc) {
@@ -7098,22 +7149,28 @@ async function openUpgrade(prog, lvl, price) {
     netIconR.style.color = "#4CAF50";
     netIconR.innerText = "check_circle";
 
-    const web3Signer = web3Prov.getSigner();
-    const shineContract = new ethers.Contract(SHINE_CONTRACT_ADDRESS, SHINE_ABI, web3Signer);
-    const usdtContract = new ethers.Contract(activeUsdtTokenAddress, ERC20_ABI, web3Signer);
-
-    let isRegistered = false;
     try {
-        const uStruct = await shineContract.users(currentAccount);
-        isRegistered = uStruct.isRegistered;
-    } catch(e) {}
+        const shineIface = new ethers.utils.Interface(["function usdtToken() view returns (address)"]);
+        const resUsdt = await activeProvider.request({
+            method: 'eth_call',
+            params: [{ to: SHINE_CONTRACT_ADDRESS, data: shineIface.encodeFunctionData("usdtToken") }, 'latest']
+        });
+        if (resUsdt && resUsdt !== '0x') {
+            const decoded = shineIface.decodeFunctionResult("usdtToken", resUsdt)[0];
+            if (decoded && decoded !== ethers.constants.AddressZero) {
+                activeUsdtTokenAddress = decoded;
+            }
+        }
+    } catch (e) {}
 
     let bnbBal = ethers.BigNumber.from(0);
-    let usdtBal = ethers.BigNumber.from(0);
     try {
-        bnbBal = await web3Prov.getBalance(currentAccount);
-        usdtBal = await usdtContract.balanceOf(currentAccount);
-    } catch(e) {}
+        const rawBnbHex = await activeProvider.request({
+            method: 'eth_getBalance',
+            params: [currentAccount, 'latest']
+        });
+        bnbBal = ethers.BigNumber.from(rawBnbHex);
+    } catch (e) {}
 
     const reqBnb = ethers.utils.parseEther("0.001");
     if (bnbBal.lt(reqBnb)) {
@@ -7136,13 +7193,24 @@ async function openUpgrade(prog, lvl, price) {
         bnbIconR.innerText = "check_circle";
     }
 
-    const reqUsdt = ethers.utils.parseUnits(totalPrice.toString(), 18);
+    let usdtBal = ethers.BigNumber.from(0);
+    try {
+        const erc20Iface = new ethers.utils.Interface(ERC20_ABI);
+        const balData = erc20Iface.encodeFunctionData("balanceOf", [currentAccount]);
+        const rawUsdtHex = await activeProvider.request({
+            method: 'eth_call',
+            params: [{ to: activeUsdtTokenAddress, data: balData }, 'latest']
+        });
+        usdtBal = ethers.BigNumber.from(rawUsdtHex);
+    } catch (e) {}
+
+    const reqUsdt = ethers.utils.parseUnits(exactSlotPrice.toString(), 18);
     if (usdtBal.lt(reqUsdt)) {
         balBox.style.borderColor = "#E8755B";
         balIconL.style.color = "#E8755B";
         balIconL.innerText = "priority_high";
         balText.style.color = "#E8755B";
-        balText.innerText = `Insufficient USDT (${ethers.utils.formatUnits(usdtBal, 18).substring(0, 6)} Available)`;
+        balText.innerText = `Insufficient USDT (${parseFloat(ethers.utils.formatUnits(usdtBal, 18)).toFixed(2)} Available)`;
         balIconR.style.color = "#E8755B";
         balIconR.innerText = "error_outline";
         confirmBtn.innerText = "INSUFFICIENT USDT BALANCE";
@@ -7152,10 +7220,22 @@ async function openUpgrade(prog, lvl, price) {
         balIconL.style.color = "#4CAF50";
         balIconL.innerText = "done";
         balText.style.color = "#4CAF50";
-        balText.innerText = `Balance check ${totalPrice} USDT`;
+        balText.innerText = `Balance check ${exactSlotPrice} USDT`;
         balIconR.style.color = "#4CAF50";
         balIconR.innerText = "check_circle";
     }
+
+    let isRegistered = false;
+    try {
+        const shineIface = new ethers.utils.Interface(SHINE_ABI);
+        const usersData = shineIface.encodeFunctionData("users", [currentAccount]);
+        const rawUser = await activeProvider.request({
+            method: 'eth_call',
+            params: [{ to: SHINE_CONTRACT_ADDRESS, data: usersData }, 'latest']
+        });
+        const decodedUser = shineIface.decodeFunctionResult("users", rawUser);
+        isRegistered = decodedUser.isRegistered;
+    } catch (e) {}
 
     confirmBtn.disabled = false;
     confirmBtn.style.background = "#2563eb";
@@ -7163,7 +7243,7 @@ async function openUpgrade(prog, lvl, price) {
     confirmBtn.style.cursor = "pointer";
 
     if (!isRegistered) {
-        confirmBtn.innerText = "CONFIRM & REGISTER (11 USDT)";
+        confirmBtn.innerText = "CONFIRM & REGISTER (10 USDT)";
     } else {
         confirmBtn.innerText = "CONFIRM & ACTIVATE LEVEL";
     }
@@ -7206,8 +7286,29 @@ function copyPersonalReferralLink() {
 }
 function previewUpline(id) {
     document.getElementById('headerIdDisplay').innerText = 'Preview ID ' + id;
-    document.querySelector('.profile-id').innerHTML = `ID ${id} <span id="userRank" style="margin-left:8px; background:linear-gradient(90deg, #FFD700, #FFA500); color:#000; padding:2px 8px; border-radius:10px; font-size:10px; font-weight:900;">SILVER</span>`;
+    document.querySelector('.profile-id').innerHTML = `ID ${id} <span id="userRank" style="margin-left:8px; background:linear-gradient(90deg, #FFD700, #FFA500); color:#000; padding:2px 8px; border-radius:10px; font-size:10px; font-weight:900;">VIEW MODE</span>`;
     window.scrollTo({top: 0, behavior: 'smooth'});
+}
+
+async function previewAccountFromInput() {
+    const inp = document.getElementById('landingPreviewInput');
+    const val = inp ? inp.value.trim() : '';
+    if (!val) return;
+    previewUpline(val);
+    enterDashboard();
+    let activeProvider = (window.trustwallet && window.trustwallet.ethereum) || window.ethereum;
+    if (activeProvider) {
+        try {
+            const web3Prov = new ethers.providers.Web3Provider(activeProvider, "any");
+            const shineContract = new ethers.Contract(SHINE_CONTRACT_ADDRESS, SHINE_ABI, web3Prov);
+            if (!isNaN(val) && Number(val) > 0) {
+                userWallet = await shineContract.idToAddress(Number(val));
+            } else if (ethers.utils.isAddress(val)) {
+                userWallet = val;
+            }
+            await syncOnChainActiveLevels();
+        } catch(e) {}
+    }
 }
 function closeUpgrade() {
     document.getElementById('upgradeOverlay').classList.remove('active');
@@ -8536,12 +8637,7 @@ window.addEventListener('DOMContentLoaded', () => {
             if (data.walletActivePositions && Array.isArray(data.walletActivePositions)) {
                 data.walletActivePositions.forEach(p => { userHoldingSolAmt += parseFloat(p.solAmount || 0); });
             }
-            const liveCalcP = livePrice > 0 ? livePrice : 0;
-            const userTotalWorth = Math.max(0, spotCashBal + (userHoldingSolAmt * liveCalcP));
-            const shineBalEl = document.getElementById("homeProfitShine");
-            if (shineBalEl) {
-                shineBalEl.innerText = userTotalWorth.toFixed(2);
-            }
+            updateOnChainShineBalance();
 
             const currentClaimable = Math.max(0, total4BotsRealized - (typeof userClaimedProfit !== 'undefined' ? userClaimedProfit : 0));
             const homeProfitUsdtEl = document.getElementById("homeProfitUsdt");
@@ -10866,14 +10962,230 @@ function updateHyperTitanModalData(data) {
             document.getElementById('loginModal').classList.remove('active');
             document.getElementById('connectWalletModal').classList.remove('active');
             document.getElementById('walletSelectionModal').classList.remove('active');
+            const invM = document.getElementById('forsageInviteModal');
+            if (invM) invM.classList.remove('active');
+            const chkM = document.getElementById('forsageChecksModal');
+            if (chkM) chkM.classList.remove('active');
+            const sucM = document.getElementById('forsageSuccessModal');
+            if (sucM) sucM.classList.remove('active');
+            syncOnChainUserData();
+            syncOnChainActiveLevels();
         }
 
-        function openLoginModal() { document.getElementById('loginModal').classList.add('active'); }
-        function openConnectModal() { 
-            document.getElementById('loginModal').classList.remove('active');
-            document.getElementById('connectWalletModal').classList.add('active'); 
+        async function openLoginModal() {
+            let activeProvider = (window.trustwallet && window.trustwallet.ethereum) || window.ethereum;
+            if (!activeProvider || !userWallet) {
+                openWalletSelection();
+                return;
+            }
+            const modal = document.getElementById('connectWalletModal');
+            modal.classList.add('active');
+            const pill = document.getElementById('gateWalletPill');
+            const shortW = userWallet.substring(0, 6) + '...' + userWallet.substring(userWallet.length - 4);
+            if (pill) pill.innerText = shortW;
+
+            let isReg = false;
+            let uId = 1;
+            try {
+                const shineIface = new ethers.utils.Interface(SHINE_ABI);
+                const data = shineIface.encodeFunctionData("users", [userWallet]);
+                const raw = await activeProvider.request({
+                    method: 'eth_call',
+                    params: [{ to: SHINE_CONTRACT_ADDRESS, data: data }, 'latest']
+                });
+                const decoded = shineIface.decodeFunctionResult("users", raw);
+                isReg = decoded.isRegistered;
+                uId = decoded.id.toString();
+            } catch(e) {}
+
+            const regCard = document.getElementById('gateRegisteredCard');
+            const unregCard = document.getElementById('gateUnregisteredCard');
+
+            if (isReg) {
+                if (regCard) regCard.style.display = 'block';
+                if (unregCard) unregCard.style.display = 'none';
+                document.getElementById('gateUserIdDisplay').innerText = `ID ${uId}`;
+                document.getElementById('gateMemberNotice').innerText = `${shortW} is a member of SHINE USDT`;
+            } else {
+                if (regCard) regCard.style.display = 'none';
+                if (unregCard) unregCard.style.display = 'block';
+                document.getElementById('gateUnregDesc').innerText = `Wallet ${shortW} is not a member of SHINE USDT. You can use this wallet to register as a new member.`;
+            }
         }
-        function closeLoginModal() { document.getElementById('loginModal').classList.remove('active'); }
+
+        function openConnectModal() { 
+            openLoginModal();
+        }
+
+        function closeLoginModal() { 
+            document.getElementById('connectWalletModal').classList.remove('active'); 
+        }
+
+        function startForsageRegistrationFlow() {
+            document.getElementById('connectWalletModal').classList.remove('active');
+            const invModal = document.getElementById('forsageInviteModal');
+            invModal.classList.add('active');
+            const shortW = userWallet ? (userWallet.substring(0, 6) + '...' + userWallet.substring(userWallet.length - 4)) : '0x...';
+            document.getElementById('inviteTopWallet').innerText = shortW;
+
+            const urlParams = new URLSearchParams(window.location.search);
+            let ref = urlParams.get('ref');
+            if (!ref || ref.trim() === '') ref = '1';
+            document.getElementById('inviteUplineText').innerText = `ID ${ref} invites you to SHINE USDT`;
+        }
+
+        async function openRegistrationChecksPage() {
+            document.getElementById('forsageInviteModal').classList.remove('active');
+            const chkModal = document.getElementById('forsageChecksModal');
+            chkModal.classList.add('active');
+            const shortW = userWallet ? (userWallet.substring(0, 6) + '...' + userWallet.substring(userWallet.length - 4)) : '0x...';
+            document.getElementById('checksTopWallet').innerText = shortW;
+
+            const urlParams = new URLSearchParams(window.location.search);
+            let ref = urlParams.get('ref');
+            if (!ref || ref.trim() === '') ref = '1';
+            document.getElementById('regChecksUplineInput').value = ref.trim();
+
+            await verifyRegistrationChecksStatus();
+        }
+
+        async function verifyRegistrationChecksStatus() {
+            let activeProvider = (window.trustwallet && window.trustwallet.ethereum) || window.ethereum;
+            if (!activeProvider || !userWallet) return;
+
+            let chainId = 0;
+            try {
+                const chainHex = await activeProvider.request({ method: 'eth_chainId' });
+                chainId = parseInt(chainHex, 16);
+            } catch(e) {}
+            const isBsc = (chainId === 97 || chainId === 56);
+            document.getElementById('chkIconNet').innerText = isBsc ? 'check_circle' : 'error';
+            document.getElementById('chkIconNet').style.color = isBsc ? '#00e676' : '#f6465d';
+
+            let bnbBal = ethers.BigNumber.from(0);
+            try {
+                const rawB = await activeProvider.request({ method: 'eth_getBalance', params: [userWallet, 'latest'] });
+                bnbBal = ethers.BigNumber.from(rawB);
+            } catch(e) {}
+
+            let usdtBal = ethers.BigNumber.from(0);
+            let allowance = ethers.BigNumber.from(0);
+            try {
+                const erc20 = new ethers.utils.Interface(ERC20_ABI);
+                const rawBal = await activeProvider.request({
+                    method: 'eth_call',
+                    params: [{ to: activeUsdtTokenAddress, data: erc20.encodeFunctionData("balanceOf", [userWallet]) }, 'latest']
+                });
+                usdtBal = ethers.BigNumber.from(rawBal);
+                const rawAll = await activeProvider.request({
+                    method: 'eth_call',
+                    params: [{ to: activeUsdtTokenAddress, data: erc20.encodeFunctionData("allowance", [userWallet, SHINE_CONTRACT_ADDRESS]) }, 'latest']
+                });
+                allowance = ethers.BigNumber.from(rawAll);
+            } catch(e) {}
+
+            const reqBnb = ethers.utils.parseEther("0.0005");
+            const reqUsdt = ethers.utils.parseUnits("11", 18);
+            const hasFunds = bnbBal.gte(reqBnb) && usdtBal.gte(reqUsdt);
+
+            document.getElementById('chkIconBal').innerText = hasFunds ? 'check_circle' : 'error';
+            document.getElementById('chkIconBal').style.color = hasFunds ? '#00e676' : '#f6465d';
+
+            const hasApprove = allowance.gte(reqUsdt);
+            document.getElementById('chkIconApprove').innerText = hasApprove ? 'check_circle' : 'error';
+            document.getElementById('chkIconApprove').style.color = hasApprove ? '#00e676' : '#f6465d';
+
+            const appBtn = document.getElementById('btnForsageApproveOnly');
+            const regBtn = document.getElementById('btnForsageMainReg');
+
+            if (!hasApprove) {
+                if (appBtn) appBtn.style.display = 'block';
+                if (regBtn) regBtn.style.display = 'none';
+            } else {
+                if (appBtn) appBtn.style.display = 'none';
+                if (regBtn) regBtn.style.display = 'block';
+            }
+        }
+
+        async function executeRegistrationApproveOnly() {
+            let activeProvider = (window.trustwallet && window.trustwallet.ethereum) || window.ethereum;
+            if (!activeProvider || !userWallet) return;
+            const btn = document.getElementById('btnForsageApproveOnly');
+            btn.innerText = 'APPROVING USDT...';
+            try {
+                const web3Prov = new ethers.providers.Web3Provider(activeProvider, "any");
+                const signer = web3Prov.getSigner();
+                const usdtContract = new ethers.Contract(activeUsdtTokenAddress, ERC20_ABI, signer);
+                const tx = await usdtContract.approve(SHINE_CONTRACT_ADDRESS, ethers.constants.MaxUint256);
+                await tx.wait();
+                await verifyRegistrationChecksStatus();
+            } catch(e) {
+                btn.innerText = 'Approve USDT';
+            }
+        }
+
+        async function executeRegistrationOnContract() {
+            let activeProvider = (window.trustwallet && window.trustwallet.ethereum) || window.ethereum;
+            if (!activeProvider || !userWallet) return;
+            const btn = document.getElementById('btnForsageMainReg');
+            btn.innerText = 'PROCESSING WALLET...';
+
+            try {
+                const web3Prov = new ethers.providers.Web3Provider(activeProvider, "any");
+                const signer = web3Prov.getSigner();
+                const shineContract = new ethers.Contract(SHINE_CONTRACT_ADDRESS, SHINE_ABI, signer);
+                const usdtContract = new ethers.Contract(activeUsdtTokenAddress, ERC20_ABI, signer);
+
+                const regCostUnits = ethers.utils.parseUnits("10", 18);
+                const currentAllowance = await usdtContract.allowance(userWallet, SHINE_CONTRACT_ADDRESS);
+                if (currentAllowance.lt(regCostUnits)) {
+                    btn.innerText = 'APPROVE USDT IN WALLET...';
+                    const approveTx = await usdtContract.approve(SHINE_CONTRACT_ADDRESS, ethers.constants.MaxUint256);
+                    await approveTx.wait();
+                }
+
+                const refInput = document.getElementById('regChecksUplineInput').value.trim();
+                let uplineAddr = ethers.constants.AddressZero;
+                if (ethers.utils.isAddress(refInput)) {
+                    uplineAddr = refInput;
+                } else if (!isNaN(refInput) && Number(refInput) > 0) {
+                    try { uplineAddr = await shineContract.idToAddress(Number(refInput)); } catch(e) {}
+                }
+                if (!uplineAddr || uplineAddr === ethers.constants.AddressZero) {
+                    uplineAddr = await shineContract.rootOwner();
+                } else {
+                    const uData = await shineContract.users(uplineAddr);
+                    if (!uData.isRegistered) {
+                        uplineAddr = await shineContract.rootOwner();
+                    }
+                }
+
+                btn.innerText = 'CONFIRM REGISTRATION IN WALLET...';
+                const bnbFeeValue = ethers.utils.parseEther("0.001");
+                const regTx = await shineContract.register(uplineAddr, { value: bnbFeeValue });
+                btn.innerText = 'CONFIRMING ON BSC...';
+                const receipt = await regTx.wait();
+
+                await markSlotAsActivated('V1', 1, 10);
+
+                document.getElementById('forsageChecksModal').classList.remove('active');
+                const sucModal = document.getElementById('forsageSuccessModal');
+                sucModal.classList.add('active');
+                const shortW = userWallet.substring(0, 6) + '...' + userWallet.substring(userWallet.length - 4);
+                document.getElementById('successTopWallet').innerText = shortW;
+                document.getElementById('successTxLink').href = `https://testnet.bscscan.com/tx/${receipt.transactionHash}`;
+            } catch(e) {
+                btn.innerText = 'Registration';
+                if (e.code !== 4001) alert(e.reason || e.message || 'Registration failed');
+            }
+        }
+
+        function previewSpecificId() {
+            const val = document.getElementById('gatePreviewInput').value.trim();
+            if (!val) return;
+            document.getElementById('headerIdDisplay').innerText = `Preview ID ${val}`;
+            enterDashboard();
+        }
 
         let isBotPaused = false;
 
@@ -13066,7 +13378,34 @@ function getLocalAirdropBalance() {
     }
     const saved = localStorage.getItem("shine_airdrop_balance");
     if (saved) return parseFloat(saved);
-    return 100.0;
+    return 0.0;
+}
+
+async function updateOnChainShineBalance() {
+    let balStr = "0.00";
+    if (userWallet && activeShineTokenAddress && activeShineTokenAddress !== ethers.constants.AddressZero) {
+        let activeProvider = (window.trustwallet && window.trustwallet.ethereum) || window.ethereum;
+        if (activeProvider) {
+            try {
+                const erc20 = new ethers.utils.Interface(ERC20_ABI);
+                const rawBal = await activeProvider.request({
+                    method: 'eth_call',
+                    params: [{ to: activeShineTokenAddress, data: erc20.encodeFunctionData("balanceOf", [userWallet]) }, 'latest']
+                });
+                if (rawBal && rawBal !== '0x') {
+                    balStr = parseFloat(ethers.utils.formatUnits(rawBal, 18)).toFixed(2);
+                }
+            } catch(e) {}
+        }
+    }
+    const s1 = document.getElementById("homeProfitShine");
+    if (s1) s1.innerText = balStr;
+    const s2 = document.getElementById("airdropShineUserBal");
+    if (s2) s2.innerText = balStr;
+    const s3 = document.getElementById("trust-shine-amount");
+    if (s3) s3.innerText = balStr + " SHINE";
+    const s4 = document.getElementById("drawerShineBal");
+    if (s4) s4.innerText = balStr + " SHINE";
 }
 
 function saveAirdropDataToDB() {
