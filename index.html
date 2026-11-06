@@ -6570,9 +6570,11 @@ input:checked + .tw-slider:before {
 
             const pLink = document.getElementById('userPersonalReferralLink');
             if (pLink) {
-                const fullRefUrl = `${window.location.origin}${window.location.pathname}?ref=${addr}`;
-                pLink.innerText = `${addr.substring(0, 8)}...${addr.substring(addr.length - 6)}`;
+                const baseUrl = window.location.origin + window.location.pathname;
+                const fullRefUrl = `${baseUrl}?ref=1`;
+                pLink.innerText = `${window.location.host}/?ref=1`;
                 pLink.href = fullRefUrl;
+                window.currentGeneratedReferralLink = fullRefUrl;
             }
 
             enterDashboard();
@@ -6641,8 +6643,8 @@ input:checked + .tw-slider:before {
                     const pLink = document.getElementById('userPersonalReferralLink');
                     if (pLink) {
                         const baseUrl = window.location.origin + window.location.pathname;
-                        const refUrl = `${baseUrl}?ref=${userWallet}`;
-                        pLink.innerText = `${window.location.host}/?ref=${userWallet.substring(0,6)}...`;
+                        const refUrl = `${baseUrl}?ref=1`;
+                        pLink.innerText = `${window.location.host}/?ref=1`;
                         pLink.href = refUrl;
                         window.currentGeneratedReferralLink = refUrl;
                     }
@@ -6698,10 +6700,10 @@ input:checked + .tw-slider:before {
         async function loadProfileData() {
     startDividendTimer();
     loadSavedProfileFromDB();
-    localStorage.removeItem("shine_active_slots");
-    localStorage.removeItem("shine_total_invested_slots");
-    localStorage.removeItem("shine_user_total_capital");
-    activeUserLevels = {};
+    const savedActiveData = localStorage.getItem("shine_active_slots");
+    if (savedActiveData) {
+        try { activeUserLevels = JSON.parse(savedActiveData); } catch (e) {}
+    }
     let sumActivatedCost = 0.0;
     const savedSlotsObj = JSON.parse(localStorage.getItem("shine_active_slots") || "{}");
     Object.keys(savedSlotsObj).forEach(k => {
@@ -6759,12 +6761,14 @@ input:checked + .tw-slider:before {
     if (savedSlots) {
         try { activeUserLevels = JSON.parse(savedSlots); } catch (e) {}
     }
+    const headerTitle = document.getElementById('headerIdDisplay') ? document.getElementById('headerIdDisplay').innerText : "";
+    const isViewingId1 = headerTitle.includes("ID 1") || !userWallet;
     for (const p of programs) {
         const target = document.getElementById('slots-' + p);
         if (!target) continue;
         const prices = progPrices[p];
         target.innerHTML = prices.map((val, idx) => {
-            const isAct = activeUserLevels[`${p}_${idx + 1}`];
+            const isAct = isViewingId1 || activeUserLevels[`${p}_${idx + 1}`];
             if (isAct) {
                 return `
                 <div class="slot-box" onclick="openUpgrade('${p}', ${idx + 1}, ${val})" style="background:#2563eb; border-color:#00e5ff; color:#ffffff;">
@@ -6900,9 +6904,10 @@ function initApp() {
             document.getElementById('previewIdBreadcrumb').innerText = `ID 1 / SHINE ${prog} (0/12)`;
             const grid = document.getElementById('levelsGrid');
             grid.innerHTML = '';
+            const isViewingId1 = document.getElementById('headerIdDisplay') && document.getElementById('headerIdDisplay').innerText.includes("ID 1");
             prices.forEach((currentPrice, index) => {
                 const levelDiv = document.createElement('div');
-                const isActivated = activeUserLevels[`${prog}_${index + 1}`];
+                const isActivated = isViewingId1 || activeUserLevels[`${prog}_${index + 1}`];
                 levelDiv.className = isActivated ? 'level-card active' : 'level-card';
                 if (isActivated) {
                     levelDiv.style.background = "#2563eb";
