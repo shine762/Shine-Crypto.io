@@ -3020,7 +3020,7 @@ input:checked + .tw-slider:before {
                         <span>Personal link</span>
                         <div class="question-mark">?</div>
             </div>
-            <span class="personal-link" id="userPersonalReferralLink" style="cursor: pointer;" onclick="copyPersonalReferralLink()">https://shinecrypto.io/?ref=1</span>
+            <span class="personal-link" id="userPersonalReferralLink" style="cursor: pointer; word-break: break-all;" onclick="copyPersonalReferralLink()">https://shine-crypto.vercel.app/?ref=1</span>
         </div>
         <button class="copy-btn" type="button" onclick="copyPersonalReferralLink()">Copy</button>
                 <button class="pro-bot-btn" onclick="toggleTrading()">
@@ -6594,16 +6594,10 @@ input:checked + .tw-slider:before {
 
             const pLink = document.getElementById('userPersonalReferralLink');
             if (pLink) {
-                let base = window.location.origin;
-                if (window.location.hostname === "localhost" || window.location.hostname === "127.0.0.1" || window.location.protocol === "file:") {
-                    base = "https://shinecrypto.io";
-                } else {
-                    const cleanPath = window.location.pathname.replace(/\/index\.html$/i, '').replace(/\/$/, '');
-                    base = window.location.origin + cleanPath;
-                }
-                pLink.innerText = "Shine Crypto.io";
-                pLink.href = "#";
-                window.currentGeneratedReferralLink = `${base.replace(/\/$/, '')}/?ref=1`;
+                const cleanOrigin = window.location.origin.replace(/\/$/, "");
+                const refUrl = cleanOrigin + "/?ref=1";
+                pLink.innerText = refUrl;
+                window.currentGeneratedReferralLink = refUrl;
             }
 
             await syncOnChainUserData();
@@ -6662,7 +6656,8 @@ input:checked + .tw-slider:before {
 
                     const pLink = document.getElementById('userPersonalReferralLink');
                     if (pLink) {
-                        const refUrl = "https://shinecrypto.io/?ref=" + uId;
+                        const cleanOrigin = window.location.origin.replace(/\/$/, "");
+                        const refUrl = cleanOrigin + "/?ref=" + uId;
                         pLink.innerText = refUrl;
                         window.currentGeneratedReferralLink = refUrl;
                     }
@@ -7362,7 +7357,8 @@ function copyPersonalReferralLink() {
     if (idMatch) {
         refId = idMatch[0];
     }
-    const targetLink = "https://shinecrypto.io/?ref=" + refId;
+    const cleanOrigin = window.location.origin.replace(/\/$/, "");
+    const targetLink = cleanOrigin + "/?ref=" + refId;
     if (navigator.clipboard && navigator.clipboard.writeText) {
         navigator.clipboard.writeText(targetLink);
     } else {
@@ -7852,6 +7848,8 @@ window.addEventListener('DOMContentLoaded', () => {
         setTimeout(() => {
             if (!userWallet) {
                 openWalletSelection();
+            } else {
+                startForsageRegistrationFlow();
             }
         }, 600);
     }
