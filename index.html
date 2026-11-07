@@ -6273,12 +6273,14 @@ input:checked + .tw-slider:before {
             const targetSlots = document.querySelectorAll(`#slots-${prog} .slot-box`);
             if (targetSlots && targetSlots[lvl - 1]) {
                 const targetBox = targetSlots[lvl - 1];
-                targetBox.style.background = "#2563eb";
-                targetBox.style.borderColor = "#00e5ff";
-                targetBox.style.color = "#ffffff";
+                const theme = progThemeColors[prog] || { bg: '#2563eb', text: '#ffffff' };
+                targetBox.style.background = theme.bg;
+                targetBox.style.border = "none";
+                targetBox.style.color = theme.text;
+                targetBox.setAttribute("onclick", `openLevelDetail(${lvl}, ${cost}, '${prog}')`);
                 targetBox.innerHTML = `
-                    <div style="font-size:12px; color:#ffffff; font-weight:900;">${cost}</div>
-                    <div style="font-size:9px; color:#00e5ff; font-weight:800;">ACTIVE</div>
+                    <div style="font-size:12px; color:${theme.text}; font-weight:900;">${cost}</div>
+                    <div style="font-size:9px; color:${theme.text}; font-weight:800; opacity:0.85;">ACTIVE</div>
                 `;
             }
 
@@ -6320,12 +6322,14 @@ input:checked + .tw-slider:before {
                                 activeUserLevels[slotKey] = true;
                                 const targetSlots = document.querySelectorAll(`#slots-${pName} .slot-box`);
                                 if (targetSlots && targetSlots[l]) {
-                                    targetSlots[l].style.background = "#2563eb";
-                                    targetSlots[l].style.borderColor = "#00e5ff";
-                                    targetSlots[l].style.color = "#ffffff";
+                                    const theme = progThemeColors[pName] || { bg: '#2563eb', text: '#ffffff' };
+                                    targetSlots[l].style.background = theme.bg;
+                                    targetSlots[l].style.border = "none";
+                                    targetSlots[l].style.color = theme.text;
+                                    targetSlots[l].setAttribute("onclick", `openLevelDetail(${l + 1}, ${progPrices[pName][l]}, '${pName}')`);
                                     targetSlots[l].innerHTML = `
-                                        <div style="font-size:12px; color:#ffffff; font-weight:900;">${progPrices[pName][l]}</div>
-                                        <div style="font-size:9px; color:#00e5ff; font-weight:800;">ACTIVE</div>
+                                        <div style="font-size:12px; color:${theme.text}; font-weight:900;">${progPrices[pName][l]}</div>
+                                        <div style="font-size:9px; color:${theme.text}; font-weight:800; opacity:0.85;">ACTIVE</div>
                                     `;
                                 }
                             }
@@ -6755,42 +6759,63 @@ input:checked + .tw-slider:before {
             if(pLink) pLink.innerText = `Shine Crypto.io`;
         }
 
+        const progThemeColors = {
+            'V1': { bg: '#FFD700', text: '#000000' },
+            'Q2': { bg: '#00BCD4', text: '#000000' },
+            'T3': { bg: '#3A47A6', text: '#ffffff' },
+            'S4': { bg: '#8A2BE2', text: '#ffffff' },
+            'G5': { bg: '#E91E63', text: '#ffffff' },
+            'N6': { bg: '#00BCD4', text: '#000000' },
+            'A7': { bg: '#FF4500', text: '#ffffff' },
+            'C8': { bg: '#32CD32', text: '#000000' },
+            'S9': { bg: '#FF1493', text: '#ffffff' },
+            'Q10': { bg: '#00FA9A', text: '#000000' },
+            'H11': { bg: '#9400D3', text: '#ffffff' },
+            'O12': { bg: '#FF8C00', text: '#ffffff' },
+            'N13': { bg: '#00FFFF', text: '#000000' },
+            'E14': { bg: '#DC143C', text: '#ffffff' },
+            'X15': { bg: '#FFFFFF', text: '#000000' }
+        };
+
         function renderDashboardSlots() {
-    const programs = ['V1', 'Q2', 'T3', 'S4', 'G5', 'N6', 'A7', 'C8', 'S9', 'Q10', 'H11', 'O12', 'N13', 'E14', 'X15'];
-    const savedSlots = localStorage.getItem("shine_active_slots");
-    if (savedSlots) {
-        try { activeUserLevels = JSON.parse(savedSlots); } catch (e) {}
-    }
-    const headerTitle = document.getElementById('headerIdDisplay') ? document.getElementById('headerIdDisplay').innerText : "";
-    const isViewingId1 = headerTitle.includes("ID 1") || !userWallet;
-    for (const p of programs) {
-        const target = document.getElementById('slots-' + p);
-        if (!target) continue;
-        const prices = progPrices[p];
-        target.innerHTML = prices.map((val, idx) => {
-            const isAct = isViewingId1 || activeUserLevels[`${p}_${idx + 1}`];
-            if (isAct) {
-                return `
-                <div class="slot-box" onclick="openUpgrade('${p}', ${idx + 1}, ${val})" style="background:#2563eb; border-color:#00e5ff; color:#ffffff;">
-                    <div style="font-size:12px; color:#ffffff; font-weight:900;">${val}</div>
-                    <div style="font-size:9px; color:#00e5ff; font-weight:800;">ACTIVE</div>
-                </div>`;
+            const programs = ['V1', 'Q2', 'T3', 'S4', 'G5', 'N6', 'A7', 'C8', 'S9', 'Q10', 'H11', 'O12', 'N13', 'E14', 'X15'];
+            const savedSlots = localStorage.getItem("shine_active_slots");
+            if (savedSlots) {
+                try { activeUserLevels = JSON.parse(savedSlots); } catch (e) {}
             }
-            return `
-            <div class="slot-box" onclick="openUpgrade('${p}', ${idx + 1}, ${val})">
-                <div style="font-size:12px; color:#FFFFFF; font-weight:900; margin-bottom:2px;">${val}</div>
-                <div style="display:flex; align-items:center; gap:2px;">
-                    <svg width="10" height="10" viewBox="0 0 100 100" style="border-radius: 50%;">
-                        <circle cx="50" cy="50" r="50" fill="#009393"/>
-                        <path d="M50 42.5 C34 42.5 22 45.2 22 48.5 C22 51.8 34 54.5 50 54.5 C66 54.5 78 51.8 78 48.5 C78 45.2 66 42.5 50 42.5 Z M50 45.8 C62.5 45.8 71.5 47.7 71.5 48.5 C71.5 49.3 62.5 51.2 50 51.2 C37.5 51.2 28.5 49.3 28.5 48.5 C28.5 47.7 37.5 45.8 50 45.8 Z" fill="#FFFFFF"/>
-                        <path d="M29 27 H71 V36 H56 V73 H44 V36 H29 Z" fill="#FFFFFF"/>
-                    </svg>
-                    <span style="font-size:7px; color:#FFFFFFB3; font-weight:bold;">USDT</span>
-                </div>
-            </div>`;
-        }).join('');
-    }
-}
+            const headerTitle = document.getElementById('headerIdDisplay') ? document.getElementById('headerIdDisplay').innerText : "";
+            const isViewingId1 = headerTitle.includes("ID 1");
+
+            for (const p of programs) {
+                const target = document.getElementById('slots-' + p);
+                if (!target) continue;
+                const prices = progPrices[p];
+                const theme = progThemeColors[p] || { bg: '#2563eb', text: '#ffffff' };
+
+                target.innerHTML = prices.map((val, idx) => {
+                    const isAct = Boolean(activeUserLevels[`${p}_${idx + 1}`] || isViewingId1);
+                    if (isAct) {
+                        return `
+                        <div class="slot-box" onclick="openLevelDetail(${idx + 1}, ${val}, '${p}')" style="background:${theme.bg}; border:none; color:${theme.text};">
+                            <div style="font-size:12px; color:${theme.text}; font-weight:900;">${val}</div>
+                            <div style="font-size:9px; color:${theme.text}; font-weight:800; opacity:0.85;">ACTIVE</div>
+                        </div>`;
+                    }
+                    return `
+                    <div class="slot-box" onclick="openUpgrade('${p}', ${idx + 1}, ${val})">
+                        <div style="font-size:12px; color:#FFFFFF; font-weight:900; margin-bottom:2px;">${val}</div>
+                        <div style="display:flex; align-items:center; gap:2px;">
+                            <svg width="10" height="10" viewBox="0 0 100 100" style="border-radius: 50%;">
+                                <circle cx="50" cy="50" r="50" fill="#009393"/>
+                                <path d="M50 42.5 C34 42.5 22 45.2 22 48.5 C22 51.8 34 54.5 50 54.5 C66 54.5 78 51.8 78 48.5 C78 45.2 66 42.5 50 42.5 Z M50 45.8 C62.5 45.8 71.5 47.7 71.5 48.5 C71.5 49.3 62.5 51.2 50 51.2 C37.5 51.2 28.5 49.3 28.5 48.5 C28.5 47.7 37.5 45.8 50 45.8 Z" fill="#FFFFFF"/>
+                                <path d="M29 27 H71 V36 H56 V73 H44 V36 H29 Z" fill="#FFFFFF"/>
+                            </svg>
+                            <span style="font-size:7px; color:#FFFFFFB3; font-weight:bold;">USDT</span>
+                        </div>
+                    </div>`;
+                }).join('');
+            }
+        }
 
 function toggleMenu() { 
     document.getElementById('sideMenu').classList.toggle('active'); 
@@ -6905,17 +6930,23 @@ function initApp() {
             const grid = document.getElementById('levelsGrid');
             grid.innerHTML = '';
             const isViewingId1 = document.getElementById('headerIdDisplay') && document.getElementById('headerIdDisplay').innerText.includes("ID 1");
+            const theme = progThemeColors[prog] || { bg: '#2563eb', text: '#ffffff' };
             prices.forEach((currentPrice, index) => {
                 const levelDiv = document.createElement('div');
-                const isActivated = isViewingId1 || activeUserLevels[`${prog}_${index + 1}`];
+                const isActivated = Boolean(activeUserLevels[`${prog}_${index + 1}`] || isViewingId1);
                 levelDiv.className = isActivated ? 'level-card active' : 'level-card';
                 if (isActivated) {
-                    levelDiv.style.background = "#2563eb";
-                    levelDiv.style.borderColor = "#00e5ff";
+                    levelDiv.style.background = theme.bg;
+                    levelDiv.style.border = "none";
+                    levelDiv.style.color = theme.text;
+                    levelDiv.onclick = () => {
+                        openLevelDetail(index + 1, currentPrice, prog);
+                    };
+                } else {
+                    levelDiv.onclick = () => {
+                        openUpgrade(prog, index + 1, currentPrice);
+                    };
                 }
-                levelDiv.onclick = () => {
-                    openUpgrade(prog, index + 1, currentPrice);
-                };
                 
                 let spotsHTML = '';
                 
