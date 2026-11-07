@@ -2676,64 +2676,83 @@ input:checked + .tw-slider:before {
         <div style="text-align:center; display:flex; flex-direction:column; align-items:center;">
             <div id="inviteUplineAvatar" style="width:110px; height:110px; border-radius:50%; background-image:url('https://i.imgur.com/O4u35tA.jpeg'); background-size:cover; background-position:center; margin-bottom:22px;"></div>
             <h1 id="inviteUplineText" style="color:#ffffff; font-size:26px; font-weight:900; line-height:1.25; margin:0 0 24px 0; text-align:center;">ID 1 invites<br>you to SHINE USDT</h1>
-            <div style="display:grid; grid-template-columns:1fr 1fr; gap:12px; width:100%; margin-bottom:28px;">
-                <div style="background:#121622; border-radius:18px; padding:16px 18px; text-align:left; border:1px solid rgba(255,255,255,0.06);">
-                    <div style="color:#718096; font-size:12px; font-weight:600;">Team</div>
-                    <div id="inviteUplineTeam" style="color:#ffffff; font-size:24px; font-weight:900; font-family:monospace; margin-top:4px;">1</div>
+            <div style="display:flex; flex-direction:column; gap:10px; width:100%; margin-bottom:28px;">
+                <div style="background:#2A2A3B; border-radius:14px; padding:16px 20px; display:flex; justify-content:space-between; align-items:center;">
+                    <span style="color:var(--text-secondary); font-size:15px; font-weight:500;">Team</span>
+                    <span id="inviteUplineTeam" style="color:#ffffff; font-size:18px; font-weight:900; font-family:monospace;">0</span>
                 </div>
-                <div style="background:#121622; border-radius:18px; padding:16px 18px; text-align:left; border:1px solid rgba(255,255,255,0.06);">
-                    <div style="color:#718096; font-size:12px; font-weight:600;">Rewards, USDT</div>
-                    <div id="inviteUplineRewards" style="color:#ffffff; font-size:24px; font-weight:900; font-family:monospace; margin-top:4px;">0.00</div>
+                <div style="background:#2A2A3B; border-radius:14px; padding:16px 20px; display:flex; justify-content:space-between; align-items:center;">
+                    <span style="color:var(--text-secondary); font-size:15px; font-weight:500;">Rewards, USDT</span>
+                    <span id="inviteUplineRewards" style="color:#ffffff; font-size:18px; font-weight:900; font-family:monospace;">0.00</span>
                 </div>
             </div>
             <button onclick="openRegistrationChecksPage()" style="width:100%; background:#2563eb; color:#ffffff; border:none; padding:18px 0; border-radius:16px; font-size:17px; font-weight:900; cursor:pointer; box-shadow:0 6px 20px rgba(37,99,235,0.4);">Register now</button>
         </div>
     </div>
 </div>
-<div id="forsageChecksModal" class="connect-overlay">
+<div id="forsageChecksModal" class="connect-overlay" style="background:var(--primary-bg) !important;">
     <div class="forsage-screen-wrap">
         <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:24px;">
-            <div style="display:flex; align-items:center; gap:10px;">
-                <button onclick="document.getElementById('forsageChecksModal').classList.remove('active')" style="background:transparent; border:none; color:#fff; cursor:pointer; padding:0; display:flex; align-items:center;"><i class="material-icons" style="font-size:24px;">arrow_back</i></button>
+            <div style="display:flex; align-items:center; gap:12px;">
+                <button onclick="backToForsageInviteScreen()" style="background:transparent; border:none; color:#fff; cursor:pointer; padding:0; display:flex; align-items:center;"><i class="material-icons" style="font-size:24px;">arrow_back</i></button>
                 <h2 style="color:#fff; font-size:20px; font-weight:800; margin:0;">Registration in SHINE USDT</h2>
             </div>
-            <div id="checksTopWallet" style="background:rgba(255,255,255,0.08); border-radius:20px; color:#ffffff; padding:5px 12px; font-size:12px; font-family:monospace; font-weight:700;">0x...</div>
+            <div id="checksTopWallet" style="background:rgba(255,255,255,0.08); border-radius:20px; color:#ffffff; padding:6px 12px; font-size:12px; font-family:monospace; font-weight:700;">0x...</div>
         </div>
 
-        <div style="margin-bottom:20px;">
-            <div style="color:#718096; font-size:13px; font-weight:600; margin-bottom:8px;">Your upline</div>
-            <input type="text" id="regChecksUplineInput" value="1" readonly style="width:100%; background:#121622; border:1px solid rgba(255,255,255,0.08); color:#fff; padding:16px; border-radius:14px; font-size:18px; font-weight:900; box-sizing:border-box; outline:none;">
+        <div style="margin-bottom:22px;">
+            <div style="color:var(--text-secondary); font-size:14px; font-weight:500; margin-bottom:8px;">Your upline</div>
+            <input type="text" id="regChecksUplineInput" value="1" readonly style="width:100%; background:#2A2A3B; border:none; color:#fff; padding:16px; border-radius:14px; font-size:18px; font-weight:900; box-sizing:border-box; outline:none;">
         </div>
 
-        <div style="background:#121622; border-radius:20px; padding:16px 20px; margin-bottom:28px; border:1px solid rgba(255,255,255,0.06); display:flex; flex-direction:column;">
-            <div class="forsage-check-row">
-                <div id="chkIconWalletBox" class="forsage-check-icon" style="background:#00e676;"><i class="material-icons" style="color:#000; font-size:16px; font-weight:900;">done</i></div>
-                <span id="chkTextWallet" style="color:#fff; font-size:15px; font-weight:700;">Wallet: connected</span>
+        <div style="display:flex; flex-direction:column; margin-bottom:28px;">
+            <div style="display:flex; align-items:center; justify-content:space-between; padding:12px 0;">
+                <div style="display:flex; align-items:center; gap:12px;">
+                    <div id="chkIconWalletBox" style="width:24px; height:24px; border-radius:50%; background:#4CAF50; display:flex; align-items:center; justify-content:center;"><i class="material-icons" style="font-size:16px; color:#fff;">done</i></div>
+                    <span id="chkTextWallet" style="color:#ffffff; font-weight:500; font-size:14px;">Wallet: connected</span>
+                </div>
+                <i class="material-icons" style="color:#4CAF50; font-size:24px;">check_circle</i>
             </div>
-            <div class="forsage-check-row" onclick="triggerSmartChainNetworkSwitch()" style="cursor:pointer;">
-                <div id="chkIconNetBox" class="forsage-check-icon" style="background:#00e676;"><i id="chkIconNetInner" class="material-icons" style="color:#000; font-size:16px; font-weight:900;">done</i></div>
-                <div style="flex:1; display:flex; justify-content:space-between; align-items:center;">
-                    <span id="chkTextNet" style="color:#fff; font-size:15px; font-weight:700;">Network: Smart chain</span>
-                    <span id="chkNetSwitchBtn" style="display:none; color:#2563eb; font-size:13px; font-weight:800;">Switch</span>
+
+            <div onclick="triggerSmartChainNetworkSwitch()" style="display:flex; align-items:center; justify-content:space-between; padding:12px 0; cursor:pointer;">
+                <div style="display:flex; align-items:center; gap:12px;">
+                    <div id="chkIconNetBox" style="width:24px; height:24px; border-radius:50%; background:#4CAF50; display:flex; align-items:center; justify-content:center;"><i id="chkIconNetInner" class="material-icons" style="font-size:16px; color:#fff;">done</i></div>
+                    <span id="chkTextNet" style="color:#ffffff; font-weight:500; font-size:14px;">Network: Smart chain</span>
+                </div>
+                <div style="display:flex; align-items:center; gap:6px;">
+                    <span id="chkNetSwitchBtn" style="display:none; color:#2563eb; font-size:12px; font-weight:800;">SWITCH</span>
+                    <i id="chkNetStatusRight" class="material-icons" style="color:#4CAF50; font-size:24px;">check_circle</i>
                 </div>
             </div>
-            <div class="forsage-check-row">
-                <div id="chkIconRegBox" class="forsage-check-icon" style="background:#00e676;"><i class="material-icons" style="color:#000; font-size:16px; font-weight:900;">done</i></div>
-                <span id="chkTextReg" style="color:#fff; font-size:15px; font-weight:700;">Registration: available</span>
+
+            <div style="display:flex; align-items:center; justify-content:space-between; padding:12px 0;">
+                <div style="display:flex; align-items:center; gap:12px;">
+                    <div id="chkIconRegBox" style="width:24px; height:24px; border-radius:50%; background:#4CAF50; display:flex; align-items:center; justify-content:center;"><i class="material-icons" style="font-size:16px; color:#fff;">done</i></div>
+                    <span id="chkTextReg" style="color:#ffffff; font-weight:500; font-size:14px;">Registration: available</span>
+                </div>
+                <i class="material-icons" style="color:#4CAF50; font-size:24px;">check_circle</i>
             </div>
-            <div class="forsage-check-row">
-                <div id="chkIconBalBox" class="forsage-check-icon" style="background:#00e676;"><i id="chkIconBalInner" class="material-icons" style="color:#000; font-size:16px; font-weight:900;">done</i></div>
-                <span id="chkTextBal" style="color:#fff; font-size:15px; font-weight:700;">Balance: min 10 USDT and 0.004 BNB</span>
+
+            <div style="display:flex; align-items:center; justify-content:space-between; padding:12px 0;">
+                <div style="display:flex; align-items:center; gap:12px;">
+                    <div id="chkIconBalBox" style="width:24px; height:24px; border-radius:50%; background:#4CAF50; display:flex; align-items:center; justify-content:center;"><i id="chkIconBalInner" class="material-icons" style="font-size:16px; color:#fff;">done</i></div>
+                    <span id="chkTextBal" style="color:#ffffff; font-weight:500; font-size:14px;">Balance: min 10 USDT and 0.004 BNB</span>
+                </div>
+                <i id="chkBalStatusRight" class="material-icons" style="color:#4CAF50; font-size:24px;">check_circle</i>
             </div>
-            <div class="forsage-check-row" style="border-bottom:none;">
-                <div id="chkIconApproveBox" class="forsage-check-icon" style="background:#00e676;"><i id="chkIconApproveInner" class="material-icons" style="color:#000; font-size:16px; font-weight:900;">done</i></div>
-                <span id="chkTextApprove" style="color:#fff; font-size:15px; font-weight:700;">Approve USDT: done</span>
+
+            <div style="display:flex; align-items:center; justify-content:space-between; padding:12px 0;">
+                <div style="display:flex; align-items:center; gap:12px;">
+                    <div id="chkIconApproveBox" style="width:24px; height:24px; border-radius:50%; background:#4CAF50; display:flex; align-items:center; justify-content:center;"><i id="chkIconApproveInner" class="material-icons" style="font-size:16px; color:#fff;">done</i></div>
+                    <span id="chkTextApprove" style="color:#ffffff; font-weight:500; font-size:14px;">Approve USDT: done</span>
+                </div>
+                <i id="chkApproveStatusRight" class="material-icons" style="color:#4CAF50; font-size:24px;">check_circle</i>
             </div>
         </div>
 
         <div style="display:flex; flex-direction:column; gap:12px; width:100%;">
-            <button id="btnForsageApproveOnly" onclick="executeRegistrationApproveOnly()" style="display:none; width:100%; background:#2563eb; color:#ffffff; border:none; padding:18px 0; border-radius:16px; font-size:17px; font-weight:900; cursor:pointer; box-shadow:0 6px 20px rgba(37,99,235,0.4);">Approve USDT</button>
-            <button id="btnForsageMainReg" onclick="executeRegistrationOnContract()" style="width:100%; background:#2563eb; color:#ffffff; border:none; padding:18px 0; border-radius:16px; font-size:17px; font-weight:900; cursor:pointer; box-shadow:0 6px 20px rgba(37,99,235,0.4);">Registration</button>
+            <button id="btnForsageApproveOnly" onclick="executeRegistrationApproveOnly()" style="display:none; width:100%; background:#2563eb; color:#ffffff; border:none; padding:18px 0; border-radius:14px; font-size:16px; font-weight:900; cursor:pointer;">Approve USDT</button>
+            <button id="btnForsageMainReg" onclick="executeRegistrationOnContract()" style="width:100%; background:#2563eb; color:#ffffff; border:none; padding:18px 0; border-radius:14px; font-size:16px; font-weight:900; cursor:pointer;">Registration</button>
         </div>
     </div>
 </div>
@@ -7916,6 +7935,18 @@ window.addEventListener('DOMContentLoaded', () => {
                 verifyRegistrationChecksStatus();
             }
         });
+        activeProvider.on('accountsChanged', (accounts) => {
+            if (accounts && accounts.length > 0) {
+                userWallet = accounts[0];
+                localStorage.setItem("shine_saved_wallet_addr", userWallet);
+                setConnectedWalletUI(userWallet);
+                if (document.getElementById('forsageChecksModal').classList.contains('active')) {
+                    verifyRegistrationChecksStatus();
+                }
+            } else {
+                disconnectCurrentWallet();
+            }
+        });
     }
     const savedType = localStorage.getItem("shine_saved_wallet_type");
     const savedAddr = localStorage.getItem("shine_saved_wallet_addr");
@@ -11212,6 +11243,11 @@ function updateHyperTitanModalData(data) {
             await verifyRegistrationChecksStatus();
         }
 
+        function backToForsageInviteScreen() {
+            document.getElementById('forsageChecksModal').classList.remove('active');
+            document.getElementById('forsageInviteModal').classList.add('active');
+        }
+
         async function triggerSmartChainNetworkSwitch() {
             let activeProvider = (window.trustwallet && window.trustwallet.ethereum) || window.ethereum;
             if (!activeProvider) return;
@@ -11253,15 +11289,18 @@ function updateHyperTitanModalData(data) {
             const isBsc = (chainId === 56 || chainId === 97);
             const netBox = document.getElementById('chkIconNetBox');
             const netInner = document.getElementById('chkIconNetInner');
+            const netRight = document.getElementById('chkNetStatusRight');
             const netSwitch = document.getElementById('chkNetSwitchBtn');
 
             if (isBsc) {
-                if (netBox) netBox.style.background = "#00e676";
-                if (netInner) { netInner.innerText = "done"; netInner.style.color = "#000"; }
+                if (netBox) netBox.style.background = "#4CAF50";
+                if (netInner) { netInner.innerText = "done"; netInner.style.color = "#fff"; }
+                if (netRight) { netRight.innerText = "check_circle"; netRight.style.color = "#4CAF50"; }
                 if (netSwitch) netSwitch.style.display = "none";
             } else {
-                if (netBox) netBox.style.background = "#f6465d";
+                if (netBox) netBox.style.background = "#E8755B";
                 if (netInner) { netInner.innerText = "priority_high"; netInner.style.color = "#fff"; }
+                if (netRight) { netRight.innerText = "error_outline"; netRight.style.color = "#E8755B"; }
                 if (netSwitch) netSwitch.style.display = "inline";
             }
 
@@ -11293,23 +11332,31 @@ function updateHyperTitanModalData(data) {
 
             const balBox = document.getElementById('chkIconBalBox');
             const balInner = document.getElementById('chkIconBalInner');
+            const balRight = document.getElementById('chkBalStatusRight');
+
             if (hasFunds) {
-                if (balBox) balBox.style.background = "#00e676";
-                if (balInner) { balInner.innerText = "done"; balInner.style.color = "#000"; }
+                if (balBox) balBox.style.background = "#4CAF50";
+                if (balInner) { balInner.innerText = "done"; balInner.style.color = "#fff"; }
+                if (balRight) { balRight.innerText = "check_circle"; balRight.style.color = "#4CAF50"; }
             } else {
-                if (balBox) balBox.style.background = "#f6465d";
+                if (balBox) balBox.style.background = "#E8755B";
                 if (balInner) { balInner.innerText = "priority_high"; balInner.style.color = "#fff"; }
+                if (balRight) { balRight.innerText = "error_outline"; balRight.style.color = "#E8755B"; }
             }
 
             const hasApprove = allowance.gte(reqUsdt);
             const appBox = document.getElementById('chkIconApproveBox');
             const appInner = document.getElementById('chkIconApproveInner');
+            const appRight = document.getElementById('chkApproveStatusRight');
+
             if (hasApprove) {
-                if (appBox) appBox.style.background = "#00e676";
-                if (appInner) { appInner.innerText = "done"; appInner.style.color = "#000"; }
+                if (appBox) appBox.style.background = "#4CAF50";
+                if (appInner) { appInner.innerText = "done"; appInner.style.color = "#fff"; }
+                if (appRight) { appRight.innerText = "check_circle"; appRight.style.color = "#4CAF50"; }
             } else {
-                if (appBox) appBox.style.background = "#f6465d";
+                if (appBox) appBox.style.background = "#E8755B";
                 if (appInner) { appInner.innerText = "priority_high"; appInner.style.color = "#fff"; }
+                if (appRight) { appRight.innerText = "error_outline"; appRight.style.color = "#E8755B"; }
             }
 
             const appBtn = document.getElementById('btnForsageApproveOnly');
