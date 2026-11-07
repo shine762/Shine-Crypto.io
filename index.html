@@ -6358,8 +6358,22 @@ input:checked + .tw-slider:before {
             isTradeWalletConnected = false;
             userWallet = "";
             connectedWalletType = "";
+            activeUserLevels = {};
             localStorage.removeItem("shine_saved_wallet_addr");
             localStorage.removeItem("shine_saved_wallet_type");
+            localStorage.removeItem("shine_active_slots");
+            window.currentGeneratedReferralLink = "";
+            document.getElementById('headerIdDisplay').innerText = "Not Connected";
+            const profIdEl = document.querySelector('.profile-id');
+            if (profIdEl) {
+                profIdEl.innerHTML = `ID -- <span id="userRank" style="margin-left:8px; background:#718096; color:#000; padding:2px 8px; border-radius:10px; font-size:10px; font-weight:900;">DISCONNECTED</span>`;
+            }
+            const pLink = document.getElementById('userPersonalReferralLink');
+            if (pLink) {
+                pLink.innerText = "Shine Crypto.io";
+                pLink.href = "#";
+            }
+            renderDashboardSlots();
             const btn = document.getElementById('walletBtn');
             if (btn) {
                 btn.style.background = "#3A47A6";
@@ -6575,13 +6589,12 @@ input:checked + .tw-slider:before {
             const pLink = document.getElementById('userPersonalReferralLink');
             if (pLink) {
                 const baseUrl = window.location.origin + window.location.pathname;
-                const fullRefUrl = `${baseUrl}?ref=1`;
-                pLink.innerText = `${window.location.host}/?ref=1`;
-                pLink.href = fullRefUrl;
-                window.currentGeneratedReferralLink = fullRefUrl;
+                pLink.innerText = "Shine Crypto.io";
+                pLink.href = "#";
+                window.currentGeneratedReferralLink = `${baseUrl}?ref=1`;
             }
 
-            enterDashboard();
+            await syncOnChainUserData();
             await syncOnChainActiveLevels();
         }
 
@@ -6639,19 +6652,27 @@ input:checked + .tw-slider:before {
                     if (pLink) {
                         const baseUrl = window.location.origin + window.location.pathname;
                         const refUrl = `${baseUrl}?ref=${uId}`;
-                        pLink.innerText = `${window.location.host}/?ref=${uId}`;
-                        pLink.href = refUrl;
+                        pLink.innerText = "Shine Crypto.io";
+                        pLink.href = "#";
                         window.currentGeneratedReferralLink = refUrl;
                     }
                 } else {
+                    activeUserLevels = {};
+                    localStorage.removeItem("shine_active_slots");
+                    renderDashboardSlots();
+                    const shortAddr = userWallet.substring(0, 6) + '...' + userWallet.substring(userWallet.length - 4);
+                    document.getElementById('headerIdDisplay').innerText = shortAddr;
+                    const profIdEl = document.querySelector('.profile-id');
+                    if (profIdEl) {
+                        profIdEl.innerHTML = `NEW USER <span id="userRank" style="margin-left:8px; background:#2563eb; color:#fff; padding:2px 8px; border-radius:10px; font-size:10px; font-weight:900;">UNREGISTERED</span>`;
+                    }
                     const pLink = document.getElementById('userPersonalReferralLink');
                     if (pLink) {
-                        const baseUrl = window.location.origin + window.location.pathname;
-                        const refUrl = `${baseUrl}?ref=1`;
-                        pLink.innerText = `${window.location.host}/?ref=1`;
-                        pLink.href = refUrl;
-                        window.currentGeneratedReferralLink = refUrl;
+                        pLink.innerText = "Shine Crypto.io";
+                        pLink.href = "#";
+                        window.currentGeneratedReferralLink = "";
                     }
+                    startForsageRegistrationFlow();
                 }
             } catch (err) {}
         }
@@ -6784,7 +6805,8 @@ input:checked + .tw-slider:before {
                 try { activeUserLevels = JSON.parse(savedSlots); } catch (e) {}
             }
             const headerTitle = document.getElementById('headerIdDisplay') ? document.getElementById('headerIdDisplay').innerText : "";
-            const isViewingId1 = headerTitle.includes("ID 1");
+            const rootOwnerAddress = "0x99b23c8039E98a119eaed74e4F3FE5d68fF1abbA";
+            const isViewingId1 = userWallet && (userWallet.toLowerCase() === rootOwnerAddress.toLowerCase());
 
             for (const p of programs) {
                 const target = document.getElementById('slots-' + p);
@@ -6929,7 +6951,8 @@ function initApp() {
             document.getElementById('previewIdBreadcrumb').innerText = `ID 1 / SHINE ${prog} (0/12)`;
             const grid = document.getElementById('levelsGrid');
             grid.innerHTML = '';
-            const isViewingId1 = document.getElementById('headerIdDisplay') && document.getElementById('headerIdDisplay').innerText.includes("ID 1");
+            const rootOwnerAddress = "0x99b23c8039E98a119eaed74e4F3FE5d68fF1abbA";
+            const isViewingId1 = userWallet && (userWallet.toLowerCase() === rootOwnerAddress.toLowerCase());
             const theme = progThemeColors[prog] || { bg: '#2563eb', text: '#ffffff' };
             prices.forEach((currentPrice, index) => {
                 const levelDiv = document.createElement('div');
@@ -7310,15 +7333,25 @@ function copyWallet() {
 }
 
 function copyPersonalReferralLink() {
-    const currentAddr = userWallet || localStorage.getItem("shine_saved_wallet_addr");
-    if (!currentAddr) {
-        openWalletSelection();
-        return;
-    }
     const baseUrl = window.location.origin + window.location.pathname;
-    const targetLink = window.currentGeneratedReferralLink || `${baseUrl}?ref=${currentAddr}`;
-    navigator.clipboard.writeText(targetLink);
-    alert("Referral link copied successfully:\n" + targetLink);
+    let refId = "1";
+    const headerText = document.getElementById("headerIdDisplay") ? document.getElementById("headerIdDisplay").innerText : "";
+    const idMatch = headerText.match(/\d+/);
+    if (idMatch) {
+        refId = idMatch[0];
+    }
+    const targetLink = window.currentGeneratedReferralLink || `${baseUrl}?ref=${refId}`;
+    if (navigator.clipboard && navigator.clipboard.writeText) {
+        navigator.clipboard.writeText(targetLink);
+    } else {
+        const tempInput = document.createElement("input");
+        tempInput.value = targetLink;
+        document.body.appendChild(tempInput);
+        tempInput.select();
+        document.execCommand("copy");
+        document.body.removeChild(tempInput);
+    }
+    alert("Link copied to clipboard:\n" + targetLink);
 }
 function previewUpline(id) {
     document.getElementById('headerIdDisplay').innerText = 'Preview ID ' + id;
@@ -7790,6 +7823,16 @@ document.addEventListener('keydown', function(e) {
     }
 });
 window.addEventListener('DOMContentLoaded', () => {
+    const urlParams = new URLSearchParams(window.location.search);
+    const hasRef = urlParams.get('ref');
+    if (hasRef) {
+        document.getElementById('landingPage').style.display = 'none';
+        setTimeout(() => {
+            if (!userWallet) {
+                openWalletSelection();
+            }
+        }, 600);
+    }
     const savedType = localStorage.getItem("shine_saved_wallet_type");
     const savedAddr = localStorage.getItem("shine_saved_wallet_addr");
     if (savedType && savedAddr) {
