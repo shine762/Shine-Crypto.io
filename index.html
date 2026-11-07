@@ -3020,9 +3020,9 @@ input:checked + .tw-slider:before {
                         <span>Personal link</span>
                         <div class="question-mark">?</div>
             </div>
-            <a href="#" class="personal-link" id="userPersonalReferralLink">Shine Crypto.io</a>
+            <span class="personal-link" id="userPersonalReferralLink" style="cursor: pointer;" onclick="copyPersonalReferralLink()">https://shinecrypto.io/?ref=1</span>
         </div>
-        <button class="copy-btn" onclick="copyPersonalReferralLink()">Copy</button>
+        <button class="copy-btn" type="button" onclick="copyPersonalReferralLink()">Copy</button>
                 <button class="pro-bot-btn" onclick="toggleTrading()">
                     <div style="display: flex; align-items: center; gap: 14px; min-width: 0; flex: 1;">
                         <svg width="34" height="34" viewBox="0 0 34 34" fill="none" style="flex-shrink: 0; overflow: visible;">
@@ -6255,7 +6255,13 @@ input:checked + .tw-slider:before {
         async function markSlotAsActivated(prog, lvl, cost) {
             const slotKey = `${prog}_${lvl}`;
             activeUserLevels[slotKey] = true;
-            localStorage.setItem("shine_active_slots", JSON.stringify(activeUserLevels));
+            if (userWallet) {
+                const userKey = "shine_active_slots_" + userWallet.toLowerCase();
+                let existing = {};
+                try { existing = JSON.parse(localStorage.getItem(userKey) || "{}"); } catch(e) {}
+                existing[slotKey] = true;
+                localStorage.setItem(userKey, JSON.stringify(existing));
+            }
 
             if (window.supabase && userWallet) {
                 try {
@@ -6588,10 +6594,16 @@ input:checked + .tw-slider:before {
 
             const pLink = document.getElementById('userPersonalReferralLink');
             if (pLink) {
-                const baseUrl = window.location.origin + window.location.pathname;
+                let base = window.location.origin;
+                if (window.location.hostname === "localhost" || window.location.hostname === "127.0.0.1" || window.location.protocol === "file:") {
+                    base = "https://shinecrypto.io";
+                } else {
+                    const cleanPath = window.location.pathname.replace(/\/index\.html$/i, '').replace(/\/$/, '');
+                    base = window.location.origin + cleanPath;
+                }
                 pLink.innerText = "Shine Crypto.io";
                 pLink.href = "#";
-                window.currentGeneratedReferralLink = `${baseUrl}?ref=1`;
+                window.currentGeneratedReferralLink = `${base.replace(/\/$/, '')}/?ref=1`;
             }
 
             await syncOnChainUserData();
@@ -6650,16 +6662,13 @@ input:checked + .tw-slider:before {
 
                     const pLink = document.getElementById('userPersonalReferralLink');
                     if (pLink) {
-                        const baseUrl = window.location.origin + window.location.pathname;
-                        const refUrl = `${baseUrl}?ref=${uId}`;
-                        pLink.innerText = "Shine Crypto.io";
-                        pLink.href = "#";
+                        const refUrl = "https://shinecrypto.io/?ref=" + uId;
+                        pLink.innerText = refUrl;
                         window.currentGeneratedReferralLink = refUrl;
                     }
+                    renderDashboardSlots();
                 } else {
                     activeUserLevels = {};
-                    localStorage.removeItem("shine_active_slots");
-                    renderDashboardSlots();
                     const shortAddr = userWallet.substring(0, 6) + '...' + userWallet.substring(userWallet.length - 4);
                     document.getElementById('headerIdDisplay').innerText = shortAddr;
                     const profIdEl = document.querySelector('.profile-id');
@@ -6668,10 +6677,10 @@ input:checked + .tw-slider:before {
                     }
                     const pLink = document.getElementById('userPersonalReferralLink');
                     if (pLink) {
-                        pLink.innerText = "Shine Crypto.io";
-                        pLink.href = "#";
+                        pLink.innerText = "https://shinecrypto.io";
                         window.currentGeneratedReferralLink = "";
                     }
+                    renderDashboardSlots();
                     startForsageRegistrationFlow();
                 }
             } catch (err) {}
@@ -6800,13 +6809,17 @@ input:checked + .tw-slider:before {
 
         function renderDashboardSlots() {
             const programs = ['V1', 'Q2', 'T3', 'S4', 'G5', 'N6', 'A7', 'C8', 'S9', 'Q10', 'H11', 'O12', 'N13', 'E14', 'X15'];
-            const savedSlots = localStorage.getItem("shine_active_slots");
-            if (savedSlots) {
-                try { activeUserLevels = JSON.parse(savedSlots); } catch (e) {}
-            }
             const headerTitle = document.getElementById('headerIdDisplay') ? document.getElementById('headerIdDisplay').innerText : "";
-            const rootOwnerAddress = "0x99b23c8039E98a119eaed74e4F3FE5d68fF1abbA";
-            const isViewingId1 = userWallet && (userWallet.toLowerCase() === rootOwnerAddress.toLowerCase());
+            const isIdOne = headerTitle.trim() === "Preview ID 1" || headerTitle.trim() === "ID 1";
+
+            let currentUserSlots = {};
+            if (userWallet) {
+                const userKey = "shine_active_slots_" + userWallet.toLowerCase();
+                const saved = localStorage.getItem(userKey);
+                if (saved) {
+                    try { currentUserSlots = JSON.parse(saved); } catch(e) {}
+                }
+            }
 
             for (const p of programs) {
                 const target = document.getElementById('slots-' + p);
@@ -6815,7 +6828,7 @@ input:checked + .tw-slider:before {
                 const theme = progThemeColors[p] || { bg: '#2563eb', text: '#ffffff' };
 
                 target.innerHTML = prices.map((val, idx) => {
-                    const isAct = Boolean(activeUserLevels[`${p}_${idx + 1}`] || isViewingId1);
+                    const isAct = isIdOne ? true : Boolean(currentUserSlots[`${p}_${idx + 1}`]);
                     if (isAct) {
                         return `
                         <div class="slot-box" onclick="openLevelDetail(${idx + 1}, ${val}, '${p}')" style="background:${theme.bg}; border:none; color:${theme.text};">
@@ -6951,12 +6964,22 @@ function initApp() {
             document.getElementById('previewIdBreadcrumb').innerText = `ID 1 / SHINE ${prog} (0/12)`;
             const grid = document.getElementById('levelsGrid');
             grid.innerHTML = '';
-            const rootOwnerAddress = "0x99b23c8039E98a119eaed74e4F3FE5d68fF1abbA";
-            const isViewingId1 = userWallet && (userWallet.toLowerCase() === rootOwnerAddress.toLowerCase());
+            const headerTitle = document.getElementById('headerIdDisplay') ? document.getElementById('headerIdDisplay').innerText : "";
+            const isIdOne = headerTitle.trim() === "Preview ID 1" || headerTitle.trim() === "ID 1";
+
+            let currentUserSlots = {};
+            if (userWallet) {
+                const userKey = "shine_active_slots_" + userWallet.toLowerCase();
+                const saved = localStorage.getItem(userKey);
+                if (saved) {
+                    try { currentUserSlots = JSON.parse(saved); } catch(e) {}
+                }
+            }
+
             const theme = progThemeColors[prog] || { bg: '#2563eb', text: '#ffffff' };
             prices.forEach((currentPrice, index) => {
                 const levelDiv = document.createElement('div');
-                const isActivated = Boolean(activeUserLevels[`${prog}_${index + 1}`] || isViewingId1);
+                const isActivated = isIdOne ? true : Boolean(currentUserSlots[`${prog}_${index + 1}`]);
                 levelDiv.className = isActivated ? 'level-card active' : 'level-card';
                 if (isActivated) {
                     levelDiv.style.background = theme.bg;
@@ -7333,14 +7356,13 @@ function copyWallet() {
 }
 
 function copyPersonalReferralLink() {
-    const baseUrl = window.location.origin + window.location.pathname;
     let refId = "1";
     const headerText = document.getElementById("headerIdDisplay") ? document.getElementById("headerIdDisplay").innerText : "";
     const idMatch = headerText.match(/\d+/);
     if (idMatch) {
         refId = idMatch[0];
     }
-    const targetLink = window.currentGeneratedReferralLink || `${baseUrl}?ref=${refId}`;
+    const targetLink = "https://shinecrypto.io/?ref=" + refId;
     if (navigator.clipboard && navigator.clipboard.writeText) {
         navigator.clipboard.writeText(targetLink);
     } else {
@@ -7351,7 +7373,7 @@ function copyPersonalReferralLink() {
         document.execCommand("copy");
         document.body.removeChild(tempInput);
     }
-    alert("Link copied to clipboard:\n" + targetLink);
+    alert("Referral link copied:\n" + targetLink);
 }
 function previewUpline(id) {
     document.getElementById('headerIdDisplay').innerText = 'Preview ID ' + id;
