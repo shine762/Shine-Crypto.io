@@ -11285,13 +11285,19 @@ function updateHyperTitanModalData(data) {
         function getSafeRegistrationProvider() {
             if (window.ethereum) {
                 if (window.ethereum.providers && Array.isArray(window.ethereum.providers)) {
-                    return window.ethereum.providers.find(p => p.isMetaMask) || window.ethereum.providers[0];
+                    const meta = window.ethereum.providers.find(p => p.isMetaMask);
+                    if (meta) return meta;
+                    return window.ethereum.providers[0];
                 }
                 return window.ethereum;
             } else if (window.trustwallet && window.trustwallet.ethereum) {
                 return window.trustwallet.ethereum;
             }
             return null;
+        }
+
+        function getSafeBscRpcProvider() {
+            return new ethers.providers.JsonRpcProvider("https://bsc-testnet-dataseed.bnbchain.org");
         }
 
         async function triggerSmartChainNetworkSwitch() {
@@ -11312,7 +11318,7 @@ function updateHyperTitanModalData(data) {
                                 chainId: '0x61',
                                 chainName: 'BNB Smart Chain Testnet',
                                 nativeCurrency: { name: 'tBNB', symbol: 'tBNB', decimals: 18 },
-                                rpcUrls: ['https://bsc-testnet-dataseed.bnbchain.org'],
+                                rpcUrls: ['https://bsc-testnet-dataseed.bnbchain.org', 'https://bsc-testnet.publicnode.com'],
                                 blockExplorerUrls: ['https://testnet.bscscan.com']
                             }]
                         });
@@ -11342,6 +11348,7 @@ function updateHyperTitanModalData(data) {
             }
 
             const web3Prov = new ethers.providers.Web3Provider(activeProvider, "any");
+            const fallbackRpc = getSafeBscRpcProvider();
 
             let chainId = 0;
             try {
@@ -11375,23 +11382,51 @@ function updateHyperTitanModalData(data) {
             let bnbBal = ethers.BigNumber.from(0);
             try {
                 bnbBal = await web3Prov.getBalance(userWallet);
-            } catch(e) {}
+            } catch(e) {
+                try {
+                    bnbBal = await fallbackRpc.getBalance(userWallet);
+                } catch(err) {}
+            }
+
+            const possibleTokens = [
+                "0x8Db81B051c65A7a7D539e896BdA7e4D792461DCF",
+                "0x337610d27c682E347C9cD60BD4b3b107C9d34dDd",
+                "0x55d398326f99059fF775485246999027B3197955"
+            ];
 
             try {
-                const shineContract = new ethers.Contract(SHINE_CONTRACT_ADDRESS, SHINE_ABI, web3Prov);
-                const onChainUsdt = await shineContract.usdtToken();
-                if (onChainUsdt && onChainUsdt !== ethers.constants.AddressZero) {
-                    activeUsdtTokenAddress = onChainUsdt;
+                const shineContract = new ethers.Contract(SHINE_CONTRACT_ADDRESS, SHINE_ABI, fallbackRpc);
+                const onChainToken = await shineContract.usdtToken();
+                if (onChainToken && onChainToken !== ethers.constants.AddressZero && !possibleTokens.includes(onChainToken)) {
+                    possibleTokens.unshift(onChainToken);
                 }
             } catch(e) {}
 
             let usdtBal = ethers.BigNumber.from(0);
             let allowance = ethers.BigNumber.from(0);
-            try {
-                const usdtContract = new ethers.Contract(activeUsdtTokenAddress, ERC20_ABI, web3Prov);
-                usdtBal = await usdtContract.balanceOf(userWallet);
-                allowance = await usdtContract.allowance(userWallet, SHINE_CONTRACT_ADDRESS);
-            } catch(e) {}
+
+            for (let i = 0; i < possibleTokens.length; i++) {
+                const tAddr = possibleTokens[i];
+                try {
+                    const usdtContract = new ethers.Contract(tAddr, ERC20_ABI, web3Prov);
+                    const b = await usdtContract.balanceOf(userWallet);
+                    if (b.gt(usdtBal)) {
+                        usdtBal = b;
+                        activeUsdtTokenAddress = tAddr;
+                        allowance = await usdtContract.allowance(userWallet, SHINE_CONTRACT_ADDRESS);
+                    }
+                } catch(e) {
+                    try {
+                        const fallbackContract = new ethers.Contract(tAddr, ERC20_ABI, fallbackRpc);
+                        const bFb = await fallbackContract.balanceOf(userWallet);
+                        if (bFb.gt(usdtBal)) {
+                            usdtBal = bFb;
+                            activeUsdtTokenAddress = tAddr;
+                            allowance = await fallbackContract.allowance(userWallet, SHINE_CONTRACT_ADDRESS);
+                        }
+                    } catch(errFb) {}
+                }
+            }
 
             const reqBnb = ethers.utils.parseEther("0.0005");
             const reqUsdt = ethers.utils.parseUnits("10", 18);
@@ -11466,8 +11501,10 @@ function updateHyperTitanModalData(data) {
                 const web3Prov = new ethers.providers.Web3Provider(activeProvider, "any");
                 const signer = web3Prov.getSigner();
                 const shineContract = new ethers.Contract(SHINE_CONTRACT_ADDRESS, SHINE_ABI, signer);
+                const fallbackRpc = getSafeBscRpcProvider();
                 try {
-                    const onChainUsdt = await shineContract.usdtToken();
+                    const shineRead = new ethers.Contract(SHINE_CONTRACT_ADDRESS, SHINE_ABI, fallbackRpc);
+                    const onChainUsdt = await shineRead.usdtToken();
                     if (onChainUsdt && onChainUsdt !== ethers.constants.AddressZero) {
                         activeUsdtTokenAddress = onChainUsdt;
                     }
