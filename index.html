@@ -6588,10 +6588,22 @@ input:checked + .tw-slider:before {
 
             if (targetProvider && typeof targetProvider.request === "function") {
                 try {
+                    let accounts = [];
                     try {
-                        await targetProvider.request({ method: "wallet_requestPermissions", params: [{ eth_accounts: {} }] });
+                        const permissions = await targetProvider.request({
+                            method: "wallet_requestPermissions",
+                            params: [{ eth_accounts: {} }]
+                        });
+                        if (Array.isArray(permissions)) {
+                            const accPerm = permissions.find(p => p.parentCapability === 'eth_accounts');
+                            if (accPerm && accPerm.caveats && accPerm.caveats[0] && Array.isArray(accPerm.caveats[0].value)) {
+                                accounts = accPerm.caveats[0].value;
+                            }
+                        }
                     } catch(permErr) {}
-                    const accounts = await targetProvider.request({ method: "eth_requestAccounts" });
+                    if (!accounts || accounts.length === 0) {
+                        accounts = await targetProvider.request({ method: "eth_requestAccounts" });
+                    }
                     if (accounts && accounts.length > 0) {
                         userWallet = accounts[0];
                         isTradeWalletConnected = true;
@@ -6824,17 +6836,9 @@ input:checked + .tw-slider:before {
     const totalCapEl = document.getElementById("total-capital");
     if (totalCapEl) totalCapEl.innerText = "$" + currentTotalUserCapital.toFixed(2);
     try {
-        if (window.ethereum) {
-                    provider = new ethers.providers.Web3Provider(window.ethereum);
-                    const accounts = await provider.listAccounts();
-                    if (accounts.length > 0) {
-                        userWallet = accounts[0];
-                        document.getElementById('displayWallet').innerText = userWallet.substring(0, 6) + '...' + userWallet.substring(userWallet.length - 4);
-                        loadSavedProfileFromDB();
-                    }
-                }
-                document.getElementById('notifDot').style.display = 'none';
-            } catch (err) {}
+        const notifDotEl = document.getElementById('notifDot');
+        if (notifDotEl) notifDotEl.style.display = 'none';
+    } catch (err) {}
 
             const mem = document.getElementById('totalMembers');
             const profitVal = document.getElementById('realProfitValue');
@@ -7948,38 +7952,8 @@ window.addEventListener('DOMContentLoaded', () => {
             }
         });
     }
-    const savedType = localStorage.getItem("shine_saved_wallet_type");
-    const savedAddr = localStorage.getItem("shine_saved_wallet_addr");
-    if (savedType && savedAddr) {
-        setTimeout(() => {
-            directReconnectLastWallet();
-        }, 300);
-    } else if (window.ethereum) {
-        setTimeout(async () => {
-            try {
-                const prov = new ethers.providers.Web3Provider(window.ethereum);
-                const accs = await prov.listAccounts();
-                if (accs && accs.length > 0) {
-                    userWallet = accs[0];
-                    isTradeWalletConnected = true;
-                    connectedWalletType = window.ethereum.isTrust ? "TRUST" : "METAMASK";
-                    setConnectedWalletUI(userWallet);
-                }
-            } catch (err) {}
-        }, 500);
-    } else if (window.solana && window.solana.isPhantom) {
-        setTimeout(async () => {
-            try {
-                const resp = await window.solana.connect({ onlyIfTrusted: true });
-                if (resp && resp.publicKey) {
-                    userWallet = resp.publicKey.toString();
-                    isTradeWalletConnected = true;
-                    connectedWalletType = "PHANTOM";
-                    setConnectedWalletUI(userWallet);
-                }
-            } catch (err) {}
-        }, 500);
-    }
+    localStorage.removeItem("shine_saved_wallet_addr");
+    localStorage.removeItem("shine_saved_wallet_type");
     try {
         latestBackendState = null;
         cachedAllTrades = [];
