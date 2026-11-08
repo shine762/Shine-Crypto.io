@@ -6725,12 +6725,7 @@ input:checked + .tw-slider:before {
                 const web3Prov = new ethers.providers.Web3Provider(activeProvider, "any");
                 const shineContract = new ethers.Contract(SHINE_CONTRACT_ADDRESS, SHINE_ABI, web3Prov);
 
-                try {
-                    const realUsdt = await shineContract.usdtToken();
-                    if (realUsdt && realUsdt !== ethers.constants.AddressZero) activeUsdtTokenAddress = realUsdt;
-                    const realShine = await shineContract.shineToken();
-                    if (realShine && realShine !== ethers.constants.AddressZero) activeShineTokenAddress = realShine;
-                } catch(te) {}
+                activeUsdtTokenAddress = "0x8Db81B051c65A7a7D539e896BdA7e4D792461DCF";
 
                 const userStruct = await shineContract.users(userWallet);
                 if (userStruct && userStruct.isRegistered) {
@@ -11319,6 +11314,8 @@ function updateHyperTitanModalData(data) {
             let activeProvider = (window.trustwallet && window.trustwallet.ethereum) || window.ethereum;
             if (!activeProvider || !userWallet) return;
 
+            activeUsdtTokenAddress = "0x8Db81B051c65A7a7D539e896BdA7e4D792461DCF";
+
             let chainId = 0;
             try {
                 const chainHex = await activeProvider.request({ method: 'eth_chainId' });
@@ -11346,7 +11343,7 @@ function updateHyperTitanModalData(data) {
             let bnbBal = ethers.BigNumber.from(0);
             try {
                 const rawB = await activeProvider.request({ method: 'eth_getBalance', params: [userWallet, 'latest'] });
-                bnbBal = ethers.BigNumber.from(rawB);
+                if (rawB && rawB !== '0x') bnbBal = ethers.BigNumber.from(rawB);
             } catch(e) {}
 
             let usdtBal = ethers.BigNumber.from(0);
@@ -11357,17 +11354,19 @@ function updateHyperTitanModalData(data) {
                     method: 'eth_call',
                     params: [{ to: activeUsdtTokenAddress, data: erc20.encodeFunctionData("balanceOf", [userWallet]) }, 'latest']
                 });
-                usdtBal = ethers.BigNumber.from(rawBal);
+                if (rawBal && rawBal !== '0x') usdtBal = ethers.BigNumber.from(rawBal);
+
                 const rawAll = await activeProvider.request({
                     method: 'eth_call',
                     params: [{ to: activeUsdtTokenAddress, data: erc20.encodeFunctionData("allowance", [userWallet, SHINE_CONTRACT_ADDRESS]) }, 'latest']
                 });
-                allowance = ethers.BigNumber.from(rawAll);
+                if (rawAll && rawAll !== '0x') allowance = ethers.BigNumber.from(rawAll);
             } catch(e) {}
 
-            const reqBnb = ethers.utils.parseEther("0.0035");
+            const reqBnb = ethers.utils.parseEther("0.0005");
             const reqUsdt = ethers.utils.parseUnits("10", 18);
-            const hasFunds = bnbBal.gte(reqBnb) && usdtBal.gte(reqUsdt);
+            const reqUsdt6 = ethers.utils.parseUnits("10", 6);
+            const hasFunds = bnbBal.gte(reqBnb) && (usdtBal.gte(reqUsdt) || usdtBal.gte(reqUsdt6));
 
             const balBox = document.getElementById('chkIconBalBox');
             const balInner = document.getElementById('chkIconBalInner');
@@ -11383,7 +11382,7 @@ function updateHyperTitanModalData(data) {
                 if (balRight) { balRight.innerText = "error_outline"; balRight.style.color = "#E8755B"; }
             }
 
-            const hasApprove = allowance.gte(reqUsdt);
+            const hasApprove = allowance.gte(reqUsdt) || allowance.gte(reqUsdt6);
             const appBox = document.getElementById('chkIconApproveBox');
             const appInner = document.getElementById('chkIconApproveInner');
             const appRight = document.getElementById('chkApproveStatusRight');
@@ -11437,41 +11436,49 @@ function updateHyperTitanModalData(data) {
                 const web3Prov = new ethers.providers.Web3Provider(activeProvider, "any");
                 const signer = web3Prov.getSigner();
                 const shineContract = new ethers.Contract(SHINE_CONTRACT_ADDRESS, SHINE_ABI, signer);
+                activeUsdtTokenAddress = "0x8Db81B051c65A7a7D539e896BdA7e4D792461DCF";
                 const usdtContract = new ethers.Contract(activeUsdtTokenAddress, ERC20_ABI, signer);
 
                 const regCostUnits = ethers.utils.parseUnits("10", 18);
                 const currentAllowance = await usdtContract.allowance(userWallet, SHINE_CONTRACT_ADDRESS);
                 if (currentAllowance.lt(regCostUnits)) {
                     btn.innerText = 'APPROVE USDT IN WALLET...';
-                    const approveTx = await usdtContract.approve(SHINE_CONTRACT_ADDRESS, ethers.constants.MaxUint256, { gasLimit: 120000 });
+                    const approveTx = await usdtContract.approve(SHINE_CONTRACT_ADDRESS, ethers.constants.MaxUint256);
                     await approveTx.wait();
                 }
 
                 const refInput = document.getElementById('regChecksUplineInput').value.trim();
                 let uplineAddr = ROOT_OWNER_ADDRESS;
-                if (ethers.utils.isAddress(refInput)) {
+                try {
+                    const cOwner = await shineContract.rootOwner();
+                    if (cOwner && cOwner !== ethers.constants.AddressZero) uplineAddr = cOwner;
+                } catch(e) {}
+
+                if (ethers.utils.isAddress(refInput) && refInput !== ethers.constants.AddressZero) {
                     uplineAddr = refInput;
                 } else if (!isNaN(refInput) && Number(refInput) > 1) {
                     try {
                         const fetched = await shineContract.idToAddress(Number(refInput));
-                        if (fetched && fetched !== ethers.constants.AddressZero) {
-                            uplineAddr = fetched;
-                        }
+                        if (fetched && fetched !== ethers.constants.AddressZero) uplineAddr = fetched;
                     } catch(e) {}
                 }
 
                 let bnbFeeValue = ethers.utils.parseEther("0.001");
                 try {
                     const feeVal = await shineContract.getServiceFee(1);
-                    if (feeVal && !feeVal.isZero()) {
-                        bnbFeeValue = feeVal;
-                    }
+                    if (feeVal && !feeVal.isZero()) bnbFeeValue = feeVal;
                 } catch(e) {}
 
                 btn.innerText = 'CONFIRM REGISTRATION IN WALLET...';
-                const regTx = await shineContract.register(uplineAddr, { value: bnbFeeValue, gasLimit: 600000 });
+                let regTx;
+                try {
+                    regTx = await shineContract.register(uplineAddr, { value: bnbFeeValue, gasLimit: 650000 });
+                } catch(errTx) {
+                    regTx = await shineContract.register(uplineAddr, { value: 0, gasLimit: 650000 });
+                }
+
                 btn.innerText = 'CONFIRMING ON BSC...';
-                const receipt = await regTx.wait();
+                await regTx.wait();
 
                 await markSlotAsActivated('V1', 1, 10);
 
@@ -11486,7 +11493,6 @@ function updateHyperTitanModalData(data) {
                 if (e.code !== 4001) alert(e.reason || e.message || 'Registration failed');
             }
         }
-
         function previewSpecificId() {
             const val = document.getElementById('gatePreviewInput').value.trim();
             if (!val) return;
