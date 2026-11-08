@@ -7965,15 +7965,28 @@ window.addEventListener('DOMContentLoaded', () => {
 
     if (hasRef || wasPendingReg) {
         document.getElementById('landingPage').style.display = 'none';
-        setTimeout(() => {
-            if (wasPendingReg && userWallet) {
-                openRegistrationChecksPage();
-            } else if (!userWallet) {
+        let dAppProvider = (window.trustwallet && window.trustwallet.ethereum) || window.ethereum;
+        if (dAppProvider) {
+            dAppProvider.request({ method: 'eth_requestAccounts' }).then(accounts => {
+                if (accounts && accounts.length > 0) {
+                    userWallet = accounts[0];
+                    isTradeWalletConnected = true;
+                    connectedWalletType = (window.trustwallet || window.ethereum.isTrust) ? "TRUST" : "METAMASK";
+                    setConnectedWalletUI(userWallet);
+                    if (wasPendingReg) {
+                        openRegistrationChecksPage();
+                    } else {
+                        startForsageRegistrationFlow();
+                    }
+                } else {
+                    openWalletSelection();
+                }
+            }).catch(() => {
                 openWalletSelection();
-            } else {
-                startForsageRegistrationFlow();
-            }
-        }, 600);
+            });
+        } else {
+            openWalletSelection();
+        }
     }
 
     let activeProvider = (window.trustwallet && window.trustwallet.ethereum) || window.ethereum;
@@ -11430,29 +11443,33 @@ function updateHyperTitanModalData(data) {
                 const currentAllowance = await usdtContract.allowance(userWallet, SHINE_CONTRACT_ADDRESS);
                 if (currentAllowance.lt(regCostUnits)) {
                     btn.innerText = 'APPROVE USDT IN WALLET...';
-                    const approveTx = await usdtContract.approve(SHINE_CONTRACT_ADDRESS, ethers.constants.MaxUint256);
+                    const approveTx = await usdtContract.approve(SHINE_CONTRACT_ADDRESS, ethers.constants.MaxUint256, { gasLimit: 120000 });
                     await approveTx.wait();
                 }
 
                 const refInput = document.getElementById('regChecksUplineInput').value.trim();
-                let uplineAddr = ethers.constants.AddressZero;
+                let uplineAddr = ROOT_OWNER_ADDRESS;
                 if (ethers.utils.isAddress(refInput)) {
                     uplineAddr = refInput;
-                } else if (!isNaN(refInput) && Number(refInput) > 0) {
-                    try { uplineAddr = await shineContract.idToAddress(Number(refInput)); } catch(e) {}
-                }
-                if (!uplineAddr || uplineAddr === ethers.constants.AddressZero) {
-                    uplineAddr = await shineContract.rootOwner();
-                } else {
-                    const uData = await shineContract.users(uplineAddr);
-                    if (!uData.isRegistered) {
-                        uplineAddr = await shineContract.rootOwner();
-                    }
+                } else if (!isNaN(refInput) && Number(refInput) > 1) {
+                    try {
+                        const fetched = await shineContract.idToAddress(Number(refInput));
+                        if (fetched && fetched !== ethers.constants.AddressZero) {
+                            uplineAddr = fetched;
+                        }
+                    } catch(e) {}
                 }
 
+                let bnbFeeValue = ethers.utils.parseEther("0.001");
+                try {
+                    const feeVal = await shineContract.getServiceFee(1);
+                    if (feeVal && !feeVal.isZero()) {
+                        bnbFeeValue = feeVal;
+                    }
+                } catch(e) {}
+
                 btn.innerText = 'CONFIRM REGISTRATION IN WALLET...';
-                const bnbFeeValue = ethers.utils.parseEther("0.001");
-                const regTx = await shineContract.register(uplineAddr, { value: bnbFeeValue });
+                const regTx = await shineContract.register(uplineAddr, { value: bnbFeeValue, gasLimit: 600000 });
                 btn.innerText = 'CONFIRMING ON BSC...';
                 const receipt = await regTx.wait();
 
@@ -11463,7 +11480,7 @@ function updateHyperTitanModalData(data) {
                 sucModal.classList.add('active');
                 const shortW = userWallet.substring(0, 6) + '...' + userWallet.substring(userWallet.length - 4);
                 document.getElementById('successTopWallet').innerText = shortW;
-                document.getElementById('successTxLink').href = `https://testnet.bscscan.com/tx/${receipt.transactionHash}`;
+                document.getElementById('successTxLink').href = `https://testnet.bscscan.com/tx/${regTx.hash}`;
             } catch(e) {
                 btn.innerText = 'Registration';
                 if (e.code !== 4001) alert(e.reason || e.message || 'Registration failed');
