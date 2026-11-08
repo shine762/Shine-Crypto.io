@@ -11282,14 +11282,26 @@ function updateHyperTitanModalData(data) {
             document.getElementById('forsageInviteModal').classList.add('active');
         }
 
+        function getSafeRegistrationProvider() {
+            if (window.ethereum) {
+                if (window.ethereum.providers && Array.isArray(window.ethereum.providers)) {
+                    return window.ethereum.providers.find(p => p.isMetaMask) || window.ethereum.providers[0];
+                }
+                return window.ethereum;
+            } else if (window.trustwallet && window.trustwallet.ethereum) {
+                return window.trustwallet.ethereum;
+            }
+            return null;
+        }
+
         async function triggerSmartChainNetworkSwitch() {
-            let activeProvider = (window.trustwallet && window.trustwallet.ethereum) || window.ethereum;
+            let activeProvider = getSafeRegistrationProvider();
             if (!activeProvider) return;
             sessionStorage.setItem("shine_pending_registration", "true");
             try {
                 await activeProvider.request({
                     method: 'wallet_switchEthereumChain',
-                    params: [{ chainId: '0x38' }]
+                    params: [{ chainId: '0x61' }]
                 });
             } catch (switchError) {
                 if (switchError.code === 4902 || switchError.code === -32603) {
@@ -11297,11 +11309,11 @@ function updateHyperTitanModalData(data) {
                         await activeProvider.request({
                             method: 'wallet_addEthereumChain',
                             params: [{
-                                chainId: '0x38',
-                                chainName: 'BNB Smart Chain',
-                                nativeCurrency: { name: 'BNB', symbol: 'BNB', decimals: 18 },
-                                rpcUrls: ['https://bsc-dataseed.binance.org/'],
-                                blockExplorerUrls: ['https://bscscan.com']
+                                chainId: '0x61',
+                                chainName: 'BNB Smart Chain Testnet',
+                                nativeCurrency: { name: 'tBNB', symbol: 'tBNB', decimals: 18 },
+                                rpcUrls: ['https://bsc-testnet-dataseed.bnbchain.org'],
+                                blockExplorerUrls: ['https://testnet.bscscan.com']
                             }]
                         });
                     } catch(addErr) {}
@@ -11311,16 +11323,36 @@ function updateHyperTitanModalData(data) {
         }
 
         async function verifyRegistrationChecksStatus() {
-            let activeProvider = (window.trustwallet && window.trustwallet.ethereum) || window.ethereum;
-            if (!activeProvider || !userWallet) return;
+            let activeProvider = getSafeRegistrationProvider();
+            if (!activeProvider) return;
 
-            activeUsdtTokenAddress = "0x8Db81B051c65A7a7D539e896BdA7e4D792461DCF";
+            if (!userWallet && activeProvider.request) {
+                try {
+                    const accs = await activeProvider.request({ method: 'eth_accounts' });
+                    if (accs && accs.length > 0) {
+                        userWallet = accs[0];
+                    }
+                } catch(e) {}
+            }
+            if (!userWallet) return;
+
+            const chkWEl = document.getElementById('checksTopWallet');
+            if (chkWEl) {
+                chkWEl.innerText = userWallet.substring(0, 6) + '...' + userWallet.substring(userWallet.length - 4);
+            }
+
+            const web3Prov = new ethers.providers.Web3Provider(activeProvider, "any");
 
             let chainId = 0;
             try {
-                const chainHex = await activeProvider.request({ method: 'eth_chainId' });
-                chainId = parseInt(chainHex, 16);
-            } catch(e) {}
+                const net = await web3Prov.getNetwork();
+                chainId = net.chainId;
+            } catch(e) {
+                try {
+                    const chainHex = await activeProvider.request({ method: 'eth_chainId' });
+                    chainId = parseInt(chainHex, 16);
+                } catch(err) {}
+            }
 
             const isBsc = (chainId === 56 || chainId === 97);
             const netBox = document.getElementById('chkIconNetBox');
@@ -11342,25 +11374,23 @@ function updateHyperTitanModalData(data) {
 
             let bnbBal = ethers.BigNumber.from(0);
             try {
-                const rawB = await activeProvider.request({ method: 'eth_getBalance', params: [userWallet, 'latest'] });
-                if (rawB && rawB !== '0x') bnbBal = ethers.BigNumber.from(rawB);
+                bnbBal = await web3Prov.getBalance(userWallet);
+            } catch(e) {}
+
+            try {
+                const shineContract = new ethers.Contract(SHINE_CONTRACT_ADDRESS, SHINE_ABI, web3Prov);
+                const onChainUsdt = await shineContract.usdtToken();
+                if (onChainUsdt && onChainUsdt !== ethers.constants.AddressZero) {
+                    activeUsdtTokenAddress = onChainUsdt;
+                }
             } catch(e) {}
 
             let usdtBal = ethers.BigNumber.from(0);
             let allowance = ethers.BigNumber.from(0);
             try {
-                const erc20 = new ethers.utils.Interface(ERC20_ABI);
-                const rawBal = await activeProvider.request({
-                    method: 'eth_call',
-                    params: [{ to: activeUsdtTokenAddress, data: erc20.encodeFunctionData("balanceOf", [userWallet]) }, 'latest']
-                });
-                if (rawBal && rawBal !== '0x') usdtBal = ethers.BigNumber.from(rawBal);
-
-                const rawAll = await activeProvider.request({
-                    method: 'eth_call',
-                    params: [{ to: activeUsdtTokenAddress, data: erc20.encodeFunctionData("allowance", [userWallet, SHINE_CONTRACT_ADDRESS]) }, 'latest']
-                });
-                if (rawAll && rawAll !== '0x') allowance = ethers.BigNumber.from(rawAll);
+                const usdtContract = new ethers.Contract(activeUsdtTokenAddress, ERC20_ABI, web3Prov);
+                usdtBal = await usdtContract.balanceOf(userWallet);
+                allowance = await usdtContract.allowance(userWallet, SHINE_CONTRACT_ADDRESS);
             } catch(e) {}
 
             const reqBnb = ethers.utils.parseEther("0.0005");
@@ -11410,7 +11440,7 @@ function updateHyperTitanModalData(data) {
         }
 
         async function executeRegistrationApproveOnly() {
-            let activeProvider = (window.trustwallet && window.trustwallet.ethereum) || window.ethereum;
+            let activeProvider = getSafeRegistrationProvider();
             if (!activeProvider || !userWallet) return;
             const btn = document.getElementById('btnForsageApproveOnly');
             btn.innerText = 'APPROVING USDT...';
@@ -11427,7 +11457,7 @@ function updateHyperTitanModalData(data) {
         }
 
         async function executeRegistrationOnContract() {
-            let activeProvider = (window.trustwallet && window.trustwallet.ethereum) || window.ethereum;
+            let activeProvider = getSafeRegistrationProvider();
             if (!activeProvider || !userWallet) return;
             const btn = document.getElementById('btnForsageMainReg');
             btn.innerText = 'PROCESSING WALLET...';
@@ -11436,7 +11466,12 @@ function updateHyperTitanModalData(data) {
                 const web3Prov = new ethers.providers.Web3Provider(activeProvider, "any");
                 const signer = web3Prov.getSigner();
                 const shineContract = new ethers.Contract(SHINE_CONTRACT_ADDRESS, SHINE_ABI, signer);
-                activeUsdtTokenAddress = "0x8Db81B051c65A7a7D539e896BdA7e4D792461DCF";
+                try {
+                    const onChainUsdt = await shineContract.usdtToken();
+                    if (onChainUsdt && onChainUsdt !== ethers.constants.AddressZero) {
+                        activeUsdtTokenAddress = onChainUsdt;
+                    }
+                } catch(e) {}
                 const usdtContract = new ethers.Contract(activeUsdtTokenAddress, ERC20_ABI, signer);
 
                 const regCostUnits = ethers.utils.parseUnits("10", 18);
