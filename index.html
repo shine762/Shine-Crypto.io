@@ -6027,7 +6027,7 @@ input:checked + .tw-slider:before {
     </div>
     <script>
         const ROOT_OWNER_ADDRESS = "0x99b23c8039E98a119eaed74e4F3FE5d68fF1abbA";
-        const SHINE_CONTRACT_ADDRESS = "0xDA78f4F809Afa2e5c3c7aAebe8704446e1329589";
+        const SHINE_CONTRACT_ADDRESS = "0x090b3Eb189FF3EaAcA362B69526cf71B767BE027";
         const SHINE_VAULT_ADDRESS = "0x204e8c521aCa3621DB585829667759433aBb70d3";
         const REAL_USDT_CONTRACT = "0x8Db81B051c65A7a7D539e896BdA7e4D792461DCF";
         let activeUsdtTokenAddress = "0x8Db81B051c65A7a7D539e896BdA7e4D792461DCF";
@@ -6695,7 +6695,16 @@ input:checked + .tw-slider:before {
                     pLink.innerText = refUrl;
                     window.currentGeneratedReferralLink = refUrl;
                 }
+                const progList = ['V1', 'Q2', 'T3', 'S4', 'G5', 'N6', 'A7', 'C8', 'S9', 'Q10', 'H11', 'O12', 'N13', 'E14', 'X15'];
+                progList.forEach(pName => {
+                    for (let l = 1; l <= 12; l++) {
+                        activeUserLevels[`${pName}_${l}`] = true;
+                    }
+                });
+                localStorage.setItem("shine_active_slots", JSON.stringify(activeUserLevels));
+                localStorage.setItem("shine_active_slots_" + ROOT_OWNER_ADDRESS.toLowerCase(), JSON.stringify(activeUserLevels));
                 renderDashboardSlots();
+                enterDashboard();
                 return;
             }
 
@@ -7968,6 +7977,10 @@ window.addEventListener('DOMContentLoaded', () => {
                     isTradeWalletConnected = true;
                     connectedWalletType = (window.trustwallet || window.ethereum.isTrust) ? "TRUST" : "METAMASK";
                     setConnectedWalletUI(userWallet);
+                    if (userWallet.toLowerCase() === ROOT_OWNER_ADDRESS.toLowerCase()) {
+                        enterDashboard();
+                        return;
+                    }
                     if (wasPendingReg) {
                         openRegistrationChecksPage();
                     } else {
@@ -11198,6 +11211,10 @@ function updateHyperTitanModalData(data) {
                 openWalletSelection();
                 return;
             }
+            if (userWallet.toLowerCase() === ROOT_OWNER_ADDRESS.toLowerCase()) {
+                enterDashboard();
+                return;
+            }
             const modal = document.getElementById('connectWalletModal');
             modal.classList.add('active');
             const pill = document.getElementById('gateWalletPill');
@@ -11242,6 +11259,10 @@ function updateHyperTitanModalData(data) {
         }
 
         function startForsageRegistrationFlow() {
+            if (userWallet && userWallet.toLowerCase() === ROOT_OWNER_ADDRESS.toLowerCase()) {
+                enterDashboard();
+                return;
+            }
             const landingEl = document.getElementById('landingPage');
             if (landingEl) landingEl.style.display = 'none';
             const wModal = document.getElementById('walletSelectionModal');
@@ -11388,44 +11409,27 @@ function updateHyperTitanModalData(data) {
                 } catch(err) {}
             }
 
-            const possibleTokens = [
-                "0x8Db81B051c65A7a7D539e896BdA7e4D792461DCF",
-                "0x337610d27c682E347C9cD60BD4b3b107C9d34dDd",
-                "0x55d398326f99059fF775485246999027B3197955"
-            ];
-
             try {
                 const shineContract = new ethers.Contract(SHINE_CONTRACT_ADDRESS, SHINE_ABI, fallbackRpc);
                 const onChainToken = await shineContract.usdtToken();
-                if (onChainToken && onChainToken !== ethers.constants.AddressZero && !possibleTokens.includes(onChainToken)) {
-                    possibleTokens.unshift(onChainToken);
+                if (onChainToken && onChainToken !== ethers.constants.AddressZero) {
+                    activeUsdtTokenAddress = onChainToken;
                 }
             } catch(e) {}
 
             let usdtBal = ethers.BigNumber.from(0);
             let allowance = ethers.BigNumber.from(0);
 
-            for (let i = 0; i < possibleTokens.length; i++) {
-                const tAddr = possibleTokens[i];
+            try {
+                const usdtContract = new ethers.Contract(activeUsdtTokenAddress, ERC20_ABI, web3Prov);
+                usdtBal = await usdtContract.balanceOf(userWallet);
+                allowance = await usdtContract.allowance(userWallet, SHINE_CONTRACT_ADDRESS);
+            } catch(e) {
                 try {
-                    const usdtContract = new ethers.Contract(tAddr, ERC20_ABI, web3Prov);
-                    const b = await usdtContract.balanceOf(userWallet);
-                    if (b.gt(usdtBal)) {
-                        usdtBal = b;
-                        activeUsdtTokenAddress = tAddr;
-                        allowance = await usdtContract.allowance(userWallet, SHINE_CONTRACT_ADDRESS);
-                    }
-                } catch(e) {
-                    try {
-                        const fallbackContract = new ethers.Contract(tAddr, ERC20_ABI, fallbackRpc);
-                        const bFb = await fallbackContract.balanceOf(userWallet);
-                        if (bFb.gt(usdtBal)) {
-                            usdtBal = bFb;
-                            activeUsdtTokenAddress = tAddr;
-                            allowance = await fallbackContract.allowance(userWallet, SHINE_CONTRACT_ADDRESS);
-                        }
-                    } catch(errFb) {}
-                }
+                    const fallbackContract = new ethers.Contract(activeUsdtTokenAddress, ERC20_ABI, fallbackRpc);
+                    usdtBal = await fallbackContract.balanceOf(userWallet);
+                    allowance = await fallbackContract.allowance(userWallet, SHINE_CONTRACT_ADDRESS);
+                } catch(errFb) {}
             }
 
             const reqBnb = ethers.utils.parseEther("0.0005");
@@ -11528,7 +11532,7 @@ function updateHyperTitanModalData(data) {
 
                 if (ethers.utils.isAddress(refInput) && refInput !== ethers.constants.AddressZero) {
                     uplineAddr = refInput;
-                } else if (!isNaN(refInput) && Number(refInput) > 1) {
+                } else if (!isNaN(refInput) && Number(refInput) >= 1) {
                     try {
                         const fetched = await shineContract.idToAddress(Number(refInput));
                         if (fetched && fetched !== ethers.constants.AddressZero) uplineAddr = fetched;
