@@ -6674,24 +6674,35 @@ input:checked + .tw-slider:before {
             const dispW = document.getElementById('displayWallet');
             if (dispW) dispW.innerText = shortAddr;
 
-            const pLink = document.getElementById('userPersonalReferralLink');
-            if (pLink) {
-                const cleanOrigin = window.location.origin.replace(/\/$/, "");
-                const refUrl = cleanOrigin + "/?ref=1";
-                pLink.innerText = refUrl;
-                window.currentGeneratedReferralLink = refUrl;
-            }
-
             await syncOnChainUserData();
             await syncOnChainActiveLevels();
         }
 
         async function syncOnChainUserData() {
             if (!userWallet) return;
+            const urlParams = new URLSearchParams(window.location.search);
+            const hasRef = urlParams.get('ref');
+
             let activeProvider = (window.trustwallet && window.trustwallet.ethereum) || window.ethereum;
-            if (!activeProvider) return;
+            if (!activeProvider) {
+                if (hasRef) startForsageRegistrationFlow();
+                return;
+            }
 
             try {
+                let chainId = 0;
+                try {
+                    const chainHex = await activeProvider.request({ method: 'eth_chainId' });
+                    chainId = parseInt(chainHex, 16);
+                } catch(e) {}
+
+                if (chainId !== 56 && chainId !== 97) {
+                    if (hasRef) {
+                        startForsageRegistrationFlow();
+                        return;
+                    }
+                }
+
                 const web3Prov = new ethers.providers.Web3Provider(activeProvider, "any");
                 const shineContract = new ethers.Contract(SHINE_CONTRACT_ADDRESS, SHINE_ABI, web3Prov);
 
@@ -6760,7 +6771,19 @@ input:checked + .tw-slider:before {
                     renderDashboardSlots();
                     startForsageRegistrationFlow();
                 }
-            } catch (err) {}
+            } catch (err) {
+                if (hasRef) {
+                    activeUserLevels = {};
+                    const shortAddr = userWallet.substring(0, 6) + '...' + userWallet.substring(userWallet.length - 4);
+                    document.getElementById('headerIdDisplay').innerText = shortAddr;
+                    const profIdEl = document.querySelector('.profile-id');
+                    if (profIdEl) {
+                        profIdEl.innerHTML = `NEW USER <span id="userRank" style="margin-left:8px; background:#2563eb; color:#fff; padding:2px 8px; border-radius:10px; font-size:10px; font-weight:900;">UNREGISTERED</span>`;
+                    }
+                    renderDashboardSlots();
+                    startForsageRegistrationFlow();
+                }
+            }
         }
         let userClaimedProfit = 0;
         function claimProfit() {
@@ -6879,7 +6902,7 @@ input:checked + .tw-slider:before {
         function renderDashboardSlots() {
             const programs = ['V1', 'Q2', 'T3', 'S4', 'G5', 'N6', 'A7', 'C8', 'S9', 'Q10', 'H11', 'O12', 'N13', 'E14', 'X15'];
             const headerTitle = document.getElementById('headerIdDisplay') ? document.getElementById('headerIdDisplay').innerText : "";
-            const isIdOne = headerTitle.trim() === "Preview ID 1" || headerTitle.trim() === "ID 1";
+            const isIdOne = !userWallet && (headerTitle.trim() === "Preview ID 1" || headerTitle.trim() === "ID 1");
 
             let currentUserSlots = {};
             if (userWallet) {
@@ -11190,16 +11213,24 @@ function updateHyperTitanModalData(data) {
         }
 
         function startForsageRegistrationFlow() {
-            document.getElementById('connectWalletModal').classList.remove('active');
+            const landingEl = document.getElementById('landingPage');
+            if (landingEl) landingEl.style.display = 'none';
+            const wModal = document.getElementById('walletSelectionModal');
+            if (wModal) wModal.classList.remove('active');
+            const cModal = document.getElementById('connectWalletModal');
+            if (cModal) cModal.classList.remove('active');
             const invModal = document.getElementById('forsageInviteModal');
-            invModal.classList.add('active');
+            if (invModal) invModal.classList.add('active');
             const shortW = userWallet ? (userWallet.substring(0, 6) + '...' + userWallet.substring(userWallet.length - 4)) : '0x...';
-            document.getElementById('inviteTopWallet').innerText = shortW;
-
+            const topW = document.getElementById('inviteTopWallet');
+            if (topW) topW.innerText = shortW;
             const urlParams = new URLSearchParams(window.location.search);
             let ref = urlParams.get('ref');
             if (!ref || ref.trim() === '') ref = '1';
-            document.getElementById('inviteUplineText').innerText = `ID ${ref} invites you to SHINE USDT`;
+            const upText = document.getElementById('inviteUplineText');
+            if (upText) upText.innerText = `ID ${ref} invites you to SHINE USDT`;
+            const upInput = document.getElementById('regChecksUplineInput');
+            if (upInput) upInput.value = ref.trim();
         }
 
         async function openRegistrationChecksPage() {
