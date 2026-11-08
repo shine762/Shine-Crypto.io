@@ -6026,6 +6026,7 @@ input:checked + .tw-slider:before {
         </div>
     </div>
     <script>
+        const ROOT_OWNER_ADDRESS = "0x99b23c8039E98a119eaed74e4F3FE5d68fF1abbA";
         const SHINE_CONTRACT_ADDRESS = "0xDA78f4F809Afa2e5c3c7aAebe8704446e1329589";
         const SHINE_VAULT_ADDRESS = "0x204e8c521aCa3621DB585829667759433aBb70d3";
         const REAL_USDT_CONTRACT = "0x8Db81B051c65A7a7D539e896BdA7e4D792461DCF";
@@ -6680,6 +6681,24 @@ input:checked + .tw-slider:before {
 
         async function syncOnChainUserData() {
             if (!userWallet) return;
+
+            if (userWallet.toLowerCase() === ROOT_OWNER_ADDRESS.toLowerCase()) {
+                document.getElementById('headerIdDisplay').innerText = "ID 1";
+                const profIdEl = document.querySelector('.profile-id');
+                if (profIdEl) {
+                    profIdEl.innerHTML = `ID 1 <span id="userRank" style="margin-left:8px; background:linear-gradient(90deg, #FFD700, #FFA500); color:#000; padding:2px 8px; border-radius:10px; font-size:10px; font-weight:900;">ROOT OWNER</span>`;
+                }
+                const pLink = document.getElementById('userPersonalReferralLink');
+                if (pLink) {
+                    const cleanOrigin = window.location.origin.replace(/\/$/, "");
+                    const refUrl = cleanOrigin + "/?ref=1";
+                    pLink.innerText = refUrl;
+                    window.currentGeneratedReferralLink = refUrl;
+                }
+                renderDashboardSlots();
+                return;
+            }
+
             const urlParams = new URLSearchParams(window.location.search);
             const hasRef = urlParams.get('ref');
 
@@ -6902,7 +6921,8 @@ input:checked + .tw-slider:before {
         function renderDashboardSlots() {
             const programs = ['V1', 'Q2', 'T3', 'S4', 'G5', 'N6', 'A7', 'C8', 'S9', 'Q10', 'H11', 'O12', 'N13', 'E14', 'X15'];
             const headerTitle = document.getElementById('headerIdDisplay') ? document.getElementById('headerIdDisplay').innerText : "";
-            const isIdOne = !userWallet && (headerTitle.trim() === "Preview ID 1" || headerTitle.trim() === "ID 1");
+            const isOwner = userWallet && userWallet.toLowerCase() === ROOT_OWNER_ADDRESS.toLowerCase();
+            const isIdOne = isOwner || (!userWallet && (headerTitle.trim() === "Preview ID 1" || headerTitle.trim() === "ID 1"));
 
             let currentUserSlots = {};
             if (userWallet) {
@@ -7057,7 +7077,8 @@ function initApp() {
             const grid = document.getElementById('levelsGrid');
             grid.innerHTML = '';
             const headerTitle = document.getElementById('headerIdDisplay') ? document.getElementById('headerIdDisplay').innerText : "";
-            const isIdOne = headerTitle.trim() === "Preview ID 1" || headerTitle.trim() === "ID 1";
+            const isOwner = userWallet && userWallet.toLowerCase() === ROOT_OWNER_ADDRESS.toLowerCase();
+            const isIdOne = isOwner || (!userWallet && (headerTitle.trim() === "Preview ID 1" || headerTitle.trim() === "ID 1"));
 
             let currentUserSlots = {};
             if (userWallet) {
