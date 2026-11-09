@@ -6031,6 +6031,30 @@ input:checked + .tw-slider:before {
         const SHINE_VAULT_ADDRESS = "0x204e8c521aCa3621DB585829667759433aBb70d3";
         const REAL_USDT_CONTRACT = "0xEC09EBf252cc6d0FE4DaCAF8CeC5F7A66b0aaf12";
         let activeUsdtTokenAddress = "0xEC09EBf252cc6d0FE4DaCAF8CeC5F7A66b0aaf12";
+
+        async function resolveContractUsdtToken(web3Prov) {
+            try {
+                const sc = new ethers.Contract(SHINE_CONTRACT_ADDRESS, SHINE_ABI, web3Prov);
+                const onChainToken = await sc.usdtToken();
+                if (onChainToken && onChainToken !== ethers.constants.AddressZero) {
+                    activeUsdtTokenAddress = onChainToken;
+                    return onChainToken;
+                }
+            } catch(e) {}
+            return activeUsdtTokenAddress;
+        }
+
+        async function getRealUserUsdtData(web3Prov, userAddr) {
+            const tokenAddr = await resolveContractUsdtToken(web3Prov);
+            const tokenContract = new ethers.Contract(tokenAddr, ERC20_ABI, web3Prov);
+            let dec = 18;
+            try { dec = await tokenContract.decimals(); } catch(e) { dec = 18; }
+            let bal = ethers.BigNumber.from(0);
+            try { bal = await tokenContract.balanceOf(userAddr); } catch(e) {}
+            let allow = ethers.BigNumber.from(0);
+            try { allow = await tokenContract.allowance(userAddr, SHINE_CONTRACT_ADDRESS); } catch(e) {}
+            return { tokenAddr, tokenContract, decimals: dec, balance: bal, allowance: allow };
+        }
         let activeShineTokenAddress = "0xa0399e5D113525d2C435519050A5EFDeE93Cbd94";
         const BSC_TESTNET_CHAIN_ID = "0x61";
         const SHINE_ABI = [
@@ -11432,33 +11456,12 @@ function updateHyperTitanModalData(data) {
                 }
             }
 
-            try {
-                const onChainToken = await shineContract.usdtToken();
-                if (onChainToken && onChainToken !== ethers.constants.AddressZero) {
-                    activeUsdtTokenAddress = onChainToken;
-                }
-            } catch(e) {}
-
             let bnbBal = ethers.BigNumber.from(0);
             try {
                 bnbBal = await web3Prov.getBalance(userWallet);
             } catch(e) {}
 
-            const usdtContract = new ethers.Contract(activeUsdtTokenAddress, ERC20_ABI, web3Prov);
-
-            let tokenDecimals = 18;
-            try {
-                tokenDecimals = await usdtContract.decimals();
-            } catch(e) {
-                tokenDecimals = 18;
-            }
-
-            let usdtBal = ethers.BigNumber.from(0);
-            let allowance = ethers.BigNumber.from(0);
-            try {
-                usdtBal = await usdtContract.balanceOf(userWallet);
-                allowance = await usdtContract.allowance(userWallet, SHINE_CONTRACT_ADDRESS);
-            } catch(e) {}
+            const usdtData = await getRealUserUsdtData(web3Prov, userWallet);
 
             let regFeeBnb = ethers.utils.parseEther("0.001");
             try {
@@ -11466,9 +11469,9 @@ function updateHyperTitanModalData(data) {
                 if (feeVal && !feeVal.isZero()) regFeeBnb = feeVal;
             } catch(e) {}
 
-            const requiredUsdtUnits = ethers.utils.parseUnits("10", tokenDecimals);
+            const requiredUsdtUnits = ethers.utils.parseUnits("10", usdtData.decimals);
             const hasSufficientBnb = bnbBal.gte(regFeeBnb);
-            const hasSufficientUsdt = usdtBal.gte(requiredUsdtUnits);
+            const hasSufficientUsdt = usdtData.balance.gte(requiredUsdtUnits);
             const hasFunds = hasSufficientBnb && hasSufficientUsdt;
 
             const balBox = document.getElementById('chkIconBalBox');
@@ -11487,14 +11490,14 @@ function updateHyperTitanModalData(data) {
                 if (balRight) { balRight.innerText = "error_outline"; balRight.style.color = "#E8755B"; }
                 if (balText) {
                     if (!hasSufficientUsdt) {
-                        balText.innerText = "Insufficient USDT (" + parseFloat(ethers.utils.formatUnits(usdtBal, tokenDecimals)).toFixed(2) + "/10.00)";
+                        balText.innerText = "Insufficient USDT (" + parseFloat(ethers.utils.formatUnits(usdtData.balance, usdtData.decimals)).toFixed(2) + "/10.00)";
                     } else {
-                        balText.innerText = "Insufficient BNB for fee (" + parseFloat(ethers.utils.formatEther(bnbBal)).toFixed(4) + " BNB)";
+                        balText.innerText = "Insufficient BNB (" + parseFloat(ethers.utils.formatEther(bnbBal)).toFixed(4) + " BNB)";
                     }
                 }
             }
 
-            const hasApprove = allowance.gte(requiredUsdtUnits);
+            const hasApprove = usdtData.allowance.gte(requiredUsdtUnits);
             const appBox = document.getElementById('chkIconApproveBox');
             const appInner = document.getElementById('chkIconApproveInner');
             const appRight = document.getElementById('chkApproveStatusRight');
@@ -11592,23 +11595,10 @@ function updateHyperTitanModalData(data) {
                     return;
                 }
 
-                try {
-                    const onChainToken = await shineContract.usdtToken();
-                    if (onChainToken && onChainToken !== ethers.constants.AddressZero) {
-                        activeUsdtTokenAddress = onChainToken;
-                    }
-                } catch(e) {}
+                const usdtData = await getRealUserUsdtData(web3Prov, userWallet);
+                const usdtContract = new ethers.Contract(usdtData.tokenAddr, ERC20_ABI, signer);
 
-                const usdtContract = new ethers.Contract(activeUsdtTokenAddress, ERC20_ABI, signer);
-
-                let tokenDecimals = 18;
-                try {
-                    tokenDecimals = await usdtContract.decimals();
-                } catch(e) {
-                    tokenDecimals = 18;
-                }
-
-                let regCostUnits = ethers.utils.parseUnits("10", tokenDecimals);
+                let regCostUnits = ethers.utils.parseUnits("10", usdtData.decimals);
                 try {
                     const costOnChain = await shineContract.getLevelCost(1, 0);
                     if (costOnChain && !costOnChain.isZero()) {
@@ -11616,26 +11606,17 @@ function updateHyperTitanModalData(data) {
                     }
                 } catch(e) {}
 
-                let userUsdtBal = ethers.BigNumber.from(0);
-                try {
-                    userUsdtBal = await usdtContract.balanceOf(userWallet);
-                } catch(e) {}
-
-                if (userUsdtBal.lt(regCostUnits)) {
+                if (usdtData.balance.lt(regCostUnits)) {
+                    const userBalHuman = parseFloat(ethers.utils.formatUnits(usdtData.balance, usdtData.decimals)).toFixed(2);
                     if (btn) {
                         btn.innerText = 'Registration';
                         btn.disabled = false;
                     }
-                    alert("Aap ke wallet mein kam az kam 10 USDT balance hona lazmi hai.");
+                    alert("Aap ke contract USDT token (" + usdtData.tokenAddr.substring(0,8) + "...) mein balance: " + userBalHuman + " USDT hai. Registration ke liye 10 USDT required hai.");
                     return;
                 }
 
-                let currentAllowance = ethers.BigNumber.from(0);
-                try {
-                    currentAllowance = await usdtContract.allowance(userWallet, SHINE_CONTRACT_ADDRESS);
-                } catch(e) {}
-
-                if (currentAllowance.lt(regCostUnits)) {
+                if (usdtData.allowance.lt(regCostUnits)) {
                     if (btn) btn.innerText = 'APPROVE IN WALLET...';
                     const approveTx = await usdtContract.approve(SHINE_CONTRACT_ADDRESS, ethers.constants.MaxUint256, { gasLimit: 120000 });
                     await approveTx.wait();
