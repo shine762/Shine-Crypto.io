@@ -6382,37 +6382,23 @@ input:checked + .tw-slider:before {
                 const rootOwnerAddr = await shineContract.rootOwner();
                 const isRoot = (userWallet.toLowerCase() === rootOwnerAddr.toLowerCase());
 
-                if (userStruct.isRegistered || isRoot) {
+                if (isRoot) {
                     const progList = ['V1', 'Q2', 'T3', 'S4', 'G5', 'N6', 'A7', 'C8', 'S9', 'Q10', 'H11', 'O12', 'N13', 'E14', 'X15'];
-                    for (let pIdx = 0; pIdx < progList.length; pIdx++) {
-                        const pName = progList[pIdx];
-                        const pNum = pIdx + 1;
-                        for (let l = 0; l < 12; l++) {
-                            let isActive = false;
-                            if (isRoot) {
-                                isActive = true;
-                            } else {
-                                isActive = await shineContract.isUserLevelActive(userWallet, pNum, l);
-                            }
-                            if (isActive) {
-                                const slotKey = `${pName}_${l + 1}`;
-                                activeUserLevels[slotKey] = true;
-                                const targetSlots = document.querySelectorAll(`#slots-${pName} .slot-box`);
-                                if (targetSlots && targetSlots[l]) {
-                                    const theme = progThemeColors[pName] || { bg: '#2563eb', text: '#ffffff' };
-                                    targetSlots[l].style.background = theme.bg;
-                                    targetSlots[l].style.border = "none";
-                                    targetSlots[l].style.color = theme.text;
-                                    targetSlots[l].setAttribute("onclick", `openLevelDetail(${l + 1}, ${progPrices[pName][l]}, '${pName}')`);
-                                    targetSlots[l].innerHTML = `
-                                        <div style="font-size:12px; color:${theme.text}; font-weight:900;">${progPrices[pName][l]}</div>
-                                        <div style="font-size:9px; color:${theme.text}; font-weight:800; opacity:0.85;">ACTIVE</div>
-                                    `;
-                                }
-                            }
+                    progList.forEach(pName => {
+                        for (let l = 1; l <= 12; l++) {
+                            activeUserLevels[`${pName}_${l}`] = true;
                         }
+                    });
+                    localStorage.setItem("shine_active_slots", JSON.stringify(activeUserLevels));
+                    renderDashboardSlots();
+                } else if (userStruct.isRegistered) {
+                    activeUserLevels['V1_1'] = true;
+                    const saved = localStorage.getItem("shine_active_slots_" + userWallet.toLowerCase());
+                    if (saved) {
+                        try { Object.assign(activeUserLevels, JSON.parse(saved)); } catch(e) {}
                     }
                     localStorage.setItem("shine_active_slots", JSON.stringify(activeUserLevels));
+                    renderDashboardSlots();
                 }
             } catch (e) {}
         }
@@ -11318,7 +11304,7 @@ function updateHyperTitanModalData(data) {
         }
 
         function getSafeBscRpcProvider() {
-            return new ethers.providers.JsonRpcProvider("https://bsc-testnet-dataseed.bnbchain.org");
+            return new ethers.providers.JsonRpcProvider("https://bsc-testnet-rpc.publicnode.com");
         }
 
         async function triggerSmartChainNetworkSwitch() {
