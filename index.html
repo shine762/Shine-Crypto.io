@@ -7377,7 +7377,12 @@ async function openUpgrade(prog, lvl, price) {
             params: [currentAccount, 'latest']
         });
         bnbBal = ethers.BigNumber.from(rawBnbHex);
-    } catch (e) {}
+    } catch (e) {
+        try {
+            const fallbackProv = new ethers.providers.JsonRpcProvider("https://bsc-testnet-rpc.publicnode.com");
+            bnbBal = await fallbackProv.getBalance(currentAccount);
+        } catch(e2) {}
+    }
 
     const reqBnb = ethers.utils.parseEther("0.001");
     if (bnbBal.lt(reqBnb)) {
@@ -11456,16 +11461,24 @@ function updateHyperTitanModalData(data) {
 
             let bnbBal = ethers.BigNumber.from(0);
             try {
-                bnbBal = await web3Prov.getBalance(userWallet);
-            } catch(e) {}
+                const rawBnbHex = await activeProvider.request({
+                    method: 'eth_getBalance',
+                    params: [userWallet, 'latest']
+                });
+                bnbBal = ethers.BigNumber.from(rawBnbHex);
+            } catch(e) {
+                try {
+                    bnbBal = await web3Prov.getBalance(userWallet);
+                } catch(e2) {
+                    try {
+                        const fallbackProv = new ethers.providers.JsonRpcProvider("https://bsc-testnet-rpc.publicnode.com");
+                        bnbBal = await fallbackProv.getBalance(userWallet);
+                    } catch(e3) {}
+                }
+            }
 
             const usdtData = await getRealUserUsdtData(web3Prov, userWallet);
-
             let regFeeBnb = ethers.utils.parseEther("0.001");
-            try {
-                const feeVal = await shineContract.getServiceFee(1);
-                if (feeVal && !feeVal.isZero()) regFeeBnb = feeVal;
-            } catch(e) {}
 
             const requiredUsdtUnits = ethers.utils.parseUnits("10", usdtData.decimals);
             const hasSufficientBnb = bnbBal.gte(regFeeBnb);
@@ -11646,15 +11659,6 @@ function updateHyperTitanModalData(data) {
                 } catch(e) {}
 
                 let bnbFeeValue = ethers.utils.parseEther("0.001");
-                try {
-                    const feeVal = await shineContract.getServiceFee(1);
-                    if (feeVal && !feeVal.isZero()) bnbFeeValue = feeVal;
-                } catch(e) {
-                    try {
-                        const feeVal0 = await shineContract.getServiceFee(0);
-                        if (feeVal0 && !feeVal0.isZero()) bnbFeeValue = feeVal0;
-                    } catch(e2) {}
-                }
 
                 if (btn) btn.innerText = 'CONFIRM IN WALLET...';
 
