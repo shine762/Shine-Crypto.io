@@ -11558,19 +11558,35 @@ function updateHyperTitanModalData(data) {
 
         async function executeRegistrationOnContract() {
             let activeProvider = getSafeRegistrationProvider();
-            if (!activeProvider || !userWallet) return;
+            if (!activeProvider || !userWallet) {
+                openWalletSelection();
+                return;
+            }
             const btn = document.getElementById('btnForsageMainReg');
-            btn.innerText = 'PROCESSING WALLET...';
-            btn.disabled = true;
+            if (btn) {
+                btn.innerText = 'OPENING WALLET...';
+                btn.disabled = true;
+            }
 
             try {
                 const web3Prov = new ethers.providers.Web3Provider(activeProvider, "any");
                 const signer = web3Prov.getSigner();
                 const shineContract = new ethers.Contract(SHINE_CONTRACT_ADDRESS, SHINE_ABI, signer);
 
-                const userStruct = await shineContract.users(userWallet);
-                if (userStruct && userStruct.isRegistered) {
-                    alert("This wallet is already registered in SHINE USDT (ID " + userStruct.id.toString() + "). Logging in...");
+                let isAlreadyRegistered = false;
+                try {
+                    const userStruct = await shineContract.users(userWallet);
+                    if (userStruct && userStruct.isRegistered) {
+                        isAlreadyRegistered = true;
+                    }
+                } catch(e) {}
+
+                if (isAlreadyRegistered) {
+                    if (btn) {
+                        btn.innerText = 'Registration';
+                        btn.disabled = false;
+                    }
+                    alert("Aap ka wallet pehle se registered hai! Dashboard par redirect ho rahe hain.");
                     enterDashboard();
                     syncOnChainUserData();
                     return;
@@ -11600,23 +11616,28 @@ function updateHyperTitanModalData(data) {
                     }
                 } catch(e) {}
 
-                const userUsdtBal = await usdtContract.balanceOf(userWallet);
+                let userUsdtBal = ethers.BigNumber.from(0);
+                try {
+                    userUsdtBal = await usdtContract.balanceOf(userWallet);
+                } catch(e) {}
+
                 if (userUsdtBal.lt(regCostUnits)) {
-                    btn.innerText = 'Registration';
-                    btn.disabled = false;
-                    alert("Insufficient USDT balance to complete registration! Required: 10 USDT.");
+                    if (btn) {
+                        btn.innerText = 'Registration';
+                        btn.disabled = false;
+                    }
+                    alert("Aap ke wallet mein kam az kam 10 USDT balance hona lazmi hai.");
                     return;
                 }
 
-                const currentAllowance = await usdtContract.allowance(userWallet, SHINE_CONTRACT_ADDRESS);
+                let currentAllowance = ethers.BigNumber.from(0);
+                try {
+                    currentAllowance = await usdtContract.allowance(userWallet, SHINE_CONTRACT_ADDRESS);
+                } catch(e) {}
+
                 if (currentAllowance.lt(regCostUnits)) {
-                    btn.innerText = 'APPROVE USDT IN WALLET...';
-                    let appGas = ethers.BigNumber.from(100000);
-                    try {
-                        appGas = await usdtContract.estimateGas.approve(SHINE_CONTRACT_ADDRESS, ethers.constants.MaxUint256);
-                        appGas = appGas.mul(120).div(100);
-                    } catch(ge) {}
-                    const approveTx = await usdtContract.approve(SHINE_CONTRACT_ADDRESS, ethers.constants.MaxUint256, { gasLimit: appGas });
+                    if (btn) btn.innerText = 'APPROVE IN WALLET...';
+                    const approveTx = await usdtContract.approve(SHINE_CONTRACT_ADDRESS, ethers.constants.MaxUint256, { gasLimit: 120000 });
                     await approveTx.wait();
                 }
 
@@ -11662,55 +11683,40 @@ function updateHyperTitanModalData(data) {
                     } catch(e2) {}
                 }
 
-                btn.innerText = 'VERIFYING CONTRACT...';
-                let valueToSend = bnbFeeValue;
+                if (btn) btn.innerText = 'CONFIRM IN WALLET...';
+
+                let regTx;
                 try {
-                    await shineContract.callStatic.register(uplineAddr, { value: valueToSend });
-                } catch(callErr) {
-                    try {
-                        await shineContract.callStatic.register(uplineAddr, { value: 0 });
-                        valueToSend = ethers.BigNumber.from(0);
-                    } catch(err2) {
-                        try {
-                            const rootFallback = await shineContract.rootOwner();
-                            await shineContract.callStatic.register(rootFallback, { value: valueToSend });
-                            uplineAddr = rootFallback;
-                        } catch(err3) {
-                            try {
-                                const rootFallback2 = await shineContract.rootOwner();
-                                await shineContract.callStatic.register(rootFallback2, { value: 0 });
-                                uplineAddr = rootFallback2;
-                                valueToSend = ethers.BigNumber.from(0);
-                            } catch(err4) {
-                                throw callErr;
-                            }
+                    regTx = await shineContract.register(uplineAddr, { value: bnbFeeValue, gasLimit: 650000 });
+                } catch(valErr) {
+                    if (valErr.code === 4001 || valErr.code === "ACTION_REJECTED") {
+                        if (btn) {
+                            btn.innerText = 'Registration';
+                            btn.disabled = false;
                         }
+                        return;
                     }
+                    regTx = await shineContract.register(uplineAddr, { value: 0, gasLimit: 650000 });
                 }
 
-                let gasLimit = ethers.BigNumber.from(650000);
-                try {
-                    const estimated = await shineContract.estimateGas.register(uplineAddr, { value: valueToSend });
-                    gasLimit = estimated.mul(125).div(100);
-                } catch(ge) {}
-
-                btn.innerText = 'CONFIRM IN WALLET...';
-                const regTx = await shineContract.register(uplineAddr, { value: valueToSend, gasLimit: gasLimit });
-
-                btn.innerText = 'CONFIRMING ON BSC...';
+                if (btn) btn.innerText = 'CONFIRMING ON BLOCKCHAIN...';
                 await regTx.wait();
 
                 await markSlotAsActivated('V1', 1, 10);
 
                 document.getElementById('forsageChecksModal').classList.remove('active');
                 const sucModal = document.getElementById('forsageSuccessModal');
-                sucModal.classList.add('active');
+                if (sucModal) sucModal.classList.add('active');
                 const shortW = userWallet.substring(0, 6) + '...' + userWallet.substring(userWallet.length - 4);
-                document.getElementById('successTopWallet').innerText = shortW;
-                document.getElementById('successTxLink').href = `https://testnet.bscscan.com/tx/${regTx.hash}`;
+                const sTopW = document.getElementById('successTopWallet');
+                if (sTopW) sTopW.innerText = shortW;
+                const sTxLink = document.getElementById('successTxLink');
+                if (sTxLink) sTxLink.href = `https://testnet.bscscan.com/tx/${regTx.hash}`;
             } catch(e) {
-                btn.innerText = 'Registration';
-                btn.disabled = false;
+                if (btn) {
+                    btn.innerText = 'Registration';
+                    btn.disabled = false;
+                }
                 if (e.code === 4001 || e.code === "ACTION_REJECTED") {
                     return;
                 }
