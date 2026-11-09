@@ -6027,10 +6027,10 @@ input:checked + .tw-slider:before {
     </div>
     <script>
         const ROOT_OWNER_ADDRESS = "0x99b23c8039E98a119eaed74e4F3FE5d68fF1abbA";
-        const SHINE_CONTRACT_ADDRESS = "0x090b3Eb189FF3EaAcA362B69526cf71B767BE027";
+        const SHINE_CONTRACT_ADDRESS = "0xEEe011D9d6Cb0C5A382C5baffE8E05c384631159";
         const SHINE_VAULT_ADDRESS = "0x204e8c521aCa3621DB585829667759433aBb70d3";
-        const REAL_USDT_CONTRACT = "0x8Db81B051c65A7a7D539e896BdA7e4D792461DCF";
-        let activeUsdtTokenAddress = "0x8Db81B051c65A7a7D539e896BdA7e4D792461DCF";
+        const REAL_USDT_CONTRACT = "0xEC09EBf252cc6d0FE4DaCAF8CeC5F7A66b0aaf12";
+        let activeUsdtTokenAddress = "0xEC09EBf252cc6d0FE4DaCAF8CeC5F7A66b0aaf12";
         let activeShineTokenAddress = "0xa0399e5D113525d2C435519050A5EFDeE93Cbd94";
         const BSC_TESTNET_CHAIN_ID = "0x61";
         const SHINE_ABI = [
@@ -6734,7 +6734,7 @@ input:checked + .tw-slider:before {
                 const web3Prov = new ethers.providers.Web3Provider(activeProvider, "any");
                 const shineContract = new ethers.Contract(SHINE_CONTRACT_ADDRESS, SHINE_ABI, web3Prov);
 
-                activeUsdtTokenAddress = "0x8Db81B051c65A7a7D539e896BdA7e4D792461DCF";
+                activeUsdtTokenAddress = "0xEC09EBf252cc6d0FE4DaCAF8CeC5F7A66b0aaf12";
 
                 const userStruct = await shineContract.users(userWallet);
                 if (userStruct && userStruct.isRegistered) {
@@ -11432,7 +11432,7 @@ function updateHyperTitanModalData(data) {
                 } catch(errFb) {}
             }
 
-            const reqBnb = ethers.utils.parseEther("0.0005");
+            const reqBnb = ethers.utils.parseEther("0.001");
             const reqUsdt = ethers.utils.parseUnits("10", 18);
             const reqUsdt6 = ethers.utils.parseUnits("10", 6);
             const hasFunds = bnbBal.gte(reqBnb) && (usdtBal.gte(reqUsdt) || usdtBal.gte(reqUsdt6));
@@ -11546,12 +11546,7 @@ function updateHyperTitanModalData(data) {
                 } catch(e) {}
 
                 btn.innerText = 'CONFIRM REGISTRATION IN WALLET...';
-                let regTx;
-                try {
-                    regTx = await shineContract.register(uplineAddr, { value: bnbFeeValue, gasLimit: 650000 });
-                } catch(errTx) {
-                    regTx = await shineContract.register(uplineAddr, { value: 0, gasLimit: 650000 });
-                }
+                const regTx = await shineContract.register(uplineAddr, { value: bnbFeeValue });
 
                 btn.innerText = 'CONFIRMING ON BSC...';
                 await regTx.wait();
