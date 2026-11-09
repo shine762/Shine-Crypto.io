@@ -6032,27 +6032,37 @@ input:checked + .tw-slider:before {
         const REAL_USDT_CONTRACT = "0xEC09EBf252cc6d0FE4DaCAF8CeC5F7A66b0aaf12";
         let activeUsdtTokenAddress = "0xEC09EBf252cc6d0FE4DaCAF8CeC5F7A66b0aaf12";
 
-        async function resolveContractUsdtToken(web3Prov) {
-            try {
-                const sc = new ethers.Contract(SHINE_CONTRACT_ADDRESS, SHINE_ABI, web3Prov);
-                const onChainToken = await sc.usdtToken();
-                if (onChainToken && onChainToken !== ethers.constants.AddressZero) {
-                    activeUsdtTokenAddress = onChainToken;
-                    return onChainToken;
-                }
-            } catch(e) {}
-            return activeUsdtTokenAddress;
-        }
-
         async function getRealUserUsdtData(web3Prov, userAddr) {
-            const tokenAddr = await resolveContractUsdtToken(web3Prov);
-            const tokenContract = new ethers.Contract(tokenAddr, ERC20_ABI, web3Prov);
+            const tokenAddr = REAL_USDT_CONTRACT;
+            let tokenContract = new ethers.Contract(tokenAddr, ERC20_ABI, web3Prov);
             let dec = 18;
-            try { dec = await tokenContract.decimals(); } catch(e) { dec = 18; }
+            try {
+                dec = await tokenContract.decimals();
+            } catch(e) {
+                dec = 18;
+            }
             let bal = ethers.BigNumber.from(0);
-            try { bal = await tokenContract.balanceOf(userAddr); } catch(e) {}
+            try {
+                bal = await tokenContract.balanceOf(userAddr);
+            } catch(e) {
+                try {
+                    const fallbackProv = new ethers.providers.JsonRpcProvider("https://bsc-testnet-rpc.publicnode.com");
+                    const fbContract = new ethers.Contract(tokenAddr, ERC20_ABI, fallbackProv);
+                    bal = await fbContract.balanceOf(userAddr);
+                } catch(err2) {
+                    alert("USDT Balance Check Error: " + (err2.reason || err2.message || e.message));
+                }
+            }
             let allow = ethers.BigNumber.from(0);
-            try { allow = await tokenContract.allowance(userAddr, SHINE_CONTRACT_ADDRESS); } catch(e) {}
+            try {
+                allow = await tokenContract.allowance(userAddr, SHINE_CONTRACT_ADDRESS);
+            } catch(e) {
+                try {
+                    const fallbackProv = new ethers.providers.JsonRpcProvider("https://bsc-testnet-rpc.publicnode.com");
+                    const fbContract = new ethers.Contract(tokenAddr, ERC20_ABI, fallbackProv);
+                    allow = await fbContract.allowance(userAddr, SHINE_CONTRACT_ADDRESS);
+                } catch(err2) {}
+            }
             return { tokenAddr, tokenContract, decimals: dec, balance: bal, allowance: allow };
         }
         let activeShineTokenAddress = "0xa0399e5D113525d2C435519050A5EFDeE93Cbd94";
@@ -7358,19 +7368,7 @@ async function openUpgrade(prog, lvl, price) {
     netIconR.style.color = "#4CAF50";
     netIconR.innerText = "check_circle";
 
-    try {
-        const shineIface = new ethers.utils.Interface(["function usdtToken() view returns (address)"]);
-        const resUsdt = await activeProvider.request({
-            method: 'eth_call',
-            params: [{ to: SHINE_CONTRACT_ADDRESS, data: shineIface.encodeFunctionData("usdtToken") }, 'latest']
-        });
-        if (resUsdt && resUsdt !== '0x') {
-            const decoded = shineIface.decodeFunctionResult("usdtToken", resUsdt)[0];
-            if (decoded && decoded !== ethers.constants.AddressZero) {
-                activeUsdtTokenAddress = decoded;
-            }
-        }
-    } catch (e) {}
+    activeUsdtTokenAddress = REAL_USDT_CONTRACT;
 
     let bnbBal = ethers.BigNumber.from(0);
     try {
@@ -11534,13 +11532,7 @@ function updateHyperTitanModalData(data) {
                 const web3Prov = new ethers.providers.Web3Provider(activeProvider, "any");
                 const signer = web3Prov.getSigner();
 
-                try {
-                    const shineContract = new ethers.Contract(SHINE_CONTRACT_ADDRESS, SHINE_ABI, web3Prov);
-                    const onChainToken = await shineContract.usdtToken();
-                    if (onChainToken && onChainToken !== ethers.constants.AddressZero) {
-                        activeUsdtTokenAddress = onChainToken;
-                    }
-                } catch(e) {}
+                activeUsdtTokenAddress = REAL_USDT_CONTRACT;
 
                 const usdtContract = new ethers.Contract(activeUsdtTokenAddress, ERC20_ABI, signer);
                 let approveGas = ethers.BigNumber.from(100000);
