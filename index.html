@@ -11535,42 +11535,62 @@ function updateHyperTitanModalData(data) {
             }
         }
 
+        let isRegActionLocked = false;
+
         async function executeRegistrationApproveOnly() {
+            if (isRegActionLocked) return;
             let activeProvider = getSafeRegistrationProvider();
             if (!activeProvider || !userWallet) return;
             const btn = document.getElementById('btnForsageApproveOnly');
-            btn.innerText = 'APPROVING USDT...';
-            btn.disabled = true;
+            isRegActionLocked = true;
+            if (btn) {
+                btn.innerText = 'APPROVING IN WALLET...';
+                btn.disabled = true;
+            }
             try {
                 const web3Prov = new ethers.providers.Web3Provider(activeProvider, "any");
                 const signer = web3Prov.getSigner();
-
                 activeUsdtTokenAddress = REAL_USDT_CONTRACT;
-
                 const usdtContract = new ethers.Contract(activeUsdtTokenAddress, ERC20_ABI, signer);
-                let approveGas = ethers.BigNumber.from(100000);
-                try {
-                    approveGas = await usdtContract.estimateGas.approve(SHINE_CONTRACT_ADDRESS, ethers.constants.MaxUint256);
-                    approveGas = approveGas.mul(120).div(100);
-                } catch(ge) {}
-
-                const tx = await usdtContract.approve(SHINE_CONTRACT_ADDRESS, ethers.constants.MaxUint256, { gasLimit: approveGas });
+                const tx = await usdtContract.approve(SHINE_CONTRACT_ADDRESS, ethers.constants.MaxUint256);
+                if (btn) btn.innerText = 'CONFIRMING ON CHAIN...';
                 await tx.wait();
-                await verifyRegistrationChecksStatus();
+                const appBox = document.getElementById('chkIconApproveBox');
+                const appInner = document.getElementById('chkIconApproveInner');
+                const appRight = document.getElementById('chkApproveStatusRight');
+                const appText = document.getElementById('chkTextApprove');
+                if (appBox) appBox.style.background = "#4CAF50";
+                if (appInner) { appInner.innerText = "done"; appInner.style.color = "#fff"; }
+                if (appRight) { appRight.innerText = "check_circle"; appRight.style.color = "#4CAF50"; }
+                if (appText) appText.innerText = "Approve USDT: done";
+                if (btn) btn.style.display = 'none';
+                const regBtn = document.getElementById('btnForsageMainReg');
+                if (regBtn) {
+                    regBtn.style.display = 'block';
+                    regBtn.disabled = false;
+                }
             } catch(e) {
-                btn.innerText = 'Approve USDT';
-                btn.disabled = false;
-                if (e.code !== 4001) alert(e.reason || e.message || 'Approval failed');
+                if (btn) {
+                    btn.innerText = 'Approve USDT';
+                    btn.disabled = false;
+                }
+                if (e.code !== 4001 && e.code !== "ACTION_REJECTED") {
+                    alert(e.reason || e.message || 'Approval failed');
+                }
+            } finally {
+                isRegActionLocked = false;
             }
         }
 
         async function executeRegistrationOnContract() {
+            if (isRegActionLocked) return;
             let activeProvider = getSafeRegistrationProvider();
             if (!activeProvider || !userWallet) {
                 openWalletSelection();
                 return;
             }
             const btn = document.getElementById('btnForsageMainReg');
+            isRegActionLocked = true;
             if (btn) {
                 btn.innerText = 'OPENING WALLET...';
                 btn.disabled = true;
@@ -11623,7 +11643,7 @@ function updateHyperTitanModalData(data) {
 
                 if (usdtData.allowance.lt(regCostUnits)) {
                     if (btn) btn.innerText = 'APPROVE IN WALLET...';
-                    const approveTx = await usdtContract.approve(SHINE_CONTRACT_ADDRESS, ethers.constants.MaxUint256, { gasLimit: 120000 });
+                    const approveTx = await usdtContract.approve(SHINE_CONTRACT_ADDRESS, ethers.constants.MaxUint256);
                     await approveTx.wait();
                 }
 
@@ -11664,7 +11684,7 @@ function updateHyperTitanModalData(data) {
 
                 let regTx;
                 try {
-                    regTx = await shineContract.register(uplineAddr, { value: bnbFeeValue, gasLimit: 650000 });
+                    regTx = await shineContract.register(uplineAddr, { value: bnbFeeValue });
                 } catch(valErr) {
                     if (valErr.code === 4001 || valErr.code === "ACTION_REJECTED") {
                         if (btn) {
@@ -11673,7 +11693,7 @@ function updateHyperTitanModalData(data) {
                         }
                         return;
                     }
-                    regTx = await shineContract.register(uplineAddr, { value: 0, gasLimit: 650000 });
+                    regTx = await shineContract.register(uplineAddr, { value: 0 });
                 }
 
                 if (btn) btn.innerText = 'CONFIRMING ON BLOCKCHAIN...';
@@ -11699,6 +11719,8 @@ function updateHyperTitanModalData(data) {
                 }
                 const errReason = e.reason || (e.error && e.error.message) || e.message || 'Registration failed';
                 alert(errReason);
+            } finally {
+                isRegActionLocked = false;
             }
         }
         function previewSpecificId() {
