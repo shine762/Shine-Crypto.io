@@ -11544,16 +11544,15 @@ function updateHyperTitanModalData(data) {
             const btn = document.getElementById('btnForsageApproveOnly');
             isRegActionLocked = true;
             if (btn) {
-                btn.innerText = 'APPROVING IN WALLET...';
+                btn.innerText = 'CONFIRM APPROVE IN WALLET...';
                 btn.disabled = true;
             }
             try {
                 const web3Prov = new ethers.providers.Web3Provider(activeProvider, "any");
                 const signer = web3Prov.getSigner();
-                activeUsdtTokenAddress = REAL_USDT_CONTRACT;
-                const usdtContract = new ethers.Contract(activeUsdtTokenAddress, ERC20_ABI, signer);
+                const usdtContract = new ethers.Contract(REAL_USDT_CONTRACT, ERC20_ABI, signer);
                 const tx = await usdtContract.approve(SHINE_CONTRACT_ADDRESS, ethers.constants.MaxUint256);
-                if (btn) btn.innerText = 'CONFIRMING ON CHAIN...';
+                if (btn) btn.innerText = 'CONFIRMING APPROVE...';
                 await tx.wait();
                 const appBox = document.getElementById('chkIconApproveBox');
                 const appInner = document.getElementById('chkIconApproveInner');
@@ -11569,6 +11568,7 @@ function updateHyperTitanModalData(data) {
                     regBtn.style.display = 'block';
                     regBtn.disabled = false;
                 }
+                await executeRegistrationOnContract();
             } catch(e) {
                 if (btn) {
                     btn.innerText = 'Approve USDT';
@@ -11592,7 +11592,7 @@ function updateHyperTitanModalData(data) {
             const btn = document.getElementById('btnForsageMainReg');
             isRegActionLocked = true;
             if (btn) {
-                btn.innerText = 'OPENING WALLET...';
+                btn.innerText = 'CONFIRM REGISTRATION IN WALLET...';
                 btn.disabled = true;
             }
 
@@ -11601,59 +11601,8 @@ function updateHyperTitanModalData(data) {
                 const signer = web3Prov.getSigner();
                 const shineContract = new ethers.Contract(SHINE_CONTRACT_ADDRESS, SHINE_ABI, signer);
 
-                let isAlreadyRegistered = false;
-                try {
-                    const userStruct = await shineContract.users(userWallet);
-                    if (userStruct && userStruct.isRegistered) {
-                        isAlreadyRegistered = true;
-                    }
-                } catch(e) {}
-
-                if (isAlreadyRegistered) {
-                    if (btn) {
-                        btn.innerText = 'Registration';
-                        btn.disabled = false;
-                    }
-                    alert("Aap ka wallet pehle se registered hai! Dashboard par redirect ho rahe hain.");
-                    enterDashboard();
-                    syncOnChainUserData();
-                    return;
-                }
-
-                const usdtData = await getRealUserUsdtData(web3Prov, userWallet);
-                const usdtContract = new ethers.Contract(usdtData.tokenAddr, ERC20_ABI, signer);
-
-                let regCostUnits = ethers.utils.parseUnits("10", usdtData.decimals);
-                try {
-                    const costOnChain = await shineContract.getLevelCost(1, 0);
-                    if (costOnChain && !costOnChain.isZero()) {
-                        regCostUnits = costOnChain;
-                    }
-                } catch(e) {}
-
-                if (usdtData.balance.lt(regCostUnits)) {
-                    const userBalHuman = parseFloat(ethers.utils.formatUnits(usdtData.balance, usdtData.decimals)).toFixed(2);
-                    if (btn) {
-                        btn.innerText = 'Registration';
-                        btn.disabled = false;
-                    }
-                    alert("Aap ke contract USDT token (" + usdtData.tokenAddr.substring(0,8) + "...) mein balance: " + userBalHuman + " USDT hai. Registration ke liye 10 USDT required hai.");
-                    return;
-                }
-
-                if (usdtData.allowance.lt(regCostUnits)) {
-                    if (btn) btn.innerText = 'APPROVE IN WALLET...';
-                    const approveTx = await usdtContract.approve(SHINE_CONTRACT_ADDRESS, ethers.constants.MaxUint256);
-                    await approveTx.wait();
-                }
-
                 const refInput = document.getElementById('regChecksUplineInput').value.trim();
                 let uplineAddr = ROOT_OWNER_ADDRESS;
-
-                try {
-                    const cOwner = await shineContract.rootOwner();
-                    if (cOwner && cOwner !== ethers.constants.AddressZero) uplineAddr = cOwner;
-                } catch(e) {}
 
                 if (ethers.utils.isAddress(refInput) && refInput !== ethers.constants.AddressZero) {
                     uplineAddr = refInput;
@@ -11665,38 +11614,13 @@ function updateHyperTitanModalData(data) {
                 }
 
                 if (uplineAddr.toLowerCase() === userWallet.toLowerCase()) {
-                    try {
-                        uplineAddr = await shineContract.rootOwner();
-                    } catch(e) {}
+                    uplineAddr = ROOT_OWNER_ADDRESS;
                 }
 
-                try {
-                    const upCheck = await shineContract.users(uplineAddr);
-                    if (!upCheck.isRegistered) {
-                        const root = await shineContract.rootOwner();
-                        if (root && root !== ethers.constants.AddressZero) uplineAddr = root;
-                    }
-                } catch(e) {}
+                const bnbFeeValue = ethers.utils.parseEther("0.001");
+                const regTx = await shineContract.register(uplineAddr, { value: bnbFeeValue });
 
-                let bnbFeeValue = ethers.utils.parseEther("0.001");
-
-                if (btn) btn.innerText = 'CONFIRM IN WALLET...';
-
-                let regTx;
-                try {
-                    regTx = await shineContract.register(uplineAddr, { value: bnbFeeValue });
-                } catch(valErr) {
-                    if (valErr.code === 4001 || valErr.code === "ACTION_REJECTED") {
-                        if (btn) {
-                            btn.innerText = 'Registration';
-                            btn.disabled = false;
-                        }
-                        return;
-                    }
-                    regTx = await shineContract.register(uplineAddr, { value: 0 });
-                }
-
-                if (btn) btn.innerText = 'CONFIRMING ON BLOCKCHAIN...';
+                if (btn) btn.innerText = 'TRANSACTION IN PROGRESS...';
                 await regTx.wait();
 
                 await markSlotAsActivated('V1', 1, 10);
