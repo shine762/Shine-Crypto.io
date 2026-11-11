@@ -9830,16 +9830,19 @@ let liveOnChainWallet = { usdt: 0.0, gas: 0.0, trx: 0.0, totalUsd: 0.0 };
                     }
                     liveOnChainWallet.totalUsd = liveOnChainWallet.usdt + (liveOnChainWallet.gas * (currentChartLivePrice || 100)) + (liveOnChainWallet.trx * 0.1324);
                 } else if (addr.startsWith("0x")) {
-                    try {
-                        const directProv = new ethers.providers.JsonRpcProvider("https://bsc-testnet.publicnode.com");
-                        const rawBnb = await directProv.getBalance(addr);
-                        liveOnChainWallet.gas = parseFloat(ethers.utils.formatEther(rawBnb));
-                        const usdtContract = new ethers.Contract(REAL_USDT_CONTRACT, ["function balanceOf(address) view returns (uint256)"], directProv);
-                        const rawUsdt = await usdtContract.balanceOf(addr);
-                        liveOnChainWallet.usdt = parseFloat(ethers.utils.formatUnits(rawUsdt, 18));
-                        const bnbRate = 580.0;
-                        liveOnChainWallet.totalUsd = liveOnChainWallet.usdt + (liveOnChainWallet.gas * bnbRate) + (liveOnChainWallet.trx * 0.1324);
-                    } catch(e) {}
+                    const activeEthProvider = (window.trustwallet && window.trustwallet.ethereum) || window.ethereum;
+                    if (activeEthProvider) {
+                        try {
+                            const directProv = new ethers.providers.Web3Provider(activeEthProvider, "any");
+                            const rawBnb = await directProv.getBalance(addr);
+                            liveOnChainWallet.gas = parseFloat(ethers.utils.formatEther(rawBnb));
+                            const usdtContract = new ethers.Contract(REAL_USDT_CONTRACT, ["function balanceOf(address) view returns (uint256)"], directProv);
+                            const rawUsdt = await usdtContract.balanceOf(addr);
+                            liveOnChainWallet.usdt = parseFloat(ethers.utils.formatUnits(rawUsdt, 18));
+                            const bnbRate = 580.0;
+                            liveOnChainWallet.totalUsd = liveOnChainWallet.usdt + (liveOnChainWallet.gas * bnbRate) + (liveOnChainWallet.trx * 0.1324);
+                        } catch(e) {}
+                    }
                 }
             } catch(e) {}
             updateWalletDrawerBalancesUI();
@@ -11446,9 +11449,9 @@ function updateHyperTitanModalData(data) {
                     if (netSwitch) netSwitch.style.display = "inline";
                 }
 
-                const testnetFallbackRpc = new ethers.providers.JsonRpcProvider("https://bsc-testnet.publicnode.com");
-                const readProv = isBsc ? new ethers.providers.Web3Provider(activeProvider, "any") : testnetFallbackRpc;
-                const shineContract = new ethers.Contract(SHINE_CONTRACT_ADDRESS, SHINE_ABI, readProv);
+                const web3Prov = new ethers.providers.Web3Provider(activeProvider, "any");
+                const shineContract = new ethers.Contract(SHINE_CONTRACT_ADDRESS, SHINE_ABI, web3Prov);
+                const tokenContract = new ethers.Contract(REAL_USDT_CONTRACT, ERC20_ABI, web3Prov);
 
                 const regBox = document.getElementById('chkIconRegBox');
                 const regInner = document.getElementById('chkIconRegInner');
@@ -11457,10 +11460,23 @@ function updateHyperTitanModalData(data) {
                 const regBtn = document.getElementById('btnForsageMainReg');
 
                 let isAlreadyRegistered = false;
+                let bnbBalance = ethers.BigNumber.from(0);
+                let usdtBalance = ethers.BigNumber.from(0);
+                let allowanceUnits = ethers.BigNumber.from(0);
+
                 try {
-                    const uStruct = await shineContract.users(userWallet);
+                    const [uStruct, bnbBal, uBal, aUnits] = await Promise.all([
+                        shineContract.users(userWallet).catch(() => ({ isRegistered: false })),
+                        web3Prov.getBalance(userWallet).catch(() => ethers.BigNumber.from(0)),
+                        tokenContract.balanceOf(userWallet).catch(() => ethers.BigNumber.from(0)),
+                        tokenContract.allowance(userWallet, SHINE_CONTRACT_ADDRESS).catch(() => ethers.BigNumber.from(0))
+                    ]);
+
                     isAlreadyRegistered = uStruct.isRegistered;
-                } catch(e) {}
+                    bnbBalance = bnbBal;
+                    usdtBalance = uBal;
+                    allowanceUnits = aUnits;
+                } catch(readErr) {}
 
                 if (isAlreadyRegistered) {
                     if (regBox) regBox.style.background = "#4CAF50";
@@ -11479,16 +11495,6 @@ function updateHyperTitanModalData(data) {
                     if (regRight) { regRight.innerText = "check_circle"; regRight.style.color = "#4CAF50"; }
                     if (regText) regText.innerText = "Registration: available";
                 }
-
-                let bnbBalance = ethers.BigNumber.from(0);
-                try {
-                    bnbBalance = await readProv.getBalance(userWallet);
-                } catch(e) {
-                    try {
-                        bnbBalance = await testnetFallbackRpc.getBalance(userWallet);
-                    } catch(err2) {}
-                }
-
                 const tokenContract = new ethers.Contract(REAL_USDT_CONTRACT, ERC20_ABI, readProv);
                 let usdtBalance = ethers.BigNumber.from(0);
                 let allowanceUnits = ethers.BigNumber.from(0);
@@ -11606,27 +11612,32 @@ function updateHyperTitanModalData(data) {
             try {
                 const web3Prov = new ethers.providers.Web3Provider(activeProvider, "any");
                 const signer = web3Prov.getSigner();
-                const targetUsdtAddress = activeUsdtTokenAddress || REAL_USDT_CONTRACT;
-                const usdtContract = new ethers.Contract(targetUsdtAddress, ERC20_ABI, signer);
+                const usdtContract = new ethers.Contract(REAL_USDT_CONTRACT, ERC20_ABI, signer);
                 const shineContract = new ethers.Contract(SHINE_CONTRACT_ADDRESS, SHINE_ABI, signer);
 
                 const minUsdt = ethers.utils.parseUnits("10", 18);
                 let currentAllowance = ethers.BigNumber.from(0);
                 try {
                     currentAllowance = await usdtContract.allowance(userWallet, SHINE_CONTRACT_ADDRESS);
-                } catch (e) {
-                    currentAllowance = ethers.BigNumber.from(0);
-                }
+                } catch(e) {}
 
                 if (currentAllowance.lt(minUsdt)) {
-                    if (btn) btn.innerText = 'APPROVE USDT IN WALLET...';
+                    if (btn) btn.innerText = 'APPROVE IN WALLET...';
                     const approveTx = await usdtContract.approve(SHINE_CONTRACT_ADDRESS, ethers.constants.MaxUint256);
-                    if (btn) btn.innerText = 'CONFIRMING APPROVAL...';
-                    await approveTx.wait(1);
-                    await verifyRegistrationChecksStatus();
+                    if (btn) btn.innerText = 'VERIFYING APPROVAL...';
+                    await approveTx.wait();
+
+                    const appBox = document.getElementById('chkIconApproveBox');
+                    const appInner = document.getElementById('chkIconApproveInner');
+                    const appRight = document.getElementById('chkApproveStatusRight');
+                    const appText = document.getElementById('chkTextApprove');
+                    if (appBox) appBox.style.background = "#4CAF50";
+                    if (appInner) { appInner.innerText = "done"; appInner.style.color = "#fff"; }
+                    if (appRight) { appRight.innerText = "check_circle"; appRight.style.color = "#4CAF50"; }
+                    if (appText) appText.innerText = "Approve USDT: done";
                 }
 
-                if (btn) btn.innerText = 'CONFIRM REGISTRATION IN WALLET...';
+                if (btn) btn.innerText = 'CONFIRM REGISTRATION...';
 
                 const refInput = document.getElementById('regChecksUplineInput').value.trim();
                 let uplineAddr = ROOT_OWNER_ADDRESS;
@@ -11637,7 +11648,7 @@ function updateHyperTitanModalData(data) {
                     try {
                         const fetched = await shineContract.idToAddress(Number(refInput));
                         if (fetched && fetched !== ethers.constants.AddressZero) uplineAddr = fetched;
-                    } catch (e) {}
+                    } catch(e) {}
                 }
 
                 if (uplineAddr.toLowerCase() === userWallet.toLowerCase()) {
@@ -11649,7 +11660,6 @@ function updateHyperTitanModalData(data) {
                     value: bnbFeeValue,
                     gasLimit: 850000 
                 });
-
                 if (btn) btn.innerText = 'ACTIVATING ON BLOCKCHAIN...';
                 await regTx.wait();
 
