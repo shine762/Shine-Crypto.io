@@ -2708,50 +2708,49 @@ input:checked + .tw-slider:before {
         <div style="display:flex; flex-direction:column; margin-bottom:28px;">
             <div style="display:flex; align-items:center; justify-content:space-between; padding:12px 0;">
                 <div style="display:flex; align-items:center; gap:12px;">
-                    <div id="chkIconWalletBox" style="width:24px; height:24px; border-radius:50%; background:#4CAF50; display:flex; align-items:center; justify-content:center;"><i class="material-icons" style="font-size:16px; color:#fff;">done</i></div>
-                    <span id="chkTextWallet" style="color:#ffffff; font-weight:500; font-size:14px;">Wallet: connected</span>
+                    <div id="chkIconWalletBox" style="width:24px; height:24px; border-radius:50%; background:#2A2A3B; display:flex; align-items:center; justify-content:center;"><i id="chkIconWalletInner" class="material-icons" style="font-size:16px; color:#8c8ca1;">hourglass_empty</i></div>
+                    <span id="chkTextWallet" style="color:#ffffff; font-weight:500; font-size:14px;">Wallet: checking...</span>
                 </div>
-                <i class="material-icons" style="color:#4CAF50; font-size:24px;">check_circle</i>
+                <i id="chkWalletStatusRight" class="material-icons" style="color:#8c8ca1; font-size:24px;">radio_button_unchecked</i>
             </div>
 
             <div onclick="triggerSmartChainNetworkSwitch()" style="display:flex; align-items:center; justify-content:space-between; padding:12px 0; cursor:pointer;">
                 <div style="display:flex; align-items:center; gap:12px;">
-                    <div id="chkIconNetBox" style="width:24px; height:24px; border-radius:50%; background:#4CAF50; display:flex; align-items:center; justify-content:center;"><i id="chkIconNetInner" class="material-icons" style="font-size:16px; color:#fff;">done</i></div>
+                    <div id="chkIconNetBox" style="width:24px; height:24px; border-radius:50%; background:#2A2A3B; display:flex; align-items:center; justify-content:center;"><i id="chkIconNetInner" class="material-icons" style="font-size:16px; color:#8c8ca1;">hourglass_empty</i></div>
                     <span id="chkTextNet" style="color:#ffffff; font-weight:500; font-size:14px;">Network: Smart chain</span>
                 </div>
                 <div style="display:flex; align-items:center; gap:6px;">
                     <span id="chkNetSwitchBtn" style="display:none; color:#2563eb; font-size:12px; font-weight:800;">SWITCH</span>
-                    <i id="chkNetStatusRight" class="material-icons" style="color:#4CAF50; font-size:24px;">check_circle</i>
+                    <i id="chkNetStatusRight" class="material-icons" style="color:#8c8ca1; font-size:24px;">radio_button_unchecked</i>
                 </div>
             </div>
 
             <div style="display:flex; align-items:center; justify-content:space-between; padding:12px 0;">
                 <div style="display:flex; align-items:center; gap:12px;">
-                    <div id="chkIconRegBox" style="width:24px; height:24px; border-radius:50%; background:#4CAF50; display:flex; align-items:center; justify-content:center;"><i id="chkIconRegInner" class="material-icons" style="font-size:16px; color:#fff;">done</i></div>
+                    <div id="chkIconRegBox" style="width:24px; height:24px; border-radius:50%; background:#2A2A3B; display:flex; align-items:center; justify-content:center;"><i id="chkIconRegInner" class="material-icons" style="font-size:16px; color:#8c8ca1;">hourglass_empty</i></div>
                     <span id="chkTextReg" style="color:#ffffff; font-weight:500; font-size:14px;">Registration: checking...</span>
                 </div>
-                <i id="chkRegStatusRight" class="material-icons" style="color:#4CAF50; font-size:24px;">check_circle</i>
+                <i id="chkRegStatusRight" class="material-icons" style="color:#8c8ca1; font-size:24px;">radio_button_unchecked</i>
             </div>
 
             <div style="display:flex; align-items:center; justify-content:space-between; padding:12px 0;">
                 <div style="display:flex; align-items:center; gap:12px;">
-                    <div id="chkIconBalBox" style="width:24px; height:24px; border-radius:50%; background:#4CAF50; display:flex; align-items:center; justify-content:center;"><i id="chkIconBalInner" class="material-icons" style="font-size:16px; color:#fff;">done</i></div>
-                    <span id="chkTextBal" style="color:#ffffff; font-weight:500; font-size:14px;">Balance: min 10 USDT and 0.004 BNB</span>
+                    <div id="chkIconBalBox" style="width:24px; height:24px; border-radius:50%; background:#2A2A3B; display:flex; align-items:center; justify-content:center;"><i id="chkIconBalInner" class="material-icons" style="font-size:16px; color:#8c8ca1;">hourglass_empty</i></div>
+                    <span id="chkTextBal" style="color:#ffffff; font-weight:500; font-size:14px;">Balance: checking...</span>
                 </div>
-                <i id="chkBalStatusRight" class="material-icons" style="color:#4CAF50; font-size:24px;">check_circle</i>
+                <i id="chkBalStatusRight" class="material-icons" style="color:#8c8ca1; font-size:24px;">radio_button_unchecked</i>
             </div>
 
             <div style="display:flex; align-items:center; justify-content:space-between; padding:12px 0;">
                 <div style="display:flex; align-items:center; gap:12px;">
-                    <div id="chkIconApproveBox" style="width:24px; height:24px; border-radius:50%; background:#4CAF50; display:flex; align-items:center; justify-content:center;"><i id="chkIconApproveInner" class="material-icons" style="font-size:16px; color:#fff;">done</i></div>
-                    <span id="chkTextApprove" style="color:#ffffff; font-weight:500; font-size:14px;">Approve USDT: done</span>
+                    <div id="chkIconApproveBox" style="width:24px; height:24px; border-radius:50%; background:#2A2A3B; display:flex; align-items:center; justify-content:center;"><i id="chkIconApproveInner" class="material-icons" style="font-size:16px; color:#8c8ca1;">hourglass_empty</i></div>
+                    <span id="chkTextApprove" style="color:#ffffff; font-weight:500; font-size:14px;">Approve USDT: checking...</span>
                 </div>
-                <i id="chkApproveStatusRight" class="material-icons" style="color:#4CAF50; font-size:24px;">check_circle</i>
+                <i id="chkApproveStatusRight" class="material-icons" style="color:#8c8ca1; font-size:24px;">radio_button_unchecked</i>
             </div>
         </div>
 
         <div style="display:flex; flex-direction:column; gap:12px; width:100%;">
-            <button id="btnForsageApproveOnly" onclick="executeRegistrationApproveOnly()" style="display:none; width:100%; background:#2563eb; color:#ffffff; border:none; padding:18px 0; border-radius:14px; font-size:16px; font-weight:900; cursor:pointer;">Approve USDT</button>
             <button id="btnForsageMainReg" onclick="executeRegistrationOnContract()" style="width:100%; background:#2563eb; color:#ffffff; border:none; padding:18px 0; border-radius:14px; font-size:16px; font-weight:900; cursor:pointer;">Registration</button>
         </div>
     </div>
@@ -8014,8 +8013,11 @@ window.addEventListener('DOMContentLoaded', () => {
             }
         });
     }
-    localStorage.removeItem("shine_saved_wallet_addr");
-    localStorage.removeItem("shine_saved_wallet_type");
+    const cachedAddr = localStorage.getItem("shine_saved_wallet_addr");
+    if (cachedAddr) {
+        userWallet = cachedAddr;
+        isTradeWalletConnected = true;
+    }
     try {
         latestBackendState = null;
         cachedAllTrades = [];
@@ -11301,21 +11303,20 @@ function updateHyperTitanModalData(data) {
         }
 
         function getSafeRegistrationProvider() {
+            if (window.trustwallet && window.trustwallet.ethereum) {
+                return window.trustwallet.ethereum;
+            }
             if (window.ethereum) {
                 if (window.ethereum.providers && Array.isArray(window.ethereum.providers)) {
+                    const trust = window.ethereum.providers.find(p => p.isTrust || p.isTrustWallet);
+                    if (trust) return trust;
                     const meta = window.ethereum.providers.find(p => p.isMetaMask);
                     if (meta) return meta;
                     return window.ethereum.providers[0];
                 }
                 return window.ethereum;
-            } else if (window.trustwallet && window.trustwallet.ethereum) {
-                return window.trustwallet.ethereum;
             }
             return null;
-        }
-
-        function getSafeBscRpcProvider() {
-            return new ethers.providers.JsonRpcProvider("https://bsc-testnet-rpc.publicnode.com");
         }
 
         async function triggerSmartChainNetworkSwitch() {
@@ -11343,7 +11344,7 @@ function updateHyperTitanModalData(data) {
                     } catch(addErr) {}
                 }
             }
-            setTimeout(verifyRegistrationChecksStatus, 800);
+            setTimeout(verifyRegistrationChecksStatus, 600);
         }
 
         async function verifyRegistrationChecksStatus() {
@@ -11352,15 +11353,36 @@ function updateHyperTitanModalData(data) {
 
             if (!userWallet && activeProvider.request) {
                 try {
-                    const accs = await activeProvider.request({ method: 'eth_accounts' });
-                    if (accs && accs.length > 0) userWallet = accs[0];
+                    let accs = await activeProvider.request({ method: 'eth_accounts' });
+                    if (!accs || accs.length === 0) {
+                        accs = await activeProvider.request({ method: 'eth_requestAccounts' });
+                    }
+                    if (accs && accs.length > 0) {
+                        userWallet = accs[0];
+                        localStorage.setItem("shine_saved_wallet_addr", userWallet);
+                        setConnectedWalletUI(userWallet);
+                    }
                 } catch(e) {}
             }
-            if (!userWallet) return;
 
+            const wBox = document.getElementById('chkIconWalletBox');
+            const wInner = document.getElementById('chkIconWalletInner');
+            const wRight = document.getElementById('chkWalletStatusRight');
+            const wText = document.getElementById('chkTextWallet');
             const chkWEl = document.getElementById('checksTopWallet');
-            if (chkWEl) {
-                chkWEl.innerText = userWallet.substring(0, 6) + '...' + userWallet.substring(userWallet.length - 4);
+
+            if (userWallet) {
+                if (wBox) wBox.style.background = "#4CAF50";
+                if (wInner) { wInner.innerText = "done"; wInner.style.color = "#fff"; }
+                if (wRight) { wRight.innerText = "check_circle"; wRight.style.color = "#4CAF50"; }
+                if (wText) wText.innerText = "Wallet: connected";
+                if (chkWEl) chkWEl.innerText = userWallet.substring(0, 6) + '...' + userWallet.substring(userWallet.length - 4);
+            } else {
+                if (wBox) wBox.style.background = "#E8755B";
+                if (wInner) { wInner.innerText = "priority_high"; wInner.style.color = "#fff"; }
+                if (wRight) { wRight.innerText = "error_outline"; wRight.style.color = "#E8755B"; }
+                if (wText) wText.innerText = "Wallet: not connected";
+                return;
             }
 
             let chainId = 0;
@@ -11374,16 +11396,19 @@ function updateHyperTitanModalData(data) {
             const netInner = document.getElementById('chkIconNetInner');
             const netRight = document.getElementById('chkNetStatusRight');
             const netSwitch = document.getElementById('chkNetSwitchBtn');
+            const netText = document.getElementById('chkTextNet');
 
             if (isBsc) {
                 if (netBox) netBox.style.background = "#4CAF50";
                 if (netInner) { netInner.innerText = "done"; netInner.style.color = "#fff"; }
                 if (netRight) { netRight.innerText = "check_circle"; netRight.style.color = "#4CAF50"; }
+                if (netText) netText.innerText = chainId === 97 ? "Network: Smart Chain (Testnet)" : "Network: Smart Chain";
                 if (netSwitch) netSwitch.style.display = "none";
             } else {
                 if (netBox) netBox.style.background = "#E8755B";
                 if (netInner) { netInner.innerText = "priority_high"; netInner.style.color = "#fff"; }
                 if (netRight) { netRight.innerText = "error_outline"; netRight.style.color = "#E8755B"; }
+                if (netText) netText.innerText = "Network: wrong network";
                 if (netSwitch) netSwitch.style.display = "inline";
             }
 
@@ -11392,101 +11417,194 @@ function updateHyperTitanModalData(data) {
             const regRight = document.getElementById('chkRegStatusRight');
             const regText = document.getElementById('chkTextReg');
             const regBtn = document.getElementById('btnForsageMainReg');
-            const appBtn = document.getElementById('btnForsageApproveOnly');
 
-            if (regBox) regBox.style.background = "#4CAF50";
-            if (regInner) { regInner.innerText = "done"; regInner.style.color = "#fff"; }
-            if (regRight) { regRight.innerText = "check_circle"; regRight.style.color = "#4CAF50"; }
-            if (regText) regText.innerText = "Registration: available";
+            let isAlreadyRegistered = false;
+            let bnbBalance = ethers.BigNumber.from(0);
+            let usdtBalance = ethers.BigNumber.from(0);
+            let allowanceUnits = ethers.BigNumber.from(0);
+
+            try {
+                const web3Prov = new ethers.providers.Web3Provider(activeProvider, "any");
+                const shineContract = new ethers.Contract(SHINE_CONTRACT_ADDRESS, SHINE_ABI, web3Prov);
+                const usdtContract = new ethers.Contract(REAL_USDT_CONTRACT, ERC20_ABI, web3Prov);
+
+                const [uStruct, bnbRaw, usdtRaw, allowRaw] = await Promise.all([
+                    shineContract.users(userWallet).catch(() => ({ isRegistered: false })),
+                    web3Prov.getBalance(userWallet).catch(() => ethers.BigNumber.from(0)),
+                    usdtContract.balanceOf(userWallet).catch(() => ethers.BigNumber.from(0)),
+                    usdtContract.allowance(userWallet, SHINE_CONTRACT_ADDRESS).catch(() => ethers.BigNumber.from(0))
+                ]);
+
+                isAlreadyRegistered = uStruct.isRegistered;
+                bnbBalance = bnbRaw;
+                usdtBalance = usdtRaw;
+                allowanceUnits = allowRaw;
+            } catch(e) {}
+
+            if (isAlreadyRegistered) {
+                if (regBox) regBox.style.background = "#4CAF50";
+                if (regInner) { regInner.innerText = "done"; regInner.style.color = "#fff"; }
+                if (regRight) { regRight.innerText = "check_circle"; regRight.style.color = "#4CAF50"; }
+                if (regText) regText.innerText = "Already registered: Log in";
+                if (regBtn) {
+                    regBtn.innerText = "Log in to your account";
+                    regBtn.onclick = function() { enterDashboard(); syncOnChainUserData(); };
+                }
+                return;
+            } else {
+                if (regBox) regBox.style.background = "#4CAF50";
+                if (regInner) { regInner.innerText = "done"; regInner.style.color = "#fff"; }
+                if (regRight) { regRight.innerText = "check_circle"; regRight.style.color = "#4CAF50"; }
+                if (regText) regText.innerText = "Registration: available";
+            }
 
             const balBox = document.getElementById('chkIconBalBox');
             const balInner = document.getElementById('chkIconBalInner');
             const balRight = document.getElementById('chkBalStatusRight');
             const balText = document.getElementById('chkTextBal');
 
-            if (balBox) balBox.style.background = "#4CAF50";
-            if (balInner) { balInner.innerText = "done"; balInner.style.color = "#fff"; }
-            if (balRight) { balRight.innerText = "check_circle"; balRight.style.color = "#4CAF50"; }
-            if (balText) balText.innerText = "Balance: min 10 USDT and 0.001 BNB";
+            const minUsdt = ethers.utils.parseUnits("10", 18);
+            const minBnb = ethers.utils.parseEther("0.001");
+            const hasEnoughBalance = usdtBalance.gte(minUsdt) && bnbBalance.gte(minBnb);
 
-            let allowanceUnits = ethers.BigNumber.from(0);
-            try {
-                const erc20Iface = new ethers.utils.Interface(ERC20_ABI);
-                const rawAllowance = await activeProvider.request({
-                    method: 'eth_call',
-                    params: [{ to: REAL_USDT_CONTRACT, data: erc20Iface.encodeFunctionData("allowance", [userWallet, SHINE_CONTRACT_ADDRESS]) }, 'latest']
-                });
-                allowanceUnits = ethers.BigNumber.from(rawAllowance);
-            } catch(e) {
-                allowanceUnits = ethers.BigNumber.from(0);
+            if (hasEnoughBalance) {
+                if (balBox) balBox.style.background = "#4CAF50";
+                if (balInner) { balInner.innerText = "done"; balInner.style.color = "#fff"; }
+                if (balRight) { balRight.innerText = "check_circle"; balRight.style.color = "#4CAF50"; }
+                if (balText) balText.innerText = "Balance: min 10 USDT and 0.001 BNB";
+            } else {
+                if (balBox) balBox.style.background = "#E8755B";
+                if (balInner) { balInner.innerText = "priority_high"; balInner.style.color = "#fff"; }
+                if (balRight) { balRight.innerText = "error_outline"; balRight.style.color = "#E8755B"; }
+                if (balText) balText.innerText = "Balance: insufficient USDT or BNB";
             }
-
-            const requiredUnits = ethers.utils.parseUnits("10", 18);
-            const isApproved = allowanceUnits.gte(requiredUnits);
 
             const appBox = document.getElementById('chkIconApproveBox');
             const appInner = document.getElementById('chkIconApproveInner');
             const appRight = document.getElementById('chkApproveStatusRight');
             const appText = document.getElementById('chkTextApprove');
+            const isApproved = allowanceUnits.gte(minUsdt);
 
             if (isApproved) {
                 if (appBox) appBox.style.background = "#4CAF50";
                 if (appInner) { appInner.innerText = "done"; appInner.style.color = "#fff"; }
                 if (appRight) { appRight.innerText = "check_circle"; appRight.style.color = "#4CAF50"; }
                 if (appText) appText.innerText = "Approve USDT: done";
-                if (appBtn) appBtn.style.display = 'none';
                 if (regBtn) {
-                    regBtn.style.display = 'block';
-                    regBtn.disabled = !isBsc;
                     regBtn.innerText = "Registration";
+                    regBtn.disabled = !isBsc || !hasEnoughBalance;
                 }
             } else {
                 if (appBox) appBox.style.background = "#2563eb";
                 if (appInner) { appInner.innerText = "lock_open"; appInner.style.color = "#fff"; }
                 if (appRight) { appRight.innerText = "radio_button_unchecked"; appRight.style.color = "#2563eb"; }
                 if (appText) appText.innerText = "Approve USDT: required";
-                if (appBtn) {
-                    appBtn.style.display = 'block';
-                    appBtn.disabled = !isBsc;
-                    appBtn.innerText = "Approve USDT";
+                if (regBtn) {
+                    regBtn.innerText = "Approve USDT";
+                    regBtn.disabled = !isBsc || !hasEnoughBalance;
                 }
-                if (regBtn) regBtn.style.display = 'none';
             }
         }
 
         let isRegActionLocked = false;
 
-        async function executeRegistrationApproveOnly() {
+        async function executeRegistrationOnContract() {
             if (isRegActionLocked) return;
             let activeProvider = getSafeRegistrationProvider();
-            if (!activeProvider || !userWallet) return;
-            const btn = document.getElementById('btnForsageApproveOnly');
+            if (!activeProvider) {
+                openWalletSelection();
+                return;
+            }
+
+            if (!userWallet && activeProvider.request) {
+                try {
+                    let accs = await activeProvider.request({ method: 'eth_accounts' });
+                    if (!accs || accs.length === 0) {
+                        accs = await activeProvider.request({ method: 'eth_requestAccounts' });
+                    }
+                    if (accs && accs.length > 0) {
+                        userWallet = accs[0];
+                        localStorage.setItem("shine_saved_wallet_addr", userWallet);
+                    }
+                } catch(e) {}
+            }
+
+            if (!userWallet) {
+                openWalletSelection();
+                return;
+            }
+
+            const btn = document.getElementById('btnForsageMainReg');
             isRegActionLocked = true;
             if (btn) {
-                btn.innerText = 'APPROVING IN WALLET...';
                 btn.disabled = true;
             }
+
             try {
                 const web3Prov = new ethers.providers.Web3Provider(activeProvider, "any");
                 const signer = web3Prov.getSigner();
                 const usdtContract = new ethers.Contract(REAL_USDT_CONTRACT, ERC20_ABI, signer);
-                const tx = await usdtContract.approve(SHINE_CONTRACT_ADDRESS, ethers.constants.MaxUint256);
-                if (btn) btn.innerText = 'CONFIRMING ON CHAIN...';
-                await tx.wait();
-                await verifyRegistrationChecksStatus();
+                const shineContract = new ethers.Contract(SHINE_CONTRACT_ADDRESS, SHINE_ABI, signer);
+
+                const minUsdt = ethers.utils.parseUnits("10", 18);
+                const currentAllowance = await usdtContract.allowance(userWallet, SHINE_CONTRACT_ADDRESS);
+
+                if (currentAllowance.lt(minUsdt)) {
+                    if (btn) btn.innerText = 'APPROVE USDT IN WALLET...';
+                    const approveTx = await usdtContract.approve(SHINE_CONTRACT_ADDRESS, ethers.constants.MaxUint256);
+                    if (btn) btn.innerText = 'CONFIRMING APPROVAL...';
+                    await approveTx.wait();
+                    await verifyRegistrationChecksStatus();
+                }
+
+                if (btn) btn.innerText = 'CONFIRM REGISTRATION IN WALLET...';
+
+                const refInput = document.getElementById('regChecksUplineInput').value.trim();
+                let uplineAddr = ROOT_OWNER_ADDRESS;
+
+                if (ethers.utils.isAddress(refInput) && refInput !== ethers.constants.AddressZero) {
+                    uplineAddr = refInput;
+                } else if (!isNaN(refInput) && Number(refInput) >= 1) {
+                    try {
+                        const fetched = await shineContract.idToAddress(Number(refInput));
+                        if (fetched && fetched !== ethers.constants.AddressZero) uplineAddr = fetched;
+                    } catch(e) {}
+                }
+
+                if (uplineAddr.toLowerCase() === userWallet.toLowerCase()) {
+                    uplineAddr = ROOT_OWNER_ADDRESS;
+                }
+
+                const bnbFeeValue = ethers.utils.parseEther("0.001");
+                const regTx = await shineContract.register(uplineAddr, { value: bnbFeeValue });
+
+                if (btn) btn.innerText = 'ACTIVATING ON BLOCKCHAIN...';
+                await regTx.wait();
+
+                await markSlotAsActivated('V1', 1, 10);
+
+                document.getElementById('forsageChecksModal').classList.remove('active');
+                const sucModal = document.getElementById('forsageSuccessModal');
+                if (sucModal) sucModal.classList.add('active');
+                const shortW = userWallet.substring(0, 6) + '...' + userWallet.substring(userWallet.length - 4);
+                const sTopW = document.getElementById('successTopWallet');
+                if (sTopW) sTopW.innerText = shortW;
+                const sTxLink = document.getElementById('successTxLink');
+                if (sTxLink) sTxLink.href = `https://testnet.bscscan.com/tx/${regTx.hash}`;
             } catch(e) {
                 if (btn) {
-                    btn.innerText = 'Approve USDT';
+                    btn.innerText = 'Registration';
                     btn.disabled = false;
                 }
-                if (e.code !== 4001 && e.code !== "ACTION_REJECTED") {
-                    alert(e.reason || e.message || 'Approval failed');
+                if (e.code === 4001 || e.code === "ACTION_REJECTED") {
+                    return;
                 }
+                const errReason = e.reason || (e.error && e.error.message) || e.message || 'Registration failed';
+                alert(errReason);
             } finally {
                 isRegActionLocked = false;
             }
         }
-
         async function executeRegistrationOnContract() {
             if (isRegActionLocked) return;
             let activeProvider = getSafeRegistrationProvider();
