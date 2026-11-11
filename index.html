@@ -11469,12 +11469,15 @@ function updateHyperTitanModalData(data) {
                     if (regText) regText.innerText = "Registration: available";
                 }
 
-                const tokenData = await detectUserMockUsdt(web3Prov, userWallet);
                 let bnbBalance = ethers.BigNumber.from(0);
                 try {
-                    bnbBalance = await web3Prov.getBalance(userWallet);
-                } catch(e) {}
+                    const rawHex = await activeProvider.request({ method: 'eth_getBalance', params: [userWallet, 'latest'] });
+                    bnbBalance = ethers.BigNumber.from(rawHex);
+                } catch(e) {
+                    try { bnbBalance = await web3Prov.getBalance(userWallet); } catch(e2) {}
+                }
 
+                const tokenData = await detectUserMockUsdt(web3Prov, userWallet);
                 const usdtDecimals = tokenData.decimals || 18;
                 const minUsdt = ethers.utils.parseUnits("10", usdtDecimals);
                 const minBnb = ethers.utils.parseEther("0.001");
@@ -11528,10 +11531,10 @@ function updateHyperTitanModalData(data) {
                         regBtn.disabled = !isBsc || !hasEnoughBnb || !hasEnoughUsdt;
                     }
                 } else {
-                    if (appBox) appBox.style.background = "#2563eb";
-                    if (appInner) { appInner.innerText = "lock_open"; appInner.style.color = "#fff"; }
-                    if (appRight) { appRight.innerText = "radio_button_unchecked"; appRight.style.color = "#2563eb"; }
-                    if (appText) appText.innerText = "Approve USDT: required";
+                    if (appBox) appBox.style.background = "#2A2A3B";
+                    if (appInner) { appInner.innerText = "hourglass_empty"; appInner.style.color = "#8c8ca1"; }
+                    if (appRight) { appRight.innerText = "radio_button_unchecked"; appRight.style.color = "#8c8ca1"; }
+                    if (appText) appText.innerText = "Approve USDT: ready";
                     if (regBtn) {
                         regBtn.innerText = "Approve USDT";
                         regBtn.disabled = !isBsc || !hasEnoughBnb || !hasEnoughUsdt;
