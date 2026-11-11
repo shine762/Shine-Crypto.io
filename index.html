@@ -6727,11 +6727,13 @@ input:checked + .tw-slider:before {
                     chainId = parseInt(chainHex, 16);
                 } catch(e) {}
 
-                if (chainId !== 56 && chainId !== 97) {
-                    if (hasRef) {
-                        startForsageRegistrationFlow();
-                        return;
-                    }
+                if (chainId !== 97) {
+                    try {
+                        await activeProvider.request({
+                            method: 'wallet_switchEthereumChain',
+                            params: [{ chainId: '0x61' }]
+                        });
+                    } catch(e) {}
                 }
 
                 const web3Prov = new ethers.providers.Web3Provider(activeProvider, "any");
@@ -7325,13 +7327,13 @@ async function openUpgrade(prog, lvl, price) {
         chainId = parseInt(chainIdHex, 16);
     } catch (e) {}
 
-    const isBsc = (chainId === 97 || chainId === 56);
+    const isBsc = (chainId === 97);
     if (!isBsc) {
         netBox.style.borderColor = "#E8755B";
         netIconL.style.color = "#E8755B";
         netIconL.innerText = "priority_high";
         netText.style.color = "#E8755B";
-        netText.innerText = "Wrong Network (Switch to BSC)";
+        netText.innerText = "Wrong Network (Switch to BSC Testnet)";
         netIconR.style.color = "#E8755B";
         netIconR.innerText = "error_outline";
         confirmBtn.disabled = false;
@@ -7339,7 +7341,7 @@ async function openUpgrade(prog, lvl, price) {
         confirmBtn.style.color = "#ffffff";
         confirmBtn.style.cursor = "pointer";
         confirmBtn.setAttribute("data-action", "SWITCH_NET");
-        confirmBtn.innerText = "SWITCH TO BSC NETWORK";
+        confirmBtn.innerText = "SWITCH TO BSC TESTNET";
         return;
     }
 
@@ -9828,19 +9830,16 @@ let liveOnChainWallet = { usdt: 0.0, gas: 0.0, trx: 0.0, totalUsd: 0.0 };
                     }
                     liveOnChainWallet.totalUsd = liveOnChainWallet.usdt + (liveOnChainWallet.gas * (currentChartLivePrice || 100)) + (liveOnChainWallet.trx * 0.1324);
                 } else if (addr.startsWith("0x")) {
-                    const activeEthProvider = (window.trustwallet && window.trustwallet.ethereum) || window.ethereum;
-                    if (activeEthProvider) {
-                        try {
-                            const directProv = new ethers.providers.Web3Provider(activeEthProvider);
-                            const rawBnb = await directProv.getBalance(addr);
-                            liveOnChainWallet.gas = parseFloat(ethers.utils.formatEther(rawBnb));
-                            const usdtContract = new ethers.Contract(REAL_USDT_CONTRACT, ["function balanceOf(address) view returns (uint256)"], directProv);
-                            const rawUsdt = await usdtContract.balanceOf(addr);
-                            liveOnChainWallet.usdt = parseFloat(ethers.utils.formatUnits(rawUsdt, 18));
-                            const bnbRate = 580.0;
-                            liveOnChainWallet.totalUsd = liveOnChainWallet.usdt + (liveOnChainWallet.gas * bnbRate) + (liveOnChainWallet.trx * 0.1324);
-                        } catch(e) {}
-                    }
+                    try {
+                        const directProv = new ethers.providers.JsonRpcProvider("https://bsc-testnet.publicnode.com");
+                        const rawBnb = await directProv.getBalance(addr);
+                        liveOnChainWallet.gas = parseFloat(ethers.utils.formatEther(rawBnb));
+                        const usdtContract = new ethers.Contract(REAL_USDT_CONTRACT, ["function balanceOf(address) view returns (uint256)"], directProv);
+                        const rawUsdt = await usdtContract.balanceOf(addr);
+                        liveOnChainWallet.usdt = parseFloat(ethers.utils.formatUnits(rawUsdt, 18));
+                        const bnbRate = 580.0;
+                        liveOnChainWallet.totalUsd = liveOnChainWallet.usdt + (liveOnChainWallet.gas * bnbRate) + (liveOnChainWallet.trx * 0.1324);
+                    } catch(e) {}
                 }
             } catch(e) {}
             updateWalletDrawerBalancesUI();
@@ -11415,6 +11414,17 @@ function updateHyperTitanModalData(data) {
                     chainId = parseInt(chainHex, 16);
                 } catch(err) {}
 
+                if (chainId !== 97) {
+                    try {
+                        await activeProvider.request({
+                            method: 'wallet_switchEthereumChain',
+                            params: [{ chainId: '0x61' }]
+                        });
+                        const newHex = await activeProvider.request({ method: 'eth_chainId' });
+                        chainId = parseInt(newHex, 16);
+                    } catch(swErr) {}
+                }
+
                 const isBsc = (chainId === 97);
                 const netBox = document.getElementById('chkIconNetBox');
                 const netInner = document.getElementById('chkIconNetInner');
@@ -11426,24 +11436,25 @@ function updateHyperTitanModalData(data) {
                     if (netBox) netBox.style.background = "#4CAF50";
                     if (netInner) { netInner.innerText = "done"; netInner.style.color = "#fff"; }
                     if (netRight) { netRight.innerText = "check_circle"; netRight.style.color = "#4CAF50"; }
-                    if (netText) netText.innerText = chainId === 97 ? "Network: Smart Chain (Testnet)" : "Network: Smart Chain";
+                    if (netText) netText.innerText = "Network: BSC Testnet (97)";
                     if (netSwitch) netSwitch.style.display = "none";
                 } else {
                     if (netBox) netBox.style.background = "#E8755B";
                     if (netInner) { netInner.innerText = "priority_high"; netInner.style.color = "#fff"; }
                     if (netRight) { netRight.innerText = "error_outline"; netRight.style.color = "#E8755B"; }
-                    if (netText) netText.innerText = "Network: switch to Smart Chain";
+                    if (netText) netText.innerText = "Network: Switch to BSC Testnet";
                     if (netSwitch) netSwitch.style.display = "inline";
                 }
+
+                const testnetFallbackRpc = new ethers.providers.JsonRpcProvider("https://bsc-testnet.publicnode.com");
+                const readProv = isBsc ? new ethers.providers.Web3Provider(activeProvider, "any") : testnetFallbackRpc;
+                const shineContract = new ethers.Contract(SHINE_CONTRACT_ADDRESS, SHINE_ABI, readProv);
 
                 const regBox = document.getElementById('chkIconRegBox');
                 const regInner = document.getElementById('chkIconRegInner');
                 const regRight = document.getElementById('chkRegStatusRight');
                 const regText = document.getElementById('chkTextReg');
                 const regBtn = document.getElementById('btnForsageMainReg');
-
-                const web3Prov = new ethers.providers.Web3Provider(activeProvider, "any");
-                const shineContract = new ethers.Contract(SHINE_CONTRACT_ADDRESS, SHINE_ABI, web3Prov);
 
                 let isAlreadyRegistered = false;
                 try {
@@ -11471,32 +11482,30 @@ function updateHyperTitanModalData(data) {
 
                 let bnbBalance = ethers.BigNumber.from(0);
                 try {
-                    bnbBalance = await web3Prov.getBalance(userWallet);
-                } catch (e) {
+                    bnbBalance = await readProv.getBalance(userWallet);
+                } catch(e) {
                     try {
-                        const rawBnbHex = await activeProvider.request({ method: 'eth_getBalance', params: [userWallet, 'latest'] });
-                        bnbBalance = ethers.BigNumber.from(rawBnbHex);
-                    } catch (errBnb) {}
+                        bnbBalance = await testnetFallbackRpc.getBalance(userWallet);
+                    } catch(err2) {}
                 }
 
-                const tokenContract = new ethers.Contract(REAL_USDT_CONTRACT, ERC20_ABI, web3Prov);
+                const tokenContract = new ethers.Contract(REAL_USDT_CONTRACT, ERC20_ABI, readProv);
                 let usdtBalance = ethers.BigNumber.from(0);
                 let allowanceUnits = ethers.BigNumber.from(0);
 
                 try {
-                    const [bal, allow] = await Promise.all([
+                    const [bRes, aRes] = await Promise.all([
                         tokenContract.balanceOf(userWallet),
                         tokenContract.allowance(userWallet, SHINE_CONTRACT_ADDRESS)
                     ]);
-                    usdtBalance = bal;
-                    allowanceUnits = allow;
-                    activeUsdtTokenAddress = REAL_USDT_CONTRACT;
-                } catch (errToken) {
+                    usdtBalance = bRes;
+                    allowanceUnits = aRes;
+                } catch(tErr) {
                     try {
-                        const tData = await detectUserMockUsdt(web3Prov, userWallet);
-                        usdtBalance = tData.balance;
-                        allowanceUnits = await tData.contract.allowance(userWallet, SHINE_CONTRACT_ADDRESS);
-                    } catch (errFallback) {}
+                        const tokenFallback = new ethers.Contract(REAL_USDT_CONTRACT, ERC20_ABI, testnetFallbackRpc);
+                        usdtBalance = await tokenFallback.balanceOf(userWallet);
+                        allowanceUnits = await tokenFallback.allowance(userWallet, SHINE_CONTRACT_ADDRESS);
+                    } catch(tErr2) {}
                 }
 
                 const minUsdt = ethers.utils.parseUnits("10", 18);
