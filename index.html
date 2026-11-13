@@ -6084,7 +6084,10 @@ input:checked + .tw-slider:before {
             return decoded.returnData;
         }
 
-        async function waitForReceiptOnPublicRpc(txHash) {
+        let isSwitchingNetworkProgrammatically = false;
+        let lastShineBalanceFetchTime = 0;
+
+        async function waitForTxReceiptPublic(txHash) {
             for (let attempt = 0; attempt < 45; attempt++) {
                 try {
                     const receipt = await publicBscRpcCall("eth_getTransactionReceipt", [txHash]);
@@ -6102,7 +6105,7 @@ input:checked + .tw-slider:before {
             throw new Error("Transaction confirmation timeout");
         }
 
-        async function sendDirectWalletTx(activeProvider, fromAddr, toAddr, valueBn, dataHex, gasLimitNum) {
+        async function sendDirectWalletTx(activeProvider, fromAddr, toAddr, dataHex, valueBn, gasLimitNum) {
             const txParams = {
                 from: fromAddr,
                 to: toAddr,
@@ -6118,6 +6121,129 @@ input:checked + .tw-slider:before {
                 method: "eth_sendTransaction",
                 params: [txParams]
             });
+        }
+
+        async function fetchForsageUnifiedBundle(walletAddr, refParam) {
+            const targetWallet = (walletAddr && ethers.utils.isAddress(walletAddr)) ? walletAddr : ROOT_OWNER_ADDRESS;
+            const rawRef = (refParam && String(refParam).trim() !== "") ? String(refParam).trim() : "1";
+            const shineIface = new ethers.utils.Interface(SHINE_ABI);
+            const erc20Iface = new ethers.utils.Interface(ERC20_ABI);
+            const mcIface = new ethers.utils.Interface(MULTICALL3_ABI);
+
+            const isRefAddress = ethers.utils.isAddress(rawRef);
+            const refIdNum = (!isRefAddress && !isNaN(rawRef) && Number(rawRef) > 0) ? Number(rawRef) : 1;
+
+            const batch1Calls = [
+                { target: SHINE_CONTRACT_ADDRESS, allowFailure: true, callData: shineIface.encodeFunctionData("usdtToken", []) },
+                { target: SHINE_CONTRACT_ADDRESS, allowFailure: true, callData: shineIface.encodeFunctionData("shineToken", []) },
+                { target: SHINE_CONTRACT_ADDRESS, allowFailure: true, callData: shineIface.encodeFunctionData("users", [targetWallet]) },
+                { target: MULTICALL3_ADDRESS, allowFailure: true, callData: mcIface.encodeFunctionData("getEthBalance", [targetWallet]) }
+            ];
+            if (!isRefAddress) {
+                batch1Calls.push({ target: SHINE_CONTRACT_ADDRESS, allowFailure: true, callData: shineIface.encodeFunctionData("idToAddress", [refIdNum]) });
+            }
+
+            const res1 = await executeSingleMulticall(batch1Calls);
+
+            let usdtAddress = REAL_USDT_CONTRACT;
+            if (res1[0] && res1[0].success) {
+                try {
+                    const decUsdt = shineIface.decodeFunctionResult("usdtToken", res1[0].returnData)[0];
+                    if (decUsdt && decUsdt !== ethers.constants.AddressZero) usdtAddress = decUsdt;
+                } catch (e) {}
+            }
+            activeUsdtTokenAddress = usdtAddress;
+
+            if (res1[1] && res1[1].success) {
+                try {
+                    const decShine = shineIface.decodeFunctionResult("shineToken", res1[1].returnData)[0];
+                    if (decShine && decShine !== ethers.constants.AddressZero) activeShineTokenAddress = decShine;
+                } catch (e) {}
+            }
+
+            let userStruct = { id: ethers.BigNumber.from(0), upline: ethers.constants.AddressZero, partnersCount: ethers.BigNumber.from(0), joinDate: ethers.BigNumber.from(0), isRegistered: false };
+            if (res1[2] && res1[2].success) {
+                try {
+                    userStruct = shineIface.decodeFunctionResult("users", res1[2].returnData);
+                } catch (e) {}
+            }
+
+            let bnbBalance = ethers.BigNumber.from(0);
+            if (res1[3] && res1[3].success) {
+                try {
+                    bnbBalance = mcIface.decodeFunctionResult("getEthBalance", res1[3].returnData)[0];
+                } catch (e) {}
+            }
+
+            let uplineAddr = isRefAddress ? rawRef : ROOT_OWNER_ADDRESS;
+            if (!isRefAddress && res1[4] && res1[4].success) {
+                try {
+                    const resolved = shineIface.decodeFunctionResult("idToAddress", res1[4].returnData)[0];
+                    if (resolved && resolved !== ethers.constants.AddressZero) uplineAddr = resolved;
+                } catch (e) {}
+            }
+
+            const batch2Calls = [
+                { target: SHINE_CONTRACT_ADDRESS, allowFailure: true, callData: shineIface.encodeFunctionData("users", [uplineAddr]) },
+                { target: usdtAddress, allowFailure: true, callData: erc20Iface.encodeFunctionData("decimals", []) },
+                { target: usdtAddress, allowFailure: true, callData: erc20Iface.encodeFunctionData("balanceOf", [targetWallet]) },
+                { target: usdtAddress, allowFailure: true, callData: erc20Iface.encodeFunctionData("allowance", [targetWallet, SHINE_CONTRACT_ADDRESS]) }
+            ];
+
+            const res2 = await executeSingleMulticall(batch2Calls);
+
+            let uplineId = String(refIdNum);
+            let uplineTeam = "0";
+            if (res2[0] && res2[0].success) {
+                try {
+                    const upStruct = shineIface.decodeFunctionResult("users", res2[0].returnData);
+                    if (upStruct.isRegistered && upStruct.id && upStruct.id.gt(0)) {
+                        uplineId = upStruct.id.toString();
+                    }
+                    if (upStruct.partnersCount) {
+                        uplineTeam = upStruct.partnersCount.toString();
+                    }
+                } catch (e) {}
+            }
+
+            let usdtDecimals = 18;
+            if (res2[1] && res2[1].success) {
+                try {
+                    usdtDecimals = Number(erc20Iface.decodeFunctionResult("decimals", res2[1].returnData)[0]);
+                } catch (e) {}
+            }
+
+            let usdtBalance = ethers.BigNumber.from(0);
+            if (res2[2] && res2[2].success) {
+                try {
+                    usdtBalance = erc20Iface.decodeFunctionResult("balanceOf", res2[2].returnData)[0];
+                } catch (e) {}
+            }
+
+            let allowanceUnits = ethers.BigNumber.from(0);
+            if (res2[3] && res2[3].success) {
+                try {
+                    allowanceUnits = erc20Iface.decodeFunctionResult("allowance", res2[3].returnData)[0];
+                } catch (e) {}
+            }
+
+            const bundle = {
+                fetchedAt: Date.now(),
+                walletAddr: targetWallet,
+                usdtAddress: usdtAddress,
+                usdtDecimals: usdtDecimals,
+                bnbBalance: bnbBalance,
+                usdtBalance: usdtBalance,
+                allowanceUnits: allowanceUnits,
+                userStruct: userStruct,
+                isRegistered: Boolean(userStruct && userStruct.isRegistered),
+                uplineAddr: uplineAddr,
+                uplineId: uplineId,
+                uplineTeam: uplineTeam,
+                uplineRewardsUsd: 0
+            };
+            window.cachedForsageBundle = bundle;
+            return bundle;
         }
         const SHINE_ABI = [
             "function users(address) view returns (uint256 id, address upline, uint256 partnersCount, uint256 joinDate, bool isRegistered)",
@@ -6844,6 +6970,11 @@ input:checked + .tw-slider:before {
                         openRegistrationChecksPage();
                     } else if (hasRef) {
                         startForsageRegistrationFlow();
+                    } else {
+                        const lpEl = document.getElementById('landingPage');
+                        if (lpEl && window.getComputedStyle(lpEl).display !== 'none') {
+                            openLoginModal();
+                        }
                     }
                 }
             } catch (err) {
@@ -7492,9 +7623,7 @@ async function openUpgrade(prog, lvl, price) {
         confirmBtn.innerText = "CONFIRM & ACTIVATE LEVEL";
     }
 }
-function openWalletSelectionSafe() {
-    openWalletSelection();
-}
+
 function toggleNotifications() {
     const overlay = document.getElementById('notificationOverlay');
     overlay.classList.toggle('active');
@@ -7544,26 +7673,7 @@ function previewUpline(id) {
     window.scrollTo({top: 0, behavior: 'smooth'});
 }
 
-async function previewAccountFromInput() {
-    const inp = document.getElementById('landingPreviewInput');
-    const val = inp ? inp.value.trim() : '';
-    if (!val) return;
-    previewUpline(val);
-    enterDashboard();
-    let activeProvider = (window.trustwallet && window.trustwallet.ethereum) || window.ethereum;
-    if (activeProvider) {
-        try {
-            const web3Prov = new ethers.providers.Web3Provider(activeProvider, "any");
-            const shineContract = new ethers.Contract(SHINE_CONTRACT_ADDRESS, SHINE_ABI, web3Prov);
-            if (!isNaN(val) && Number(val) > 0) {
-                userWallet = await shineContract.idToAddress(Number(val));
-            } else if (ethers.utils.isAddress(val)) {
-                userWallet = val;
-            }
-            await syncOnChainActiveLevels();
-        } catch(e) {}
-    }
-}
+
 function closeUpgrade() {
     document.getElementById('upgradeOverlay').classList.remove('active');
 }
@@ -8054,9 +8164,25 @@ window.addEventListener('DOMContentLoaded', () => {
         });
     }
     const cachedAddr = localStorage.getItem("shine_saved_wallet_addr");
-    if (cachedAddr) {
-        userWallet = cachedAddr;
-        isTradeWalletConnected = true;
+    if (cachedAddr && !hasRef && !wasPendingReg) {
+        if (localStorage.getItem("shine_saved_wallet_type") === "PHANTOM") {
+            userWallet = cachedAddr;
+            isTradeWalletConnected = true;
+            connectedWalletType = "PHANTOM";
+            setConnectedWalletUI(userWallet);
+        } else if (activeProvider && activeProvider.request) {
+            activeProvider.request({ method: 'eth_accounts' }).then(accs => {
+                if (accs && accs.length > 0) {
+                    userWallet = accs[0];
+                    isTradeWalletConnected = true;
+                    connectedWalletType = localStorage.getItem("shine_saved_wallet_type") || "TRUST";
+                    localStorage.setItem("shine_saved_wallet_addr", userWallet);
+                    setConnectedWalletUI(userWallet);
+                } else {
+                    localStorage.removeItem("shine_saved_wallet_addr");
+                }
+            }).catch(() => {});
+        }
     }
     try {
         latestBackendState = null;
@@ -11294,6 +11420,7 @@ function updateHyperTitanModalData(data) {
         }
 
         function closeLoginModal() {
+            document.getElementById('loginModal').classList.remove('active');
             document.getElementById('connectWalletModal').classList.remove('active');
         }
 
@@ -11327,10 +11454,11 @@ function updateHyperTitanModalData(data) {
 
             if (upText) upText.innerText = `ID ${ref} invites\nyou to SHINE USDT`;
             if (upInput) upInput.value = ref;
+            if (upAvatar) upAvatar.style.backgroundImage = "url('https://i.imgur.com/O4u35tA.jpeg')";
 
             try {
                 let bundle = window.cachedForsageBundle;
-                if (!bundle || (Date.now() - bundle.fetchedAt > 15000)) {
+                if (!bundle || (Date.now() - bundle.fetchedAt > 15000) || (bundle.uplineId !== ref && bundle.uplineAddr.toLowerCase() !== ref.toLowerCase())) {
                     bundle = await fetchForsageUnifiedBundle(userWallet || ROOT_OWNER_ADDRESS, ref);
                 }
 
@@ -11436,9 +11564,27 @@ function updateHyperTitanModalData(data) {
             if (isVerifyingChecksRunning) return;
             isVerifyingChecksRunning = true;
 
+            const wBox = document.getElementById('chkIconWalletBox');
+            const wInner = document.getElementById('chkIconWalletInner');
+            const wRight = document.getElementById('chkWalletStatusRight');
+            const wText = document.getElementById('chkTextWallet');
+            const chkWEl = document.getElementById('checksTopWallet');
+            const regBtn = document.getElementById('btnForsageMainReg');
+
             try {
                 let activeProvider = getSafeRegistrationProvider();
-                if (!activeProvider) return;
+                if (!activeProvider) {
+                    if (wBox) wBox.style.background = "#E8755B";
+                    if (wInner) { wInner.innerText = "priority_high"; wInner.style.color = "#fff"; }
+                    if (wRight) { wRight.innerText = "error_outline"; wRight.style.color = "#E8755B"; }
+                    if (wText) wText.innerText = "Wallet: not found";
+                    if (regBtn) {
+                        regBtn.innerText = "Connect Wallet";
+                        regBtn.disabled = false;
+                        regBtn.onclick = openWalletSelection;
+                    }
+                    return;
+                }
 
                 if (!userWallet && activeProvider.request) {
                     try {
@@ -11453,12 +11599,6 @@ function updateHyperTitanModalData(data) {
                     } catch(e) {}
                 }
 
-                const wBox = document.getElementById('chkIconWalletBox');
-                const wInner = document.getElementById('chkIconWalletInner');
-                const wRight = document.getElementById('chkWalletStatusRight');
-                const wText = document.getElementById('chkTextWallet');
-                const chkWEl = document.getElementById('checksTopWallet');
-
                 if (userWallet) {
                     if (wBox) wBox.style.background = "#4CAF50";
                     if (wInner) { wInner.innerText = "done"; wInner.style.color = "#fff"; }
@@ -11470,6 +11610,11 @@ function updateHyperTitanModalData(data) {
                     if (wInner) { wInner.innerText = "priority_high"; wInner.style.color = "#fff"; }
                     if (wRight) { wRight.innerText = "error_outline"; wRight.style.color = "#E8755B"; }
                     if (wText) wText.innerText = "Wallet: not connected";
+                    if (regBtn) {
+                        regBtn.innerText = "Connect Wallet";
+                        regBtn.disabled = false;
+                        regBtn.onclick = openWalletSelection;
+                    }
                     return;
                 }
 
@@ -11514,10 +11659,7 @@ function updateHyperTitanModalData(data) {
                 }
 
                 const refInput = document.getElementById('regChecksUplineInput').value.trim();
-                let bundle = window.cachedForsageBundle;
-                if (!bundle || (Date.now() - bundle.fetchedAt > 15000)) {
-                    bundle = await fetchForsageUnifiedBundle(userWallet, refInput);
-                }
+                const bundle = await fetchForsageUnifiedBundle(userWallet, refInput);
 
                 const isAlreadyRegistered = bundle.isRegistered;
                 const bnbBalance = bundle.bnbBalance;
@@ -11605,6 +11747,7 @@ function updateHyperTitanModalData(data) {
                     if (appText) appText.innerText = "Approve USDT: done";
                     if (regBtn) {
                         regBtn.innerText = "Registration";
+                        regBtn.onclick = executeRegistrationOnContract;
                         regBtn.disabled = !isBsc || !hasEnoughBnb || !hasEnoughUsdt;
                     }
                 } else {
@@ -11614,8 +11757,21 @@ function updateHyperTitanModalData(data) {
                     if (appText) appText.innerText = "Approve USDT: ready";
                     if (regBtn) {
                         regBtn.innerText = "Approve & Registration";
+                        regBtn.onclick = executeRegistrationOnContract;
                         regBtn.disabled = !isBsc || !hasEnoughBnb || !hasEnoughUsdt;
                     }
+                }
+            } catch (err) {
+                const regText = document.getElementById('chkTextReg');
+                const balText = document.getElementById('chkTextBal');
+                const appText = document.getElementById('chkTextApprove');
+                if (regText) regText.innerText = "Registration: connection retry needed";
+                if (balText) balText.innerText = "Balance: check failed";
+                if (appText) appText.innerText = "Approve USDT: check failed";
+                if (regBtn) {
+                    regBtn.innerText = "Retry Checks";
+                    regBtn.disabled = false;
+                    regBtn.onclick = verifyRegistrationChecksStatus;
                 }
             } finally {
                 isVerifyingChecksRunning = false;
@@ -11644,6 +11800,18 @@ function updateHyperTitanModalData(data) {
             }
 
             try {
+                let chainId = 0;
+                try {
+                    const chainHex = activeProvider.chainId || await activeProvider.request({ method: 'eth_chainId' });
+                    chainId = parseInt(chainHex, 16);
+                } catch(e) {}
+                if (chainId !== 97) {
+                    await triggerSmartChainNetworkSwitch();
+                    const newHex = activeProvider.chainId || await activeProvider.request({ method: 'eth_chainId' });
+                    if (parseInt(newHex, 16) !== 97) {
+                        throw new Error("Please switch network to BSC Testnet (97)");
+                    }
+                }
                 const shineIface = new ethers.utils.Interface(SHINE_ABI);
                 const erc20Iface = new ethers.utils.Interface(ERC20_ABI);
 
@@ -11682,6 +11850,7 @@ function updateHyperTitanModalData(data) {
 
                 sessionStorage.removeItem("shine_pending_registration");
                 await markSlotAsActivated('V1', 1, 10);
+                await syncOnChainActiveLevels();
 
                 document.getElementById('forsageChecksModal').classList.remove('active');
                 const sucModal = document.getElementById('forsageSuccessModal');
