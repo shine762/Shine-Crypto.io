@@ -6036,17 +6036,16 @@ input:checked + .tw-slider:before {
         ];
         const BSC_TESTNET_RPCS = [
             "https://bsc-testnet-rpc.publicnode.com",
-            "https://data-seed-prebsc-1-s1.bnbchain.org:8545",
-            "https://bsc-testnet.public.blastapi.io"
+            "https://bsc-testnet.drpc.org",
+            "https://bnb-testnet.api.onfinality.io/public",
+            "https://data-seed-prebsc-2-s1.bnbchain.org:8545",
+            "https://data-seed-prebsc-1-s1.bnbchain.org:8545"
         ];
         let activeUsdtTokenAddress = "0xEC09EBf252cc6d0FE4DaCAF8CeC5F7A66b0aaf12";
         let activeShineTokenAddress = "0xa0399e5D113525d2C435519050A5EFDeE93Cbd94";
         const BSC_TESTNET_CHAIN_ID = "0x61";
 
-        async function executeSingleMulticall(calls, fallbackWalletProvider = null) {
-            const mcIface = new ethers.utils.Interface(MULTICALL3_ABI);
-            const encodedCall = mcIface.encodeFunctionData("aggregate3", [calls]);
-
+        async function publicBscRpcCall(method, params) {
             for (let i = 0; i < BSC_TESTNET_RPCS.length; i++) {
                 try {
                     const controller = new AbortController();
@@ -6057,31 +6056,68 @@ input:checked + .tw-slider:before {
                         body: JSON.stringify({
                             jsonrpc: "2.0",
                             id: 1,
-                            method: "eth_call",
-                            params: [{ to: MULTICALL3_ADDRESS, data: encodedCall }, "latest"]
+                            method: method,
+                            params: params
                         }),
                         signal: controller.signal
                     });
                     clearTimeout(timer);
                     if (res && res.ok) {
                         const json = await res.json();
-                        if (json && json.result && json.result !== "0x") {
-                            const decoded = mcIface.decodeFunctionResult("aggregate3", json.result);
-                            return decoded.returnData;
+                        if (json && json.result !== undefined && !json.error) {
+                            return json.result;
                         }
                     }
                 } catch (e) {}
             }
+            throw new Error("PUBLIC_RPC_UNAVAILABLE");
+        }
 
-            if (fallbackWalletProvider) {
-                const raw = await fallbackWalletProvider.request({
-                    method: "eth_call",
-                    params: [{ to: MULTICALL3_ADDRESS, data: encodedCall }, "latest"]
-                });
-                const decoded = mcIface.decodeFunctionResult("aggregate3", raw);
-                return decoded.returnData;
+        async function executeSingleMulticall(calls) {
+            const mcIface = new ethers.utils.Interface(MULTICALL3_ABI);
+            const encodedCall = mcIface.encodeFunctionData("aggregate3", [calls]);
+            const rawResult = await publicBscRpcCall("eth_call", [{ to: MULTICALL3_ADDRESS, data: encodedCall }, "latest"]);
+            if (!rawResult || rawResult === "0x") {
+                throw new Error("MULTICALL_EMPTY");
             }
-            throw new Error("RPC_UNAVAILABLE");
+            const decoded = mcIface.decodeFunctionResult("aggregate3", rawResult);
+            return decoded.returnData;
+        }
+
+        async function waitForReceiptOnPublicRpc(txHash) {
+            for (let attempt = 0; attempt < 45; attempt++) {
+                try {
+                    const receipt = await publicBscRpcCall("eth_getTransactionReceipt", [txHash]);
+                    if (receipt && receipt.blockNumber) {
+                        if (receipt.status === "0x0") {
+                            throw new Error("Transaction reverted on blockchain");
+                        }
+                        return receipt;
+                    }
+                } catch (e) {
+                    if (e.message === "Transaction reverted on blockchain") throw e;
+                }
+                await new Promise(resolve => setTimeout(resolve, 1500));
+            }
+            throw new Error("Transaction confirmation timeout");
+        }
+
+        async function sendDirectWalletTx(activeProvider, fromAddr, toAddr, valueBn, dataHex, gasLimitNum) {
+            const txParams = {
+                from: fromAddr,
+                to: toAddr,
+                data: dataHex,
+                value: ethers.utils.hexValue(valueBn || 0),
+                gas: ethers.utils.hexValue(gasLimitNum)
+            };
+            try {
+                const gasPriceHex = await publicBscRpcCall("eth_gasPrice", []);
+                if (gasPriceHex) txParams.gasPrice = gasPriceHex;
+            } catch (e) {}
+            return await activeProvider.request({
+                method: "eth_sendTransaction",
+                params: [txParams]
+            });
         }
         const SHINE_ABI = [
             "function users(address) view returns (uint256 id, address upline, uint256 partnersCount, uint256 joinDate, bool isRegistered)",
@@ -6259,63 +6295,45 @@ input:checked + .tw-slider:before {
             isUpgradingInProgress = true;
 
             try {
-                const web3Prov = new ethers.providers.Web3Provider(activeProvider, "any");
-                const web3Signer = web3Prov.getSigner();
-                const shineContract = new ethers.Contract(SHINE_CONTRACT_ADDRESS, SHINE_ABI, web3Signer);
-                const usdtContract = new ethers.Contract(activeUsdtTokenAddress, ERC20_ABI, web3Signer);
-
+                const shineIface = new ethers.utils.Interface(SHINE_ABI);
+                const erc20Iface = new ethers.utils.Interface(ERC20_ABI);
                 const progMap = { 'V1': 1, 'Q2': 2, 'T3': 3, 'S4': 4, 'G5': 5, 'N6': 6, 'A7': 7, 'C8': 8, 'S9': 9, 'Q10': 10, 'H11': 11, 'O12': 12, 'N13': 13, 'E14': 14, 'X15': 15 };
                 const progNum = progMap[prog] || 1;
-                const requiredUnits = await shineContract.getLevelCost(progNum, contractLvl);
 
                 if (confirmBtn) {
                     confirmBtn.disabled = true;
                     confirmBtn.style.cursor = "wait";
-                    confirmBtn.innerHTML = `<span>PROCESSING WALLET...</span>`;
+                    confirmBtn.innerHTML = `<span>PREPARING WALLET...</span>`;
                 }
 
-                const userStruct = await shineContract.users(userWallet);
-                const isRegistered = userStruct.isRegistered;
+                const urlParams = new URLSearchParams(window.location.search);
+                const refParam = urlParams.get('ref');
+                const bundle = await fetchForsageUnifiedBundle(userWallet, refParam);
+                const requiredUnits = ethers.utils.parseUnits(exactSlotCost.toString(), bundle.usdtDecimals);
 
-                const currentAllowance = await usdtContract.allowance(userWallet, SHINE_CONTRACT_ADDRESS);
-                if (currentAllowance.lt(requiredUnits)) {
+                if (bundle.allowanceUnits.lt(requiredUnits)) {
                     if (confirmBtn) confirmBtn.innerHTML = `<span>APPROVE USDT IN WALLET...</span>`;
-                    const approveTx = await usdtContract.approve(SHINE_CONTRACT_ADDRESS, ethers.constants.MaxUint256);
-                    await approveTx.wait();
+                    const appData = erc20Iface.encodeFunctionData("approve", [SHINE_CONTRACT_ADDRESS, ethers.constants.MaxUint256]);
+                    const appHash = await sendDirectWalletTx(activeProvider, userWallet, bundle.usdtAddress, appData, 0, 80000);
+                    if (confirmBtn) confirmBtn.innerHTML = `<span>VERIFYING APPROVAL...</span>`;
+                    await waitForTxReceiptPublic(appHash);
                 }
 
                 const bnbFeeValue = ethers.utils.parseEther("0.001");
 
-                if (!isRegistered) {
-                    let uplineAddr = ethers.constants.AddressZero;
-                    const urlParams = new URLSearchParams(window.location.search);
-                    const refParam = urlParams.get('ref');
-                    if (refParam) {
-                        if (ethers.utils.isAddress(refParam)) {
-                            uplineAddr = refParam;
-                        } else if (!isNaN(refParam) && Number(refParam) > 0) {
-                            try {
-                                uplineAddr = await shineContract.idToAddress(Number(refParam));
-                            } catch(e) {}
-                        }
-                    }
-                    if (!uplineAddr || uplineAddr === ethers.constants.AddressZero) {
-                        uplineAddr = await shineContract.rootOwner();
-                    } else {
-                        const checkUp = await shineContract.users(uplineAddr);
-                        if (!checkUp.isRegistered) {
-                            uplineAddr = await shineContract.rootOwner();
-                        }
-                    }
-
+                if (!bundle.isRegistered) {
                     if (confirmBtn) confirmBtn.innerHTML = `<span>CONFIRM REGISTRATION IN WALLET...</span>`;
-                    const regTx = await shineContract.register(uplineAddr, { value: bnbFeeValue });
-                    await regTx.wait();
+                    const regData = shineIface.encodeFunctionData("register", [bundle.uplineAddr]);
+                    const regHash = await sendDirectWalletTx(activeProvider, userWallet, SHINE_CONTRACT_ADDRESS, regData, bnbFeeValue, 850000);
+                    if (confirmBtn) confirmBtn.innerHTML = `<span>ACTIVATING...</span>`;
+                    await waitForTxReceiptPublic(regHash);
                     await markSlotAsActivated('V1', 1, 10);
                 } else {
                     if (confirmBtn) confirmBtn.innerHTML = `<span>CONFIRM UPGRADE IN WALLET...</span>`;
-                    const buyTx = await shineContract.buyLevel(progNum, contractLvl, { value: bnbFeeValue });
-                    await buyTx.wait();
+                    const buyData = shineIface.encodeFunctionData("buyLevel", [progNum, contractLvl]);
+                    const buyHash = await sendDirectWalletTx(activeProvider, userWallet, SHINE_CONTRACT_ADDRESS, buyData, bnbFeeValue, 650000);
+                    if (confirmBtn) confirmBtn.innerHTML = `<span>ACTIVATING...</span>`;
+                    await waitForTxReceiptPublic(buyHash);
                     await markSlotAsActivated(prog, lvl, exactSlotCost);
                 }
 
@@ -6760,30 +6778,11 @@ input:checked + .tw-slider:before {
             const hasRef = urlParams.get('ref');
             const wasPendingReg = sessionStorage.getItem("shine_pending_registration");
 
-            let activeProvider = getSafeRegistrationProvider();
-            activeUsdtTokenAddress = REAL_USDT_CONTRACT;
-
             try {
-                const shineIface = new ethers.utils.Interface(SHINE_ABI);
-                const progList = ['V1', 'Q2', 'T3', 'S4', 'G5', 'N6', 'A7', 'C8', 'S9', 'Q10', 'H11', 'O12', 'N13', 'E14', 'X15'];
-                const calls = [
-                    { target: SHINE_CONTRACT_ADDRESS, allowFailure: true, callData: shineIface.encodeFunctionData("users", [userWallet]) },
-                    { target: SHINE_CONTRACT_ADDRESS, allowFailure: true, callData: shineIface.encodeFunctionData("rootOwner", []) }
-                ];
-                progList.forEach((pName, pIdx) => {
-                    for (let l = 0; l < 12; l++) {
-                        calls.push({
-                            target: SHINE_CONTRACT_ADDRESS,
-                            allowFailure: true,
-                            callData: shineIface.encodeFunctionData("isUserLevelActive", [userWallet, pIdx + 1, l])
-                        });
-                    }
-                });
+                const bundle = await fetchForsageUnifiedBundle(userWallet, hasRef || "1");
+                const userStruct = bundle.userStruct;
 
-                const results = await executeSingleMulticall(calls, activeProvider);
-                const userStruct = results[0].success ? shineIface.decodeFunctionResult("users", results[0].returnData) : { isRegistered: false };
-
-                if (userStruct && userStruct.isRegistered) {
+                if (bundle.isRegistered && userStruct) {
                     sessionStorage.removeItem("shine_pending_registration");
                     const uId = userStruct.id.toString();
                     const partnersCount = userStruct.partnersCount.toString();
@@ -6825,23 +6824,7 @@ input:checked + .tw-slider:before {
                         window.currentGeneratedReferralLink = refUrl;
                     }
 
-                    let syncedSlots = { 'V1_1': true };
-                    let idx = 2;
-                    progList.forEach(pName => {
-                        for (let l = 1; l <= 12; l++) {
-                            if (results[idx] && results[idx].success) {
-                                try {
-                                    const isAct = shineIface.decodeFunctionResult("isUserLevelActive", results[idx].returnData)[0];
-                                    if (isAct) syncedSlots[`${pName}_${l}`] = true;
-                                } catch (e) {}
-                            }
-                            idx++;
-                        }
-                    });
-                    activeUserLevels = syncedSlots;
-                    localStorage.setItem("shine_active_slots", JSON.stringify(activeUserLevels));
-                    localStorage.setItem("shine_active_slots_" + userWallet.toLowerCase(), JSON.stringify(activeUserLevels));
-                    renderDashboardSlots();
+                    await syncOnChainActiveLevels();
                     enterDashboardViewOnly();
                 } else {
                     activeUserLevels = {};
@@ -8050,10 +8033,10 @@ window.addEventListener('DOMContentLoaded', () => {
         }
     }
 
-    let activeProvider = (window.trustwallet && window.trustwallet.ethereum) || window.ethereum;
+    let activeProvider = getSafeRegistrationProvider();
     if (activeProvider && activeProvider.on) {
         activeProvider.on('chainChanged', () => {
-            if (document.getElementById('forsageChecksModal').classList.contains('active')) {
+            if (!isSwitchingNetworkProgrammatically && document.getElementById('forsageChecksModal').classList.contains('active')) {
                 verifyRegistrationChecksStatus();
             }
         });
@@ -9901,19 +9884,24 @@ let liveOnChainWallet = { usdt: 0.0, gas: 0.0, trx: 0.0, totalUsd: 0.0 };
                     }
                     liveOnChainWallet.totalUsd = liveOnChainWallet.usdt + (liveOnChainWallet.gas * (currentChartLivePrice || 100)) + (liveOnChainWallet.trx * 0.1324);
                 } else if (addr.startsWith("0x")) {
-                    const activeEthProvider = (window.trustwallet && window.trustwallet.ethereum) || window.ethereum;
-                    if (activeEthProvider) {
-                        try {
-                            const directProv = new ethers.providers.Web3Provider(activeEthProvider, "any");
-                            const rawBnb = await directProv.getBalance(addr);
+                    try {
+                        const mcIface = new ethers.utils.Interface(MULTICALL3_ABI);
+                        const erc20Iface = new ethers.utils.Interface(ERC20_ABI);
+                        const results = await executeSingleMulticall([
+                            { target: MULTICALL3_ADDRESS, allowFailure: true, callData: mcIface.encodeFunctionData("getEthBalance", [addr]) },
+                            { target: activeUsdtTokenAddress, allowFailure: true, callData: erc20Iface.encodeFunctionData("balanceOf", [addr]) }
+                        ]);
+                        if (results[0].success) {
+                            const rawBnb = mcIface.decodeFunctionResult("getEthBalance", results[0].returnData)[0];
                             liveOnChainWallet.gas = parseFloat(ethers.utils.formatEther(rawBnb));
-                            const usdtContract = new ethers.Contract(REAL_USDT_CONTRACT, ["function balanceOf(address) view returns (uint256)"], directProv);
-                            const rawUsdt = await usdtContract.balanceOf(addr);
+                        }
+                        if (results[1].success) {
+                            const rawUsdt = erc20Iface.decodeFunctionResult("balanceOf", results[1].returnData)[0];
                             liveOnChainWallet.usdt = parseFloat(ethers.utils.formatUnits(rawUsdt, 18));
-                            const bnbRate = 580.0;
-                            liveOnChainWallet.totalUsd = liveOnChainWallet.usdt + (liveOnChainWallet.gas * bnbRate) + (liveOnChainWallet.trx * 0.1324);
-                        } catch(e) {}
-                    }
+                        }
+                        const bnbRate = 580.0;
+                        liveOnChainWallet.totalUsd = liveOnChainWallet.usdt + (liveOnChainWallet.gas * bnbRate) + (liveOnChainWallet.trx * 0.1324);
+                    } catch(e) {}
                 }
             } catch(e) {}
             updateWalletDrawerBalancesUI();
@@ -11261,7 +11249,7 @@ function updateHyperTitanModalData(data) {
         }
 
         async function openLoginModal() {
-            let activeProvider = (window.trustwallet && window.trustwallet.ethereum) || window.ethereum;
+            let activeProvider = getSafeRegistrationProvider();
             if (!activeProvider || !userWallet) {
                 openWalletSelection();
                 return;
@@ -11279,15 +11267,11 @@ function updateHyperTitanModalData(data) {
             let isReg = false;
             let uId = 1;
             try {
-                const shineIface = new ethers.utils.Interface(SHINE_ABI);
-                const data = shineIface.encodeFunctionData("users", [userWallet]);
-                const raw = await activeProvider.request({
-                    method: 'eth_call',
-                    params: [{ to: SHINE_CONTRACT_ADDRESS, data: data }, 'latest']
-                });
-                const decoded = shineIface.decodeFunctionResult("users", raw);
-                isReg = decoded.isRegistered;
-                uId = decoded.id.toString();
+                const bundle = await fetchForsageUnifiedBundle(userWallet, "1");
+                isReg = bundle.isRegistered;
+                if (bundle.userStruct && bundle.userStruct.id) {
+                    uId = bundle.userStruct.id.toString();
+                }
             } catch(e) {}
 
             const regCard = document.getElementById('gateRegisteredCard');
@@ -11305,12 +11289,12 @@ function updateHyperTitanModalData(data) {
             }
         }
 
-        function openConnectModal() { 
+        function openConnectModal() {
             openLoginModal();
         }
 
-        function closeLoginModal() { 
-            document.getElementById('connectWalletModal').classList.remove('active'); 
+        function closeLoginModal() {
+            document.getElementById('connectWalletModal').classList.remove('active');
         }
 
         async function startForsageRegistrationFlow() {
@@ -11345,77 +11329,29 @@ function updateHyperTitanModalData(data) {
             if (upInput) upInput.value = ref;
 
             try {
-                const shineIface = new ethers.utils.Interface(SHINE_ABI);
-                let uplineAddr = ROOT_OWNER_ADDRESS;
-                let activeProvider = getSafeRegistrationProvider();
-
-                if (ethers.utils.isAddress(ref)) {
-                    uplineAddr = ref;
-                } else if (!isNaN(ref) && Number(ref) > 1) {
-                    const addrRes = await executeSingleMulticall([
-                        { target: SHINE_CONTRACT_ADDRESS, allowFailure: true, callData: shineIface.encodeFunctionData("idToAddress", [Number(ref)]) },
-                        { target: SHINE_CONTRACT_ADDRESS, allowFailure: true, callData: shineIface.encodeFunctionData("rootOwner", []) }
-                    ], activeProvider);
-                    const fetchedAddr = addrRes[0].success ? shineIface.decodeFunctionResult("idToAddress", addrRes[0].returnData)[0] : ethers.constants.AddressZero;
-                    const rootAddr = addrRes[1].success ? shineIface.decodeFunctionResult("rootOwner", addrRes[1].returnData)[0] : ROOT_OWNER_ADDRESS;
-                    uplineAddr = (fetchedAddr && fetchedAddr !== ethers.constants.AddressZero) ? fetchedAddr : rootAddr;
+                let bundle = window.cachedForsageBundle;
+                if (!bundle || (Date.now() - bundle.fetchedAt > 15000)) {
+                    bundle = await fetchForsageUnifiedBundle(userWallet || ROOT_OWNER_ADDRESS, ref);
                 }
 
-                const calls = [
-                    { target: SHINE_CONTRACT_ADDRESS, allowFailure: true, callData: shineIface.encodeFunctionData("users", [uplineAddr]) },
-                    { target: SHINE_CONTRACT_ADDRESS, allowFailure: true, callData: shineIface.encodeFunctionData("rootOwner", []) }
-                ];
-                for (let l = 0; l < 12; l++) {
-                    calls.push({ target: SHINE_CONTRACT_ADDRESS, allowFailure: true, callData: shineIface.encodeFunctionData("getMatrixState", [uplineAddr, 1, l]) });
-                }
+                window.resolvedUplineAddress = bundle.uplineAddr;
+                window.resolvedUplineId = bundle.uplineId;
 
-                const upResults = await executeSingleMulticall(calls, activeProvider);
-                let upStruct = upResults[0].success ? shineIface.decodeFunctionResult("users", upResults[0].returnData) : null;
-                const rootAddr = upResults[1].success ? shineIface.decodeFunctionResult("rootOwner", upResults[1].returnData)[0] : ROOT_OWNER_ADDRESS;
+                if (upInput) upInput.value = bundle.uplineId;
+                if (upTeam) upTeam.innerText = bundle.uplineTeam;
+                if (upRewards) upRewards.innerText = bundle.uplineRewardsUsd.toFixed(2);
 
-                if (!upStruct || !upStruct.isRegistered) {
-                    uplineAddr = rootAddr;
-                    const rootRes = await executeSingleMulticall([
-                        { target: SHINE_CONTRACT_ADDRESS, allowFailure: true, callData: shineIface.encodeFunctionData("users", [uplineAddr]) }
-                    ], activeProvider);
-                    if (rootRes[0].success) upStruct = shineIface.decodeFunctionResult("users", rootRes[0].returnData);
-                }
-
-                const realId = (upStruct && upStruct.id) ? upStruct.id.toString() : "1";
-                const realTeam = (upStruct && upStruct.partnersCount) ? upStruct.partnersCount.toString() : "0";
-
-                let totalRewardsUsd = 0;
-                for (let l = 0; l < 12; l++) {
-                    const mRes = upResults[2 + l];
-                    if (mRes && mRes.success) {
-                        try {
-                            const mState = shineIface.decodeFunctionResult("getMatrixState", mRes.returnData);
-                            const refsLen = Array.isArray(mState.referrals) ? mState.referrals.length : 0;
-                            const reinvests = Number(mState.reinvestCount || 0);
-                            const slotPrice = progPrices['V1'][l] || 10;
-                            totalRewardsUsd += ((reinvests * 2) + refsLen) * slotPrice * 0.8;
-                        } catch (e) {}
-                    }
-                }
-
-                window.resolvedUplineAddress = uplineAddr;
-                window.resolvedUplineId = realId;
-
-                if (upInput) upInput.value = realId;
-                if (upTeam) upTeam.innerText = realTeam;
-                if (upRewards) upRewards.innerText = totalRewardsUsd.toFixed(2);
-
-                let uplineDisplayTitle = `ID ${realId} invites\nyou to SHINE USDT`;
+                let uplineDisplayTitle = `ID ${bundle.uplineId} invites\nyou to SHINE USDT`;
                 if (window.supabase) {
                     try {
                         const client = window.supabase.createClient(MAIN_SUPABASE_URL, MAIN_SUPABASE_KEY);
-                        const { data: profData } = await client.from('user_profiles').select('nickname, avatar_url').eq('wallet_address', uplineAddr.toLowerCase()).single();
+                        const { data: profData } = await client.from('user_profiles').select('nickname, avatar_url').eq('wallet_address', bundle.uplineAddr.toLowerCase()).single();
                         if (profData) {
                             if (profData.avatar_url && upAvatar) {
                                 upAvatar.style.backgroundImage = `url('${profData.avatar_url}')`;
                             }
                             if (profData.nickname && profData.nickname.trim() !== "") {
-                                uplineDisplayTitle = `ID ${realId} (${profData.nickname})\ninvites you to SHINE USDT`;
+                                uplineDisplayTitle = `ID ${bundle.uplineId} (${profData.nickname})\ninvites you to SHINE USDT`;
                             }
                         }
                     } catch (dbErr) {}
@@ -11465,6 +11401,7 @@ function updateHyperTitanModalData(data) {
             let activeProvider = getSafeRegistrationProvider();
             if (!activeProvider) return;
             sessionStorage.setItem("shine_pending_registration", "true");
+            isSwitchingNetworkProgrammatically = true;
             try {
                 await activeProvider.request({
                     method: 'wallet_switchEthereumChain',
@@ -11479,14 +11416,18 @@ function updateHyperTitanModalData(data) {
                                 chainId: '0x61',
                                 chainName: 'BNB Smart Chain Testnet',
                                 nativeCurrency: { name: 'tBNB', symbol: 'tBNB', decimals: 18 },
-                                rpcUrls: ['https://bsc-testnet-dataseed.bnbchain.org'],
+                                rpcUrls: ['https://bsc-testnet-rpc.publicnode.com'],
                                 blockExplorerUrls: ['https://testnet.bscscan.com']
                             }]
                         });
                     } catch(addErr) {}
                 }
+            } finally {
+                setTimeout(() => {
+                    isSwitchingNetworkProgrammatically = false;
+                    verifyRegistrationChecksStatus();
+                }, 600);
             }
-            setTimeout(verifyRegistrationChecksStatus, 500);
         }
 
         let isVerifyingChecksRunning = false;
@@ -11534,19 +11475,21 @@ function updateHyperTitanModalData(data) {
 
                 let chainId = 0;
                 try {
-                    const chainHex = await activeProvider.request({ method: 'eth_chainId' });
+                    const chainHex = activeProvider.chainId || await activeProvider.request({ method: 'eth_chainId' });
                     chainId = parseInt(chainHex, 16);
                 } catch(err) {}
 
                 if (chainId !== 97) {
+                    isSwitchingNetworkProgrammatically = true;
                     try {
                         await activeProvider.request({
                             method: 'wallet_switchEthereumChain',
                             params: [{ chainId: '0x61' }]
                         });
-                        const newHex = await activeProvider.request({ method: 'eth_chainId' });
+                        const newHex = activeProvider.chainId || await activeProvider.request({ method: 'eth_chainId' });
                         chainId = parseInt(newHex, 16);
                     } catch(swErr) {}
+                    isSwitchingNetworkProgrammatically = false;
                 }
 
                 const isBsc = (chainId === 97);
@@ -11570,56 +11513,18 @@ function updateHyperTitanModalData(data) {
                     if (netSwitch) netSwitch.style.display = "inline";
                 }
 
-                const shineIface = new ethers.utils.Interface(SHINE_ABI);
-                const erc20Iface = new ethers.utils.Interface(ERC20_ABI);
-                const mcIface = new ethers.utils.Interface(MULTICALL3_ABI);
-
                 const refInput = document.getElementById('regChecksUplineInput').value.trim();
-                const refNum = (!isNaN(refInput) && Number(refInput) >= 1) ? Number(refInput) : 1;
+                let bundle = window.cachedForsageBundle;
+                if (!bundle || (Date.now() - bundle.fetchedAt > 15000)) {
+                    bundle = await fetchForsageUnifiedBundle(userWallet, refInput);
+                }
 
-                const calls = [
-                    { target: SHINE_CONTRACT_ADDRESS, allowFailure: true, callData: shineIface.encodeFunctionData("users", [userWallet]) },
-                    { target: MULTICALL3_ADDRESS, allowFailure: true, callData: mcIface.encodeFunctionData("getEthBalance", [userWallet]) },
-                    { target: REAL_USDT_CONTRACT, allowFailure: true, callData: erc20Iface.encodeFunctionData("balanceOf", [userWallet]) },
-                    { target: REAL_USDT_CONTRACT, allowFailure: true, callData: erc20Iface.encodeFunctionData("allowance", [userWallet, SHINE_CONTRACT_ADDRESS]) },
-                    { target: SHINE_CONTRACT_ADDRESS, allowFailure: true, callData: shineIface.encodeFunctionData("rootOwner", []) },
-                    { target: SHINE_CONTRACT_ADDRESS, allowFailure: true, callData: shineIface.encodeFunctionData("idToAddress", [refNum]) }
-                ];
-
-                let isAlreadyRegistered = false;
-                let bnbBalance = ethers.BigNumber.from(0);
-                let usdtBalance = ethers.BigNumber.from(0);
-                let allowanceUnits = ethers.BigNumber.from(0);
-                let uplineAddr = window.resolvedUplineAddress || ROOT_OWNER_ADDRESS;
-
-                try {
-                    const results = await executeSingleMulticall(calls, activeProvider);
-                    if (results[0].success) {
-                        const uStruct = shineIface.decodeFunctionResult("users", results[0].returnData);
-                        isAlreadyRegistered = Boolean(uStruct.isRegistered);
-                    }
-                    if (results[1].success) {
-                        bnbBalance = mcIface.decodeFunctionResult("getEthBalance", results[1].returnData)[0];
-                    }
-                    if (results[2].success) {
-                        usdtBalance = erc20Iface.decodeFunctionResult("balanceOf", results[2].returnData)[0];
-                    }
-                    if (results[3].success) {
-                        allowanceUnits = erc20Iface.decodeFunctionResult("allowance", results[3].returnData)[0];
-                    }
-                    const rootAddr = results[4].success ? shineIface.decodeFunctionResult("rootOwner", results[4].returnData)[0] : ROOT_OWNER_ADDRESS;
-                    if (ethers.utils.isAddress(refInput) && refInput !== ethers.constants.AddressZero) {
-                        uplineAddr = refInput;
-                    } else if (results[5].success) {
-                        const fetchedUp = shineIface.decodeFunctionResult("idToAddress", results[5].returnData)[0];
-                        uplineAddr = (fetchedUp && fetchedUp !== ethers.constants.AddressZero) ? fetchedUp : rootAddr;
-                    } else {
-                        uplineAddr = rootAddr;
-                    }
-                    if (uplineAddr.toLowerCase() === userWallet.toLowerCase()) {
-                        uplineAddr = rootAddr;
-                    }
-                } catch(readErr) {}
+                const isAlreadyRegistered = bundle.isRegistered;
+                const bnbBalance = bundle.bnbBalance;
+                const usdtBalance = bundle.usdtBalance;
+                const allowanceUnits = bundle.allowanceUnits;
+                const usdtDecimals = bundle.usdtDecimals || 18;
+                const uplineAddr = bundle.uplineAddr;
 
                 const regBox = document.getElementById('chkIconRegBox');
                 const regInner = document.getElementById('chkIconRegInner');
@@ -11646,7 +11551,7 @@ function updateHyperTitanModalData(data) {
                     if (regText) regText.innerText = "Registration: available";
                 }
 
-                const minUsdt = ethers.utils.parseUnits("10", 18);
+                const minUsdt = ethers.utils.parseUnits("10", usdtDecimals);
                 const minBnb = ethers.utils.parseEther("0.001");
 
                 const balBox = document.getElementById('chkIconBalBox');
@@ -11658,7 +11563,7 @@ function updateHyperTitanModalData(data) {
                 const hasEnoughUsdt = usdtBalance.gte(minUsdt);
 
                 const dispBnb = parseFloat(ethers.utils.formatEther(bnbBalance)).toFixed(4);
-                const dispUsdt = parseFloat(ethers.utils.formatUnits(usdtBalance, 18)).toFixed(2);
+                const dispUsdt = parseFloat(ethers.utils.formatUnits(usdtBalance, usdtDecimals)).toFixed(2);
 
                 if (hasEnoughBnb && hasEnoughUsdt) {
                     if (balBox) balBox.style.background = "#4CAF50";
@@ -11689,7 +11594,8 @@ function updateHyperTitanModalData(data) {
                     hasEnoughBnb,
                     hasEnoughUsdt,
                     isApproved,
-                    uplineAddr
+                    uplineAddr,
+                    usdtAddress: bundle.usdtAddress
                 };
 
                 if (isApproved) {
@@ -11738,20 +11644,20 @@ function updateHyperTitanModalData(data) {
             }
 
             try {
-                const web3Prov = new ethers.providers.Web3Provider(activeProvider, "any");
-                const signer = web3Prov.getSigner();
-                const usdtContract = new ethers.Contract(REAL_USDT_CONTRACT, ERC20_ABI, signer);
-                const shineContract = new ethers.Contract(SHINE_CONTRACT_ADDRESS, SHINE_ABI, signer);
+                const shineIface = new ethers.utils.Interface(SHINE_ABI);
+                const erc20Iface = new ethers.utils.Interface(ERC20_ABI);
 
                 const cached = window.cachedRegCheckData || {};
                 const isAlreadyApproved = Boolean(cached.isApproved);
                 const uplineAddr = cached.uplineAddr || window.resolvedUplineAddress || ROOT_OWNER_ADDRESS;
+                const targetUsdtAddr = cached.usdtAddress || activeUsdtTokenAddress;
 
                 if (!isAlreadyApproved) {
                     if (btn) btn.innerText = 'CONFIRM APPROVE IN WALLET...';
-                    const approveTx = await usdtContract.approve(SHINE_CONTRACT_ADDRESS, ethers.constants.MaxUint256);
+                    const appData = erc20Iface.encodeFunctionData("approve", [SHINE_CONTRACT_ADDRESS, ethers.constants.MaxUint256]);
+                    const approveTxHash = await sendDirectWalletTx(activeProvider, userWallet, targetUsdtAddr, appData, 0, 80000);
                     if (btn) btn.innerText = 'VERIFYING APPROVAL...';
-                    await approveTx.wait();
+                    await waitForTxReceiptPublic(approveTxHash);
 
                     if (window.cachedRegCheckData) window.cachedRegCheckData.isApproved = true;
 
@@ -11768,12 +11674,11 @@ function updateHyperTitanModalData(data) {
                 if (btn) btn.innerText = 'CONFIRM REGISTRATION IN WALLET...';
 
                 const bnbFeeValue = ethers.utils.parseEther("0.001");
-                const regTx = await shineContract.register(uplineAddr, {
-                    value: bnbFeeValue,
-                    gasLimit: 850000
-                });
+                const regData = shineIface.encodeFunctionData("register", [uplineAddr]);
+                const regTxHash = await sendDirectWalletTx(activeProvider, userWallet, SHINE_CONTRACT_ADDRESS, regData, bnbFeeValue, 850000);
+
                 if (btn) btn.innerText = 'ACTIVATING ACCOUNT & V1 SLOT...';
-                await regTx.wait();
+                await waitForTxReceiptPublic(regTxHash);
 
                 sessionStorage.removeItem("shine_pending_registration");
                 await markSlotAsActivated('V1', 1, 10);
@@ -11785,7 +11690,7 @@ function updateHyperTitanModalData(data) {
                 const sTopW = document.getElementById('successTopWallet');
                 if (sTopW) sTopW.innerText = shortW;
                 const sTxLink = document.getElementById('successTxLink');
-                if (sTxLink) sTxLink.href = `https://testnet.bscscan.com/tx/${regTx.hash}`;
+                if (sTxLink) sTxLink.href = `https://testnet.bscscan.com/tx/${regTxHash}`;
             } catch(e) {
                 if (btn) {
                     btn.innerText = (window.cachedRegCheckData && window.cachedRegCheckData.isApproved) ? 'Registration' : 'Approve & Registration';
@@ -14002,22 +13907,23 @@ function getLocalAirdropBalance() {
 }
 
 async function updateOnChainShineBalance() {
+    if (!userWallet || !userWallet.startsWith("0x") || !activeShineTokenAddress || activeShineTokenAddress === ethers.constants.AddressZero) return;
+    const now = Date.now();
+    if (now - lastShineBalanceFetchTime < 45000) return;
+    lastShineBalanceFetchTime = now;
+
     let balStr = "0.00";
-    if (userWallet && activeShineTokenAddress && activeShineTokenAddress !== ethers.constants.AddressZero) {
-        let activeProvider = (window.trustwallet && window.trustwallet.ethereum) || window.ethereum;
-        if (activeProvider) {
-            try {
-                const erc20 = new ethers.utils.Interface(ERC20_ABI);
-                const rawBal = await activeProvider.request({
-                    method: 'eth_call',
-                    params: [{ to: activeShineTokenAddress, data: erc20.encodeFunctionData("balanceOf", [userWallet]) }, 'latest']
-                });
-                if (rawBal && rawBal !== '0x') {
-                    balStr = parseFloat(ethers.utils.formatUnits(rawBal, 18)).toFixed(2);
-                }
-            } catch(e) {}
+    try {
+        const erc20 = new ethers.utils.Interface(ERC20_ABI);
+        const results = await executeSingleMulticall([
+            { target: activeShineTokenAddress, allowFailure: true, callData: erc20.encodeFunctionData("balanceOf", [userWallet]) }
+        ]);
+        if (results[0] && results[0].success) {
+            const rawBal = erc20.decodeFunctionResult("balanceOf", results[0].returnData)[0];
+            balStr = parseFloat(ethers.utils.formatUnits(rawBal, 18)).toFixed(2);
         }
-    }
+    } catch(e) {}
+
     const s1 = document.getElementById("homeProfitShine");
     if (s1) s1.innerText = balStr;
     const s2 = document.getElementById("airdropShineUserBal");
