@@ -3120,7 +3120,7 @@ input:checked + .tw-slider:before {
                 </button>
             </section>
             <section class="stats-grid">
-                <div class="stat-card">
+                <div class="stat-card" onclick="openTeamDetailsModal()" style="cursor: pointer;">
                     <div class="stat-header">
                         <div class="stat-title">
                             <span>Partners</span>
@@ -3128,9 +3128,9 @@ input:checked + .tw-slider:before {
                         </div>
                         <i class="material-icons">people_outline</i>
                     </div>
-                    <div class="stat-value">0</div>
+                    <div class="stat-value" id="statPartnersVal">0</div>
                 </div>
-                <div class="stat-card">
+                <div class="stat-card" onclick="openTeamDetailsModal()" style="cursor: pointer;">
                     <div class="stat-header">
                         <div class="stat-title">
                             <span>Team</span>
@@ -3138,7 +3138,7 @@ input:checked + .tw-slider:before {
                         </div>
                         <i class="material-icons">groups</i>
                     </div>
-                    <div class="stat-value">0</div>
+                    <div class="stat-value" id="statTeamVal">0</div>
                 </div>
                 <div class="stat-card">
                     <div class="stat-header">
@@ -3148,7 +3148,7 @@ input:checked + .tw-slider:before {
                         </div>
                         <i class="material-icons">rocket_launch</i>
                     </div>
-                    <div class="stat-value">0 %</div>
+                    <div class="stat-value" id="statRatioVal">0 %</div>
                 </div>
                 <div class="stat-card">
                     <div class="stat-header">
@@ -3287,12 +3287,12 @@ input:checked + .tw-slider:before {
                         </svg>
                     </div>
                 </button>
-                <div style="background: rgba(76, 175, 80, 0.08); border: 1px solid rgba(76, 175, 80, 0.2); border-radius: 12px; padding: 12px 14px; margin-top: 14px; display: flex; justify-content: space-between; align-items: center;">
+                <div onclick="openTeamDetailsModal()" style="background: rgba(76, 175, 80, 0.08); border: 1px solid rgba(76, 175, 80, 0.2); border-radius: 12px; padding: 12px 14px; margin-top: 14px; display: flex; justify-content: space-between; align-items: center; cursor: pointer;">
                     <div style="display: flex; align-items: center; gap: 8px;">
                         <i class="material-icons" style="color: #4CAF50; font-size: 20px;">group_add</i>
-                        <span style="font-size: 13px; font-weight: 700; color: #ffffff;">Referral Trading Profit</span>
+                        <span style="font-size: 13px; font-weight: 700; color: #ffffff;">Referral Profit (5%/3%/2%)</span>
                     </div>
-                    <span style="color: #4CAF50; font-size: 13px; font-weight: 800; font-family: monospace;">10% DIRECT</span>
+                    <span id="homeReferralProfitDisplay" style="color: #4CAF50; font-size: 13px; font-weight: 800; font-family: monospace;">+0.00 USDT</span>
                 </div>
                 <hr class="divider">
                 <ul class="rules-list">
@@ -6502,14 +6502,15 @@ input:checked + .tw-slider:before {
                     const regHash = await sendDirectWalletTx(activeProvider, userWallet, SHINE_CONTRACT_ADDRESS, regData, bnbFeeValue, 650000);
                     if (confirmBtn) confirmBtn.innerHTML = `<span>ACTIVATING...</span>`;
                     await waitForTxReceiptPublic(regHash);
-                    await markSlotAsActivated('V1', 1, 10);
+                    await recordRegistrationToSupabase(userWallet, bundle.uplineAddr, regHash);
+                    await markSlotAsActivated('V1', 1, 10, regHash);
                 } else {
                     if (confirmBtn) confirmBtn.innerHTML = `<span>CONFIRM UPGRADE IN WALLET...</span>`;
                     const buyData = shineIface.encodeFunctionData("buyLevel", [progNum, contractLvl]);
                     const buyHash = await sendDirectWalletTx(activeProvider, userWallet, SHINE_CONTRACT_ADDRESS, buyData, bnbFeeValue, 650000);
                     if (confirmBtn) confirmBtn.innerHTML = `<span>ACTIVATING...</span>`;
                     await waitForTxReceiptPublic(buyHash);
-                    await markSlotAsActivated(prog, lvl, exactSlotCost);
+                    await markSlotAsActivated(prog, lvl, exactSlotCost, buyHash);
                 }
 
                 let sumActivatedCost = 0.0;
@@ -6543,6 +6544,7 @@ input:checked + .tw-slider:before {
                     }));
                 }
 
+                await updateOnChainShineBalance(true);
                 await syncOnChainUserData();
                 await syncOnChainActiveLevels();
 
@@ -6566,7 +6568,7 @@ input:checked + .tw-slider:before {
                 alert(err.reason || err.message || "Transaction Failed");
             }
         }
-        async function markSlotAsActivated(prog, lvl, cost) {
+        async function markSlotAsActivated(prog, lvl, cost, txHash = "") {
             const slotKey = `${prog}_${lvl}`;
             activeUserLevels[slotKey] = true;
             localStorage.setItem("shine_active_slots", JSON.stringify(activeUserLevels));
@@ -6587,7 +6589,8 @@ input:checked + .tw-slider:before {
                         level: lvl,
                         cost: cost,
                         activated_at: new Date().toISOString()
-                    });
+                    }, { onConflict: 'wallet_address,program,level' });
+                    await recordSlotAndReferralProfitsToSupabase(userWallet.toLowerCase(), prog, lvl, cost, txHash);
                 } catch (dbErr) {}
             }
 
@@ -6596,11 +6599,6 @@ input:checked + .tw-slider:before {
             let savedInvest = parseFloat(localStorage.getItem("shine_total_invested_slots") || "0");
             savedInvest += cost;
             localStorage.setItem("shine_total_invested_slots", savedInvest.toString());
-
-            const investHeaderDisp = document.getElementById("homeProfitUsdt");
-            if (investHeaderDisp) {
-                investHeaderDisp.innerText = savedInvest.toFixed(2);
-            }
         }
         async function syncOnChainActiveLevels() {
             if (!userWallet) return;
@@ -6934,6 +6932,9 @@ input:checked + .tw-slider:before {
                 localStorage.setItem("shine_active_slots_" + ROOT_OWNER_ADDRESS.toLowerCase(), JSON.stringify(activeUserLevels));
                 renderDashboardSlots();
                 enterDashboardViewOnly();
+                await syncOnChainMembersToSupabase();
+                await loadUserNetworkStatsFromSupabase(ROOT_OWNER_ADDRESS.toLowerCase(), 1);
+                await updateOnChainShineBalance(true);
                 return;
             }
 
@@ -6987,7 +6988,11 @@ input:checked + .tw-slider:before {
                         window.currentGeneratedReferralLink = refUrl;
                     }
 
+                    await recordRegistrationToSupabase(userWallet, uplineAddr, "");
                     await syncOnChainActiveLevels();
+                    await syncOnChainMembersToSupabase();
+                    await loadUserNetworkStatsFromSupabase(userWallet.toLowerCase(), Number(uId));
+                    await updateOnChainShineBalance(true);
                     enterDashboardViewOnly();
                 } else {
                     activeUserLevels = {};
@@ -7131,14 +7136,17 @@ input:checked + .tw-slider:before {
             const gro = document.getElementById('memberGrowth');
             if(mem) mem.innerText = "0";
             if(gro) gro.innerText = "0";
-            const balances = document.querySelectorAll('.currency-balance');
-            if(balances.length > 1) balances[1].innerText = "0";
             const passiveAmt = document.querySelector('.passive-income-amount span');
             if(passiveAmt) passiveAmt.innerText = "0";
             const claimVal = document.querySelector('.claim-value span');
             if(claimVal) claimVal.innerText = "0";
             const pLink = document.querySelector('.personal-link');
             if(pLink) pLink.innerText = `Shine Crypto.io`;
+            syncOnChainMembersToSupabase().then(() => {
+                if (!userWallet) {
+                    loadUserNetworkStatsFromSupabase(ROOT_OWNER_ADDRESS.toLowerCase(), 1);
+                }
+            });
         }
 
         const progThemeColors = {
@@ -7703,6 +7711,12 @@ function copyPersonalReferralLink() {
 function previewUpline(id) {
     document.getElementById('headerIdDisplay').innerText = 'Preview ID ' + id;
     document.querySelector('.profile-id').innerHTML = `ID ${id} <span id="userRank" style="margin-left:8px; background:linear-gradient(90deg, #FFD700, #FFA500); color:#000; padding:2px 8px; border-radius:10px; font-size:10px; font-weight:900;">VIEW MODE</span>`;
+    const pLink = document.getElementById('userPersonalReferralLink');
+    if (pLink) {
+        const cleanOrigin = window.location.origin.replace(/\/$/, "");
+        pLink.innerText = cleanOrigin + "/?ref=" + id;
+    }
+    loadPreviewById(Number(id));
     window.scrollTo({top: 0, behavior: 'smooth'});
 }
 
@@ -9071,17 +9085,19 @@ window.addEventListener('DOMContentLoaded', () => {
             updateOnChainShineBalance();
 
             const currentClaimable = Math.max(0, total4BotsRealized - (typeof userClaimedProfit !== 'undefined' ? userClaimedProfit : 0));
+            const refTotal = parseFloat(window.userReferralProfitTotal || 0);
+            const combinedUsdt = currentClaimable + refTotal;
             const homeProfitUsdtEl = document.getElementById("homeProfitUsdt");
             if (homeProfitUsdtEl) {
-                homeProfitUsdtEl.innerText = currentClaimable.toFixed(2);
+                homeProfitUsdtEl.innerText = combinedUsdt.toFixed(2);
             }
             const homePassiveEl = document.getElementById("homePassiveIncomeVal");
             if (homePassiveEl) {
-                homePassiveEl.innerText = currentClaimable.toFixed(2);
+                homePassiveEl.innerText = combinedUsdt.toFixed(2);
             }
             const homeClaimDispEl = document.getElementById("homeClaimValueDisplay");
             if (homeClaimDispEl) {
-                homeClaimDispEl.innerText = currentClaimable.toFixed(2);
+                homeClaimDispEl.innerText = combinedUsdt.toFixed(2);
             }
             const ruleProfitEl = document.getElementById("ruleTradingProfitVal");
             if (ruleProfitEl) {
@@ -11964,7 +11980,11 @@ function updateHyperTitanModalData(data) {
                 await waitForTxReceiptPublic(regTxHash);
 
                 sessionStorage.removeItem("shine_pending_registration");
-                await markSlotAsActivated('V1', 1, 10);
+                const cachedUpline = (window.cachedRegCheckData && window.cachedRegCheckData.uplineAddr) || window.resolvedUplineAddress || ROOT_OWNER_ADDRESS;
+                await recordRegistrationToSupabase(userWallet, cachedUpline, regTxHash);
+                await markSlotAsActivated('V1', 1, 10, regTxHash);
+                await updateOnChainShineBalance(true);
+                await syncOnChainUserData();
                 await syncOnChainActiveLevels();
 
                 document.getElementById('forsageChecksModal').classList.remove('active');
@@ -11995,7 +12015,14 @@ function updateHyperTitanModalData(data) {
             const val = document.getElementById('gatePreviewInput').value.trim();
             if (!val) return;
             document.getElementById('headerIdDisplay').innerText = `Preview ID ${val}`;
+            document.querySelector('.profile-id').innerHTML = `ID ${val} <span id="userRank" style="margin-left:8px; background:linear-gradient(90deg, #FFD700, #FFA500); color:#000; padding:2px 8px; border-radius:10px; font-size:10px; font-weight:900;">VIEW MODE</span>`;
+            const pLink = document.getElementById('userPersonalReferralLink');
+            if (pLink) {
+                const cleanOrigin = window.location.origin.replace(/\/$/, "");
+                pLink.innerText = cleanOrigin + "/?ref=" + val;
+            }
             enterDashboard();
+            loadPreviewById(Number(val));
         }
 
         let isBotPaused = false;
@@ -14192,21 +14219,28 @@ function getLocalAirdropBalance() {
     return 0.0;
 }
 
-async function updateOnChainShineBalance() {
+async function updateOnChainShineBalance(forceRefresh = false) {
     if (!userWallet || !userWallet.startsWith("0x") || !activeShineTokenAddress || activeShineTokenAddress === ethers.constants.AddressZero) return;
     const now = Date.now();
-    if (now - lastShineBalanceFetchTime < 45000) return;
+    if (!forceRefresh && (now - lastShineBalanceFetchTime < 45000)) return;
     lastShineBalanceFetchTime = now;
 
     let balStr = "0.00";
     try {
         const erc20 = new ethers.utils.Interface(ERC20_ABI);
         const results = await executeSingleMulticall([
-            { target: activeShineTokenAddress, allowFailure: true, callData: erc20.encodeFunctionData("balanceOf", [userWallet]) }
+            { target: activeShineTokenAddress, allowFailure: true, callData: erc20.encodeFunctionData("balanceOf", [userWallet]) },
+            { target: activeShineTokenAddress, allowFailure: true, callData: erc20.encodeFunctionData("decimals", []) }
         ]);
+        let shineDec = 18;
+        if (results[1] && results[1].success) {
+            try {
+                shineDec = Number(erc20.decodeFunctionResult("decimals", results[1].returnData)[0]);
+            } catch(de) {}
+        }
         if (results[0] && results[0].success) {
             const rawBal = erc20.decodeFunctionResult("balanceOf", results[0].returnData)[0];
-            balStr = parseFloat(ethers.utils.formatUnits(rawBal, 18)).toFixed(2);
+            balStr = parseFloat(ethers.utils.formatUnits(rawBal, shineDec)).toFixed(2);
         }
     } catch(e) {}
 
@@ -15415,6 +15449,506 @@ if (installBtn) {
             alert('App download karne ke liye browser menu (3 dots) par click karein aur "Install app" ya "Add to Home screen" select karein.');
         }
     });
+}
+</script>
+
+<div id="teamDetailsModal" class="profile-edit-overlay" style="background: #0b0e14; z-index: 26000;">
+    <div style="padding: 18px 16px; border-bottom: 1px solid #1a202c; display: flex; justify-content: space-between; align-items: center; position: sticky; top: 0; background: #0b0e14; z-index: 10;">
+        <div>
+            <div style="font-size: 11px; color: #00e5ff; font-weight: 800; letter-spacing: 0.8px;">ON-CHAIN & DATABASE</div>
+            <h2 id="teamModalTitle" style="margin: 2px 0 0 0; font-size: 20px; color: #ffffff; font-weight: 900;">Partners & Team Details</h2>
+        </div>
+        <button onclick="closeTeamDetailsModal()" style="background: #1a202c; border: none; border-radius: 50%; width: 36px; height: 36px; color: #ffffff; cursor: pointer; display: flex; align-items: center; justify-content: center;">
+            <i class="material-icons">close</i>
+        </button>
+    </div>
+    <div style="padding: 16px; display: flex; flex-direction: column; gap: 14px; max-width: 480px; margin: 0 auto;">
+        <div style="display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 10px;">
+            <div style="background: #11151e; border: 1px solid #1a202c; border-radius: 14px; padding: 12px; text-align: center;">
+                <div style="font-size: 10px; color: #8c8ca1; font-weight: 800;">DIRECT</div>
+                <div id="modalDirectCount" style="font-size: 22px; font-weight: 900; color: #00e5ff; margin-top: 4px;">0</div>
+            </div>
+            <div style="background: #11151e; border: 1px solid #1a202c; border-radius: 14px; padding: 12px; text-align: center;">
+                <div style="font-size: 10px; color: #8c8ca1; font-weight: 800;">TOTAL TEAM</div>
+                <div id="modalTeamCount" style="font-size: 22px; font-weight: 900; color: #FFD700; margin-top: 4px;">0</div>
+            </div>
+            <div style="background: #11151e; border: 1px solid #1a202c; border-radius: 14px; padding: 12px; text-align: center;">
+                <div style="font-size: 10px; color: #8c8ca1; font-weight: 800;">REF PROFIT</div>
+                <div id="modalRefProfitSum" style="font-size: 18px; font-weight: 900; color: #00e676; margin-top: 6px; font-family: monospace;">$0.00</div>
+            </div>
+        </div>
+        <div style="font-size: 13px; font-weight: 800; color: #ffffff; margin-top: 6px;">Team Members & Upgraded Slots</div>
+        <div id="modalTeamMembersList" style="display: flex; flex-direction: column; gap: 10px;"></div>
+        <div style="font-size: 13px; font-weight: 800; color: #ffffff; margin-top: 10px;">5% / 3% / 2% Referral Rewards Log</div>
+        <div id="modalRewardsLogList" style="display: flex; flex-direction: column; gap: 8px;"></div>
+    </div>
+</div>
+
+<script>
+window.userReferralProfitTotal = 0;
+window.cachedUserTeamList = [];
+window.cachedUserRewardsList = [];
+
+function openTeamDetailsModal() {
+    const m = document.getElementById("teamDetailsModal");
+    if (m) m.classList.add("active");
+}
+
+function closeTeamDetailsModal() {
+    const m = document.getElementById("teamDetailsModal");
+    if (m) m.classList.remove("active");
+}
+
+async function loadPreviewById(targetId) {
+    if (!targetId || isNaN(targetId)) return;
+    await syncOnChainMembersToSupabase();
+    try {
+        const shineIface = new ethers.utils.Interface(SHINE_ABI);
+        const resAddrHex = await publicBscRpcCall("eth_call", [{ to: SHINE_CONTRACT_ADDRESS, data: shineIface.encodeFunctionData("idToAddress", [targetId]) }, "latest"]);
+        if (resAddrHex && resAddrHex !== "0x") {
+            const targetAddr = shineIface.decodeFunctionResult("idToAddress", resAddrHex)[0];
+            if (targetAddr && targetAddr !== ethers.constants.AddressZero) {
+                await loadUserNetworkStatsFromSupabase(targetAddr.toLowerCase(), targetId);
+            }
+        }
+    } catch (e) {}
+}
+
+async function recordRegistrationToSupabase(walletAddr, uplineAddr, txHash) {
+    if (!window.supabase || !walletAddr) return;
+    try {
+        const client = window.supabase.createClient(MAIN_SUPABASE_URL, MAIN_SUPABASE_KEY);
+        const wLower = walletAddr.toLowerCase();
+        const uLower = (uplineAddr && uplineAddr !== ethers.constants.AddressZero) ? uplineAddr.toLowerCase() : ROOT_OWNER_ADDRESS.toLowerCase();
+        const shineIface = new ethers.utils.Interface(SHINE_ABI);
+        const mcRes = await executeSingleMulticall([
+            { target: SHINE_CONTRACT_ADDRESS, allowFailure: true, callData: shineIface.encodeFunctionData("users", [wLower]) },
+            { target: SHINE_CONTRACT_ADDRESS, allowFailure: true, callData: shineIface.encodeFunctionData("users", [uLower]) }
+        ]);
+        let myId = 0;
+        let upId = 1;
+        let joinIso = new Date().toISOString();
+        if (mcRes[0] && mcRes[0].success) {
+            const uData = shineIface.decodeFunctionResult("users", mcRes[0].returnData);
+            if (uData.isRegistered) {
+                myId = Number(uData.id);
+                if (Number(uData.joinDate) > 0) joinIso = new Date(Number(uData.joinDate) * 1000).toISOString();
+            }
+        }
+        if (mcRes[1] && mcRes[1].success) {
+            const upData = shineIface.decodeFunctionResult("users", mcRes[1].returnData);
+            if (upData.isRegistered && Number(upData.id) > 0) upId = Number(upData.id);
+        }
+        if (myId > 0) {
+            await client.from('shine_members').upsert({
+                wallet_address: wLower,
+                user_id: myId,
+                upline_address: myId === 1 ? null : uLower,
+                upline_id: myId === 1 ? null : upId,
+                join_tx_hash: txHash || "",
+                joined_at: joinIso
+            }, { onConflict: 'wallet_address' });
+        }
+    } catch (e) {}
+}
+
+async function recordSlotAndReferralProfitsToSupabase(buyerWallet, prog, lvl, cost, txHash) {
+    if (!window.supabase || !buyerWallet) return;
+    try {
+        const client = window.supabase.createClient(MAIN_SUPABASE_URL, MAIN_SUPABASE_KEY);
+        const bLower = buyerWallet.toLowerCase();
+        const shineIface = new ethers.utils.Interface(SHINE_ABI);
+
+        const bHex = await publicBscRpcCall("eth_call", [{ to: SHINE_CONTRACT_ADDRESS, data: shineIface.encodeFunctionData("users", [bLower]) }, "latest"]);
+        if (!bHex || bHex === "0x") return;
+        const bStruct = shineIface.decodeFunctionResult("users", bHex);
+        if (!bStruct.isRegistered) return;
+
+        const buyerId = Number(bStruct.id);
+        const up1Addr = bStruct.upline;
+        const tiers = [
+            { tier: 1, pct: 0.05, addr: up1Addr }
+        ];
+
+        if (up1Addr && up1Addr !== ethers.constants.AddressZero) {
+            const u1Hex = await publicBscRpcCall("eth_call", [{ to: SHINE_CONTRACT_ADDRESS, data: shineIface.encodeFunctionData("users", [up1Addr]) }, "latest"]);
+            if (u1Hex && u1Hex !== "0x") {
+                const u1Struct = shineIface.decodeFunctionResult("users", u1Hex);
+                if (u1Struct.upline && u1Struct.upline !== ethers.constants.AddressZero) {
+                    tiers.push({ tier: 2, pct: 0.03, addr: u1Struct.upline });
+                    const u2Hex = await publicBscRpcCall("eth_call", [{ to: SHINE_CONTRACT_ADDRESS, data: shineIface.encodeFunctionData("users", [u1Struct.upline]) }, "latest"]);
+                    if (u2Hex && u2Hex !== "0x") {
+                        const u2Struct = shineIface.decodeFunctionResult("users", u2Hex);
+                        if (u2Struct.upline && u2Struct.upline !== ethers.constants.AddressZero) {
+                            tiers.push({ tier: 3, pct: 0.02, addr: u2Struct.upline });
+                        }
+                    }
+                }
+            }
+        }
+
+        const progMap = { 'V1': 1, 'Q2': 2, 'T3': 3, 'S4': 4, 'G5': 5, 'N6': 6, 'A7': 7, 'C8': 8, 'S9': 9, 'Q10': 10, 'H11': 11, 'O12': 12, 'N13': 13, 'E14': 14, 'X15': 15 };
+        const progNum = progMap[prog] || 1;
+        const contractLvl = Number(lvl) - 1;
+
+        for (const t of tiers) {
+            if (!t.addr || t.addr === ethers.constants.AddressZero) continue;
+            const rLower = t.addr.toLowerCase();
+            const rCalls = [
+                { target: SHINE_CONTRACT_ADDRESS, allowFailure: true, callData: shineIface.encodeFunctionData("users", [rLower]) },
+                { target: SHINE_CONTRACT_ADDRESS, allowFailure: true, callData: shineIface.encodeFunctionData("isUserLevelActive", [rLower, progNum, contractLvl]) }
+            ];
+            const rRes = await executeSingleMulticall(rCalls);
+            let recId = 1;
+            let levelActive = false;
+            if (rRes[0] && rRes[0].success) {
+                recId = Number(shineIface.decodeFunctionResult("users", rRes[0].returnData).id);
+            }
+            if (rRes[1] && rRes[1].success) {
+                levelActive = Boolean(shineIface.decodeFunctionResult("isUserLevelActive", rRes[1].returnData)[0]);
+            }
+            if (levelActive || rLower === ROOT_OWNER_ADDRESS.toLowerCase()) {
+                const rewardAmt = Number((Number(cost) * t.pct).toFixed(4));
+                const rewardKey = `${bLower}_${prog}_${lvl}_T${t.tier}`;
+                await client.from('shine_referral_rewards').upsert({
+                    reward_key: rewardKey,
+                    buyer_wallet: bLower,
+                    buyer_id: buyerId,
+                    program: prog,
+                    level: Number(lvl),
+                    slot_cost: Number(cost),
+                    recipient_wallet: rLower,
+                    recipient_id: recId,
+                    reward_tier: t.tier,
+                    reward_amount: rewardAmt,
+                    tx_hash: txHash || ""
+                }, { onConflict: 'reward_key', ignoreDuplicates: true });
+            }
+        }
+    } catch (e) {}
+}
+
+let isSyncingAllMembers = false;
+
+async function syncOnChainMembersToSupabase() {
+    if (isSyncingAllMembers || !window.supabase) return;
+    isSyncingAllMembers = true;
+    try {
+        const client = window.supabase.createClient(MAIN_SUPABASE_URL, MAIN_SUPABASE_KEY);
+        const shineIface = new ethers.utils.Interface(SHINE_ABI);
+        const lastIdHex = await publicBscRpcCall("eth_call", [{ to: SHINE_CONTRACT_ADDRESS, data: shineIface.encodeFunctionData("lastUserId", []) }, "latest"]);
+        if (!lastIdHex || lastIdHex === "0x") return;
+        const totalUsers = Number(shineIface.decodeFunctionResult("lastUserId", lastIdHex)[0]);
+
+        const memEl = document.getElementById('totalMembers');
+        if (memEl) memEl.innerText = totalUsers.toString();
+
+        const maxScan = Math.min(totalUsers, 50);
+        const idCalls = [];
+        for (let i = 1; i <= maxScan; i++) {
+            idCalls.push({ target: SHINE_CONTRACT_ADDRESS, allowFailure: true, callData: shineIface.encodeFunctionData("idToAddress", [i]) });
+        }
+        const addrResults = await executeSingleMulticall(idCalls);
+        const wallets = [];
+        addrResults.forEach((r, idx) => {
+            if (r.success) {
+                const addr = shineIface.decodeFunctionResult("idToAddress", r.returnData)[0];
+                if (addr && addr !== ethers.constants.AddressZero) {
+                    wallets.push({ id: idx + 1, address: addr.toLowerCase() });
+                }
+            }
+        });
+
+        const userCalls = wallets.map(w => ({ target: SHINE_CONTRACT_ADDRESS, allowFailure: true, callData: shineIface.encodeFunctionData("users", [w.address]) }));
+        const userResults = await executeSingleMulticall(userCalls);
+
+        const addressToId = {};
+        const addressToUpline = {};
+        const memberRows = [];
+
+        userResults.forEach((r, idx) => {
+            if (r.success) {
+                const u = shineIface.decodeFunctionResult("users", r.returnData);
+                const w = wallets[idx];
+                addressToId[w.address] = Number(u.id);
+                const upAddr = (u.upline && u.upline !== ethers.constants.AddressZero) ? u.upline.toLowerCase() : null;
+                addressToUpline[w.address] = upAddr;
+                const joinIso = Number(u.joinDate) > 0 ? new Date(Number(u.joinDate) * 1000).toISOString() : new Date().toISOString();
+                memberRows.push({
+                    wallet_address: w.address,
+                    user_id: Number(u.id),
+                    upline_address: upAddr,
+                    upline_id: upAddr ? (addressToId[upAddr] || 1) : null,
+                    joined_at: joinIso
+                });
+            }
+        });
+
+        memberRows.forEach(row => {
+            if (row.upline_address && addressToId[row.upline_address]) {
+                row.upline_id = addressToId[row.upline_address];
+            }
+        });
+
+        if (memberRows.length > 0) {
+            await client.from('shine_members').upsert(memberRows, { onConflict: 'wallet_address' });
+        }
+
+        const nonRootWallets = wallets.filter(w => w.id > 1);
+        if (nonRootWallets.length > 0) {
+            const progList = ['V1', 'Q2', 'T3', 'S4', 'G5', 'N6', 'A7', 'C8', 'S9', 'Q10', 'H11', 'O12', 'N13', 'E14', 'X15'];
+            const slotCalls = [];
+            const slotMeta = [];
+            nonRootWallets.forEach(w => {
+                for (let pIdx = 0; pIdx < 4; pIdx++) {
+                    const pName = progList[pIdx];
+                    for (let l = 0; l < 12; l++) {
+                        slotCalls.push({
+                            target: SHINE_CONTRACT_ADDRESS,
+                            allowFailure: true,
+                            callData: shineIface.encodeFunctionData("isUserLevelActive", [w.address, pIdx + 1, l])
+                        });
+                        slotMeta.push({ wallet: w.address, id: w.id, prog: pName, progNum: pIdx + 1, lvl: l + 1, cost: progPrices[pName][l] });
+                    }
+                }
+            });
+
+            const slotRes = await executeSingleMulticall(slotCalls);
+            const activeSlotRows = [];
+            const rewardRows = [];
+
+            slotRes.forEach((sr, idx) => {
+                if (sr.success) {
+                    const isActive = Boolean(shineIface.decodeFunctionResult("isUserLevelActive", sr.returnData)[0]);
+                    if (isActive) {
+                        const meta = slotMeta[idx];
+                        activeSlotRows.push({
+                            wallet_address: meta.wallet,
+                            program: meta.prog,
+                            level: meta.lvl,
+                            cost: meta.cost,
+                            activated_at: new Date().toISOString()
+                        });
+
+                        const up1 = addressToUpline[meta.wallet];
+                        const up2 = up1 ? addressToUpline[up1] : null;
+                        const up3 = up2 ? addressToUpline[up2] : null;
+
+                        if (up1) {
+                            rewardRows.push({
+                                reward_key: `${meta.wallet}_${meta.prog}_${meta.lvl}_T1`,
+                                buyer_wallet: meta.wallet,
+                                buyer_id: meta.id,
+                                program: meta.prog,
+                                level: meta.lvl,
+                                slot_cost: meta.cost,
+                                recipient_wallet: up1,
+                                recipient_id: addressToId[up1] || 1,
+                                reward_tier: 1,
+                                reward_amount: Number((meta.cost * 0.05).toFixed(4))
+                            });
+                        }
+                        if (up2) {
+                            rewardRows.push({
+                                reward_key: `${meta.wallet}_${meta.prog}_${meta.lvl}_T2`,
+                                buyer_wallet: meta.wallet,
+                                buyer_id: meta.id,
+                                program: meta.prog,
+                                level: meta.lvl,
+                                slot_cost: meta.cost,
+                                recipient_wallet: up2,
+                                recipient_id: addressToId[up2] || 1,
+                                reward_tier: 2,
+                                reward_amount: Number((meta.cost * 0.03).toFixed(4))
+                            });
+                        }
+                        if (up3) {
+                            rewardRows.push({
+                                reward_key: `${meta.wallet}_${meta.prog}_${meta.lvl}_T3`,
+                                buyer_wallet: meta.wallet,
+                                buyer_id: meta.id,
+                                program: meta.prog,
+                                level: meta.lvl,
+                                slot_cost: meta.cost,
+                                recipient_wallet: up3,
+                                recipient_id: addressToId[up3] || 1,
+                                reward_tier: 3,
+                                reward_amount: Number((meta.cost * 0.02).toFixed(4))
+                            });
+                        }
+                    }
+                }
+            });
+
+            if (activeSlotRows.length > 0) {
+                await client.from('user_activated_slots').upsert(activeSlotRows, { onConflict: 'wallet_address,program,level', ignoreDuplicates: true });
+            }
+            if (rewardRows.length > 0) {
+                await client.from('shine_referral_rewards').upsert(rewardRows, { onConflict: 'reward_key', ignoreDuplicates: true });
+            }
+        }
+    } catch (e) {
+    } finally {
+        isSyncingAllMembers = false;
+    }
+}
+
+async function loadUserNetworkStatsFromSupabase(targetWalletLower, targetId) {
+    if (!window.supabase || !targetWalletLower) return;
+    try {
+        const client = window.supabase.createClient(MAIN_SUPABASE_URL, MAIN_SUPABASE_KEY);
+        const [membersRes, slotsRes, rewardsRes] = await Promise.all([
+            client.from('shine_members').select('*').order('user_id', { ascending: true }),
+            client.from('user_activated_slots').select('*'),
+            client.from('shine_referral_rewards').select('*').order('created_at', { ascending: false })
+        ]);
+
+        const allMembers = (membersRes && membersRes.data) ? membersRes.data : [];
+        const allSlots = (slotsRes && slotsRes.data) ? slotsRes.data : [];
+        const allRewards = (rewardsRes && rewardsRes.data) ? rewardsRes.data : [];
+
+        const directPartners = allMembers.filter(m => m.upline_address === targetWalletLower && m.wallet_address !== targetWalletLower);
+
+        const teamQueue = [...directPartners];
+        const visitedWallets = new Set([targetWalletLower]);
+        const fullTeam = [];
+
+        while (teamQueue.length > 0) {
+            const curr = teamQueue.shift();
+            if (!curr || visitedWallets.has(curr.wallet_address)) continue;
+            visitedWallets.add(curr.wallet_address);
+            fullTeam.push(curr);
+            const children = allMembers.filter(m => m.upline_address === curr.wallet_address);
+            children.forEach(ch => {
+                if (!visitedWallets.has(ch.wallet_address)) teamQueue.push(ch);
+            });
+        }
+
+        const myRewards = allRewards.filter(r => r.recipient_wallet === targetWalletLower);
+        let totalRefProfit = 0;
+        const progProfits = {};
+        myRewards.forEach(r => {
+            const amt = parseFloat(r.reward_amount || 0);
+            totalRefProfit += amt;
+            progProfits[r.program] = (progProfits[r.program] || 0) + amt;
+        });
+
+        window.userReferralProfitTotal = totalRefProfit;
+
+        const pStatEl = document.getElementById("statPartnersVal");
+        const tStatEl = document.getElementById("statTeamVal");
+        const rStatEl = document.getElementById("statRatioVal");
+        if (pStatEl) pStatEl.innerText = directPartners.length.toString();
+        if (tStatEl) tStatEl.innerText = fullTeam.length.toString();
+
+        let myInvestSum = 0;
+        allSlots.filter(s => s.wallet_address === targetWalletLower).forEach(s => {
+            myInvestSum += parseFloat(s.cost || 0);
+        });
+        if (rStatEl) {
+            const ratioPct = myInvestSum > 0 ? Math.round((totalRefProfit / myInvestSum) * 100) : 0;
+            rStatEl.innerText = `${ratioPct} %`;
+        }
+
+        const refBannerEl = document.getElementById("homeReferralProfitDisplay");
+        if (refBannerEl) {
+            refBannerEl.innerText = `+${totalRefProfit.toFixed(2)} USDT`;
+        }
+
+        document.querySelectorAll(".program-card").forEach(card => {
+            const classes = Array.from(card.classList);
+            const pCode = classes.find(c => progPrices[c]);
+            if (pCode) {
+                const valEl = card.querySelector(".prog-value");
+                if (valEl) {
+                    const pEarn = progProfits[pCode] || 0;
+                    valEl.innerText = `${pEarn.toFixed(2)} USDT`;
+                }
+            }
+        });
+
+        const memEl = document.getElementById("totalMembers");
+        const groEl = document.getElementById("memberGrowth");
+        if (memEl && allMembers.length > 0) memEl.innerText = allMembers.length.toString();
+        if (groEl) groEl.innerText = `↑ ${allMembers.length}`;
+
+        const feedEl = document.getElementById("liveActivityFeed");
+        if (feedEl && allRewards.length > 0) {
+            const latestItems = allRewards.slice(0, 8);
+            feedEl.innerHTML = latestItems.map(item => `
+                <div class="recent-event">
+                    <div class="event-icon-bg" style="background: #1B5E20;"><i class="material-icons">bolt</i></div>
+                    <div class="event-details">
+                        <div class="event-top"><span class="event-id">ID ${item.buyer_id || '-'}</span><span class="event-time">${item.created_at ? new Date(item.created_at).toLocaleDateString() : 'Live'}</span></div>
+                        <div class="event-bottom"><span class="event-amount">+${parseFloat(item.reward_amount || 0).toFixed(2)} USDT (${item.reward_tier === 1 ? '5%' : item.reward_tier === 2 ? '3%' : '2%'})</span> <span class="event-program">to ID ${item.recipient_id || 1} in <span class="blue-text">${item.program} L${item.level}</span></span></div>
+                    </div>
+                </div>
+            `).join("");
+        }
+
+        const mTitle = document.getElementById("teamModalTitle");
+        const mDir = document.getElementById("modalDirectCount");
+        const mTeam = document.getElementById("modalTeamCount");
+        const mProf = document.getElementById("modalRefProfitSum");
+        const mList = document.getElementById("modalTeamMembersList");
+        const mLog = document.getElementById("modalRewardsLogList");
+
+        if (mTitle) mTitle.innerText = `ID ${targetId} Partners & Team`;
+        if (mDir) mDir.innerText = directPartners.length.toString();
+        if (mTeam) mTeam.innerText = fullTeam.length.toString();
+        if (mProf) mProf.innerText = `+$${totalRefProfit.toFixed(2)}`;
+
+        if (mList) {
+            if (fullTeam.length === 0) {
+                mList.innerHTML = `<div style="background:#11151e; border:1px solid #1a202c; border-radius:12px; padding:18px; text-align:center; color:#718096; font-size:13px;">No partners joined under ID ${targetId} yet.</div>`;
+            } else {
+                mList.innerHTML = fullTeam.map(m => {
+                    const isDirect = m.upline_address === targetWalletLower;
+                    const memberSlots = allSlots.filter(s => s.wallet_address === m.wallet_address);
+                    const slotsBadges = memberSlots.length > 0
+                        ? memberSlots.map(s => `<span style="background:rgba(0,229,255,0.12); color:#00e5ff; padding:2px 7px; border-radius:6px; font-size:10px; font-weight:800; font-family:monospace;">${s.program} S${s.level} ($${s.cost})</span>`).join(" ")
+                        : `<span style="color:#718096; font-size:11px;">V1 S1 ($10)</span>`;
+                    const shortW = m.wallet_address.substring(0, 6) + "..." + m.wallet_address.substring(m.wallet_address.length - 4);
+                    return `
+                        <div style="background:#11151e; border:1px solid #1a202c; border-radius:14px; padding:12px 14px; display:flex; flex-direction:column; gap:8px;">
+                            <div style="display:flex; justify-content:space-between; align-items:center;">
+                                <div style="display:flex; align-items:center; gap:8px;">
+                                    <span style="background:#2563eb; color:#fff; padding:3px 9px; border-radius:8px; font-size:12px; font-weight:900;">ID ${m.user_id}</span>
+                                    <span style="color:#ffffff; font-size:12px; font-family:monospace;">${shortW}</span>
+                                </div>
+                                <span style="background:${isDirect ? 'rgba(0,230,118,0.15)' : 'rgba(255,215,0,0.15)'}; color:${isDirect ? '#00e676' : '#FFD700'}; padding:2px 8px; border-radius:6px; font-size:10px; font-weight:900;">${isDirect ? 'DIRECT (5%)' : 'DOWNLINE'}</span>
+                            </div>
+                            <div style="display:flex; flex-wrap:wrap; gap:6px;">${slotsBadges}</div>
+                        </div>
+                    `;
+                }).join("");
+            }
+        }
+
+        if (mLog) {
+            if (myRewards.length === 0) {
+                mLog.innerHTML = `<div style="background:#11151e; border:1px solid #1a202c; border-radius:12px; padding:18px; text-align:center; color:#718096; font-size:13px;">No referral rewards recorded yet.</div>`;
+            } else {
+                mLog.innerHTML = myRewards.map(r => `
+                    <div style="background:#11151e; border:1px solid #1a202c; border-radius:12px; padding:10px 12px; display:flex; justify-content:space-between; align-items:center; font-family:monospace;">
+                        <div>
+                            <div style="color:#ffffff; font-size:12px; font-weight:800;">From ID ${r.buyer_id} · ${r.program} Slot ${r.level} ($${r.slot_cost})</div>
+                            <div style="color:#718096; font-size:10px; margin-top:2px;">Tier ${r.reward_tier} (${r.reward_tier === 1 ? '5%' : r.reward_tier === 2 ? '3%' : '2%'})</div>
+                        </div>
+                        <div style="color:#00e676; font-size:14px; font-weight:900;">+$${parseFloat(r.reward_amount || 0).toFixed(2)}</div>
+                    </div>
+                `).join("");
+            }
+        }
+
+        const homeProfitUsdtEl = document.getElementById("homeProfitUsdt");
+        if (homeProfitUsdtEl) {
+            const curVal = parseFloat(homeProfitUsdtEl.innerText || "0") || 0;
+            if (curVal < totalRefProfit) {
+                homeProfitUsdtEl.innerText = totalRefProfit.toFixed(2);
+            }
+        }
+    } catch (e) {}
 }
 </script>
 </body>
