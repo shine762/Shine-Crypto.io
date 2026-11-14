@@ -6035,11 +6035,11 @@ input:checked + .tw-slider:before {
             "function getEthBalance(address addr) view returns (uint256 balance)"
         ];
         const BSC_TESTNET_RPCS = [
-            "https://bsc-testnet.drpc.org",
+            "https://bsc-testnet-rpc.publicnode.com",
+            "https://api.zan.top/bsc-testnet",
+            "https://data-seed-prebsc-1-s2.bnbchain.org:8545",
             "https://bnb-testnet.api.onfinality.io/public",
-            "https://data-seed-prebsc-2-s1.bnbchain.org:8545",
-            "https://data-seed-prebsc-1-s1.bnbchain.org:8545",
-            "https://bsc-testnet-rpc.publicnode.com"
+            "https://bsc-testnet.drpc.org"
         ];
         let bscRpcCursor = 0;
         let cachedBscGasPriceHex = null;
@@ -6121,15 +6121,23 @@ input:checked + .tw-slider:before {
                 gas: ethers.utils.hexValue(gasLimitNum)
             };
             try {
-                const gasPriceHex = await publicBscRpcCall("eth_gasPrice", []);
-                if (gasPriceHex) {
-                    cachedBscGasPriceHex = gasPriceHex;
-                    cachedBscGasPriceAt = Date.now();
-                    txParams.gasPrice = gasPriceHex;
-                } else if (cachedBscGasPriceHex) {
-                    txParams.gasPrice = cachedBscGasPriceHex;
+                if (!cachedBscGasPriceHex || (Date.now() - cachedBscGasPriceAt > 60000)) {
+                    const gasPriceHex = await publicBscRpcCall("eth_gasPrice", []);
+                    if (gasPriceHex) {
+                        const gpBn = ethers.BigNumber.from(gasPriceHex);
+                        const minGpBn = ethers.BigNumber.from("1000000000");
+                        cachedBscGasPriceHex = ethers.utils.hexValue(gpBn.lt(minGpBn) ? minGpBn : gpBn);
+                        cachedBscGasPriceAt = Date.now();
+                    }
                 }
-            } catch (e) {}
+                if (cachedBscGasPriceHex) {
+                    txParams.gasPrice = cachedBscGasPriceHex;
+                } else {
+                    txParams.gasPrice = "0x3b9aca00";
+                }
+            } catch (e) {
+                txParams.gasPrice = cachedBscGasPriceHex || "0x3b9aca00";
+            }
 
             try {
                 return await activeProvider.request({
@@ -6140,10 +6148,15 @@ input:checked + .tw-slider:before {
                 if (err && (err.code === 4001 || err.code === "ACTION_REJECTED")) {
                     throw err;
                 }
-                const msg = String((err && (err.message || (err.data && err.data.message))) || "").toLowerCase();
-                const isRateLimit = (err && (err.code === -32005 || err.code === -32603)) && (msg.includes("rate limit") || msg.includes("429") || msg.includes("too many") || msg.includes("request limit"));
+                const msg = [
+                    err && err.message,
+                    err && err.reason,
+                    err && err.data && err.data.message,
+                    err && err.data && err.data.originalError && err.data.originalError.message
+                ].filter(Boolean).join(" ").toLowerCase();
+                const isRateLimit = (err && (err.code === -32005 || err.code === -32603 || err.code === -32002)) && (msg.includes("rate limit") || msg.includes("429") || msg.includes("too many") || msg.includes("request limit") || msg.includes("exceeded"));
                 if (isRateLimit) {
-                    throw new Error("MetaMask RPC rate limit. Please switch BSC Testnet RPC in MetaMask to https://bsc-testnet.drpc.org and try again.");
+                    throw new Error("MetaMask RPC rate limit. Please update BSC Testnet RPC in MetaMask Settings to https://bsc-testnet-rpc.publicnode.com and try again.");
                 }
                 throw err;
             }
@@ -6395,8 +6408,9 @@ input:checked + .tw-slider:before {
                                 chainName: 'BNB Smart Chain Testnet',
                                 nativeCurrency: { name: 'tBNB', symbol: 'tBNB', decimals: 18 },
                                 rpcUrls: [
-                                    'https://bsc-testnet.drpc.org',
-                                    'https://bsc-testnet-rpc.publicnode.com'
+                                    'https://bsc-testnet-rpc.publicnode.com',
+                                    'https://api.zan.top/bsc-testnet',
+                                    'https://data-seed-prebsc-1-s2.bnbchain.org:8545'
                                 ],
                                 blockExplorerUrls: ['https://testnet.bscscan.com']
                             }]
@@ -6460,14 +6474,32 @@ input:checked + .tw-slider:before {
                     const appHash = await sendDirectWalletTx(activeProvider, userWallet, bundle.usdtAddress, appData, 0, 80000);
                     if (confirmBtn) confirmBtn.innerHTML = `<span>VERIFYING APPROVAL...</span>`;
                     await waitForTxReceiptPublic(appHash);
+                    await waitForOnChainAllowanceSync(bundle.usdtAddress, userWallet);
+                    isUpgradingInProgress = false;
+                    if (confirmBtn) {
+                        confirmBtn.disabled = false;
+                        confirmBtn.style.cursor = "pointer";
+                        confirmBtn.removeAttribute("data-action");
+                        confirmBtn.innerText = !bundle.isRegistered ? "CONFIRM & REGISTER (10 USDT)" : "CONFIRM & ACTIVATE LEVEL";
+                    }
+                    return;
                 }
 
-                const bnbFeeValue = ethers.utils.parseEther("0.001");
+                let bnbFeeValue = ethers.utils.parseEther("0.001");
+                try {
+                    const feeTargetProg = !bundle.isRegistered ? 1 : progNum;
+                    const feeCallData = shineIface.encodeFunctionData("getServiceFee", [feeTargetProg]);
+                    const feeHex = await publicBscRpcCall("eth_call", [{ to: SHINE_CONTRACT_ADDRESS, data: feeCallData }, "latest"]);
+                    if (feeHex && feeHex !== "0x") {
+                        const contractFee = shineIface.decodeFunctionResult("getServiceFee", feeHex)[0];
+                        if (contractFee.gt(0)) bnbFeeValue = contractFee;
+                    }
+                } catch (e) {}
 
                 if (!bundle.isRegistered) {
                     if (confirmBtn) confirmBtn.innerHTML = `<span>CONFIRM REGISTRATION IN WALLET...</span>`;
                     const regData = shineIface.encodeFunctionData("register", [bundle.uplineAddr]);
-                    const regHash = await sendDirectWalletTx(activeProvider, userWallet, SHINE_CONTRACT_ADDRESS, regData, bnbFeeValue, 850000);
+                    const regHash = await sendDirectWalletTx(activeProvider, userWallet, SHINE_CONTRACT_ADDRESS, regData, bnbFeeValue, 650000);
                     if (confirmBtn) confirmBtn.innerHTML = `<span>ACTIVATING...</span>`;
                     await waitForTxReceiptPublic(regHash);
                     await markSlotAsActivated('V1', 1, 10);
@@ -7553,17 +7585,20 @@ async function openUpgrade(prog, lvl, price) {
     let bnbBal = ethers.BigNumber.from(0);
     let usdtBal = ethers.BigNumber.from(0);
     let isRegistered = false;
+    let allowanceBal = ethers.BigNumber.from(0);
 
     try {
         const calls = [
             { target: MULTICALL3_ADDRESS, allowFailure: true, callData: mcIface.encodeFunctionData("getEthBalance", [currentAccount]) },
-            { target: REAL_USDT_CONTRACT, allowFailure: true, callData: erc20Iface.encodeFunctionData("balanceOf", [currentAccount]) },
-            { target: SHINE_CONTRACT_ADDRESS, allowFailure: true, callData: shineIface.encodeFunctionData("users", [currentAccount]) }
+            { target: activeUsdtTokenAddress, allowFailure: true, callData: erc20Iface.encodeFunctionData("balanceOf", [currentAccount]) },
+            { target: SHINE_CONTRACT_ADDRESS, allowFailure: true, callData: shineIface.encodeFunctionData("users", [currentAccount]) },
+            { target: activeUsdtTokenAddress, allowFailure: true, callData: erc20Iface.encodeFunctionData("allowance", [currentAccount, SHINE_CONTRACT_ADDRESS]) }
         ];
-        const results = await executeSingleMulticall(calls, activeProvider);
+        const results = await executeSingleMulticall(calls);
         if (results[0].success) bnbBal = mcIface.decodeFunctionResult("getEthBalance", results[0].returnData)[0];
         if (results[1].success) usdtBal = erc20Iface.decodeFunctionResult("balanceOf", results[1].returnData)[0];
         if (results[2].success) isRegistered = shineIface.decodeFunctionResult("users", results[2].returnData).isRegistered;
+        if (results[3].success) allowanceBal = erc20Iface.decodeFunctionResult("allowance", results[3].returnData)[0];
     } catch (e) {}
 
     const reqBnb = ethers.utils.parseEther("0.001");
@@ -7613,7 +7648,9 @@ async function openUpgrade(prog, lvl, price) {
     confirmBtn.style.color = "#ffffff";
     confirmBtn.style.cursor = "pointer";
 
-    if (!isRegistered) {
+    if (allowanceBal.lt(reqUsdt)) {
+        confirmBtn.innerText = "APPROVE USDT";
+    } else if (!isRegistered) {
         confirmBtn.innerText = "CONFIRM & REGISTER (10 USDT)";
     } else {
         confirmBtn.innerText = "CONFIRM & ACTIVATE LEVEL";
@@ -11543,7 +11580,7 @@ function updateHyperTitanModalData(data) {
                                 chainId: '0x61',
                                 chainName: 'BNB Smart Chain Testnet',
                                 nativeCurrency: { name: 'tBNB', symbol: 'tBNB', decimals: 18 },
-                                rpcUrls: ['https://bsc-testnet.drpc.org', 'https://data-seed-prebsc-2-s1.bnbchain.org:8545', 'https://bsc-testnet-rpc.publicnode.com'],
+                                rpcUrls: ['https://bsc-testnet-rpc.publicnode.com', 'https://api.zan.top/bsc-testnet', 'https://data-seed-prebsc-1-s2.bnbchain.org:8545'],
                                 blockExplorerUrls: ['https://testnet.bscscan.com']
                             }]
                         });
@@ -11746,13 +11783,13 @@ function updateHyperTitanModalData(data) {
                         regBtn.disabled = !isBsc || !hasEnoughBnb || !hasEnoughUsdt;
                     }
                 } else {
-                    if (appBox) appBox.style.background = "#2A2A3B";
-                    if (appInner) { appInner.innerText = "lock_open"; appInner.style.color = "#00e5ff"; }
-                    if (appRight) { appRight.innerText = "radio_button_unchecked"; appRight.style.color = "#8c8ca1"; }
-                    if (appText) appText.innerText = "Approve USDT: tap to approve";
+                    if (appBox) appBox.style.background = "#2563eb";
+                    if (appInner) { appInner.innerText = "hourglass_top"; appInner.style.color = "#fff"; }
+                    if (appRight) { appRight.innerText = "radio_button_unchecked"; appRight.style.color = "#00e5ff"; }
+                    if (appText) appText.innerText = "Approve USDT: required (Step 1)";
                     if (regBtn) {
-                        regBtn.innerText = "Approve & Registration";
-                        regBtn.onclick = executeRegistrationOnContract;
+                        regBtn.innerText = "Approve USDT";
+                        regBtn.onclick = approveUsdtOnlyFromCheck;
                         regBtn.disabled = !isBsc || !hasEnoughBnb || !hasEnoughUsdt;
                     }
                 }
@@ -11808,11 +11845,13 @@ function updateHyperTitanModalData(data) {
                 if (appText) appText.innerText = "Approve USDT: done";
                 if (btn) {
                     btn.innerText = 'Registration';
+                    btn.onclick = executeRegistrationOnContract;
                     btn.disabled = false;
                 }
             } catch (e) {
                 if (btn) {
-                    btn.innerText = (window.cachedRegCheckData && window.cachedRegCheckData.isApproved) ? 'Registration' : 'Approve & Registration';
+                    btn.innerText = (window.cachedRegCheckData && window.cachedRegCheckData.isApproved) ? 'Registration' : 'Approve USDT';
+                    btn.onclick = (window.cachedRegCheckData && window.cachedRegCheckData.isApproved) ? executeRegistrationOnContract : approveUsdtOnlyFromCheck;
                     btn.disabled = false;
                 }
                 if (!(e.code === 4001 || e.code === "ACTION_REJECTED")) {
@@ -11898,6 +11937,12 @@ function updateHyperTitanModalData(data) {
                     if (appInner) { appInner.innerText = "done"; appInner.style.color = "#fff"; }
                     if (appRight) { appRight.innerText = "check_circle"; appRight.style.color = "#4CAF50"; }
                     if (appText) appText.innerText = "Approve USDT: done";
+                    if (btn) {
+                        btn.innerText = 'Registration';
+                        btn.onclick = executeRegistrationOnContract;
+                        btn.disabled = false;
+                    }
+                    return;
                 }
 
                 if (btn) btn.innerText = 'CONFIRM REGISTRATION IN WALLET...';
@@ -11913,7 +11958,7 @@ function updateHyperTitanModalData(data) {
                 } catch (e) {}
 
                 const regData = shineIface.encodeFunctionData("register", [uplineAddr]);
-                const regTxHash = await sendDirectWalletTx(activeProvider, userWallet, SHINE_CONTRACT_ADDRESS, regData, bnbFeeValue, 850000);
+                const regTxHash = await sendDirectWalletTx(activeProvider, userWallet, SHINE_CONTRACT_ADDRESS, regData, bnbFeeValue, 650000);
 
                 if (btn) btn.innerText = 'ACTIVATING ACCOUNT & V1 SLOT...';
                 await waitForTxReceiptPublic(regTxHash);
@@ -11932,7 +11977,9 @@ function updateHyperTitanModalData(data) {
                 if (sTxLink) sTxLink.href = `https://testnet.bscscan.com/tx/${regTxHash}`;
             } catch(e) {
                 if (btn) {
-                    btn.innerText = (window.cachedRegCheckData && window.cachedRegCheckData.isApproved) ? 'Registration' : 'Approve & Registration';
+                    const approvedNow = Boolean(window.cachedRegCheckData && window.cachedRegCheckData.isApproved);
+                    btn.innerText = approvedNow ? 'Registration' : 'Approve USDT';
+                    btn.onclick = approvedNow ? executeRegistrationOnContract : approveUsdtOnlyFromCheck;
                     btn.disabled = false;
                 }
                 if (e.code === 4001 || e.code === "ACTION_REJECTED") {
