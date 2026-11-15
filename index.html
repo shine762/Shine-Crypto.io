@@ -410,16 +410,6 @@
     font-weight: bold;
     color: var(--text-primary);
 }
-.distribution-card {
-    background-color: transparent;
-    border: 1px solid var(--tertiary-bg);
-    border-radius: 16px;
-    padding: 16px;
-    display: flex;
-    align-items: center;
-    gap: 12px;
-    color: var(--text-secondary);
-}
 
 .visual-container {
     position: relative;
@@ -3078,8 +3068,8 @@ input:checked + .tw-slider:before {
                     <span id="displayWallet">Not Connected</span>
                     <i class="material-icons" style="font-size: 16px; color: #757575; cursor: pointer;" onclick="copyWallet()">content_copy</i>
                 </div>
-                <div class="invited-by-row">
-                    invited 30.07.2022 by <span class="upline-badge" onclick="previewUpline(487984)">ID 487984</span>
+                <div class="invited-by-row" id="expandedInvitedRow">
+                    Root Owner Account
                 </div>
             </div>
 
@@ -3089,7 +3079,7 @@ input:checked + .tw-slider:before {
                         <span>Personal link</span>
                         <div class="question-mark">?</div>
             </div>
-            <span class="personal-link" id="userPersonalReferralLink" style="cursor: pointer; word-break: break-all;" onclick="copyPersonalReferralLink()">https://shine-crypto.vercel.app/?ref=1</span>
+            <span class="personal-link" id="userPersonalReferralLink" style="cursor: pointer;" onclick="copyPersonalReferralLink()">Shine Crypto.io</span>
         </div>
         <button class="copy-btn" type="button" onclick="copyPersonalReferralLink()">Copy</button>
                 <button class="pro-bot-btn" onclick="toggleTrading()">
@@ -3128,7 +3118,10 @@ input:checked + .tw-slider:before {
                         </div>
                         <i class="material-icons">people_outline</i>
                     </div>
-                    <div class="stat-value" id="statPartnersVal">0</div>
+                    <div style="display:flex; align-items:baseline; gap:8px; margin-top:8px;">
+                        <div class="stat-value" id="statPartnersVal" style="margin-top:0;">0</div>
+                        <span id="statPartners24h" style="color:#4CAF50; font-size:14px; font-weight:800;"></span>
+                    </div>
                 </div>
                 <div class="stat-card" onclick="openTeamDetailsModal()" style="cursor: pointer;">
                     <div class="stat-header">
@@ -3138,26 +3131,12 @@ input:checked + .tw-slider:before {
                         </div>
                         <i class="material-icons">groups</i>
                     </div>
-                    <div class="stat-value" id="statTeamVal">0</div>
-                </div>
-                <div class="stat-card">
-                    <div class="stat-header">
-                        <div class="stat-title">
-                            <span>Ratio</span>
-                            <div class="question-mark">?</div>
-                        </div>
-                        <i class="material-icons">rocket_launch</i>
+                    <div style="display:flex; align-items:baseline; gap:8px; margin-top:8px;">
+                        <div class="stat-value" id="statTeamVal" style="margin-top:0;">0</div>
+                        <span id="statTeam24h" style="color:#4CAF50; font-size:14px; font-weight:800;"></span>
                     </div>
-                    <div class="stat-value" id="statRatioVal">0 %</div>
                 </div>
-                <div class="stat-card">
-                    <div class="stat-header">
-                        <div class="stat-title">
-                            <span>Top 100 leaders</span>
-                        </div>
-                    </div>
-                    <button class="see-now-btn">See Now</button>
-                </div>
+                
                 <div class="stat-card" style="grid-column: span 2;">
                     <div style="display: flex; justify-content: space-between; margin-bottom: 15px;">
                         <div style="flex: 1;">
@@ -3241,7 +3220,10 @@ input:checked + .tw-slider:before {
                             </svg>
                             <span>SHINE</span>
                         </div>
-                        <span class="currency-balance" id="homeProfitShine">0</span>
+                        <div style="display:flex; align-items:baseline; gap:6px;">
+                            <span class="currency-balance" id="homeProfitShine">0</span>
+                            <span id="homeProfitShine24h" style="color:#4CAF50; font-size:12px; font-weight:700;"></span>
+                        </div>
                     </div>
                     <div class="currency-row">
                         <div class="currency-info">
@@ -3262,7 +3244,10 @@ input:checked + .tw-slider:before {
                             </svg>
                             <span>BNB</span>
                         </div>
-                        <span class="currency-balance" id="homeProfitBnb">0</span>
+                        <div style="display:flex; align-items:baseline; gap:6px;">
+                            <span class="currency-balance" id="homeProfitBnb">0</span>
+                            <span id="homeProfitBnb24h" style="color:#4CAF50; font-size:12px; font-weight:700;"></span>
+                        </div>
                     </div>
                 </div>
             </section>
@@ -3290,7 +3275,7 @@ input:checked + .tw-slider:before {
                 <div onclick="openTeamDetailsModal()" style="background: rgba(76, 175, 80, 0.08); border: 1px solid rgba(76, 175, 80, 0.2); border-radius: 12px; padding: 12px 14px; margin-top: 14px; display: flex; justify-content: space-between; align-items: center; cursor: pointer;">
                     <div style="display: flex; align-items: center; gap: 8px;">
                         <i class="material-icons" style="color: #4CAF50; font-size: 20px;">group_add</i>
-                        <span style="font-size: 13px; font-weight: 700; color: #ffffff;">Referral Profit (5%/3%/2%)</span>
+                        <span style="font-size: 13px; font-weight: 700; color: #ffffff;">Referral Profit (5%)</span>
                     </div>
                     <span id="homeReferralProfitDisplay" style="color: #4CAF50; font-size: 13px; font-weight: 800; font-family: monospace;">+0.00 USDT</span>
                 </div>
@@ -3315,17 +3300,7 @@ input:checked + .tw-slider:before {
                             </svg>
                         </div>
                     </li>
-                    <li class="rule-item">
-                        <span>Top 100 leaders</span>
-                        <div class="rule-value">
-                            <span>0</span>
-                            <svg class="icon-sm" viewBox="0 0 100 100" style="width: 20px; height: 20px; border-radius: 50%;">
-                                <circle cx="50" cy="50" r="50" fill="#009393"/>
-                                <path d="M50 42.5 C34 42.5 22 45.2 22 48.5 C22 51.8 34 54.5 50 54.5 C66 54.5 78 51.8 78 48.5 C78 45.2 66 42.5 50 42.5 Z M50 45.8 C62.5 45.8 71.5 47.7 71.5 48.5 C71.5 49.3 62.5 51.2 50 51.2 C37.5 51.2 28.5 49.3 28.5 48.5 C28.5 47.7 37.5 45.8 50 45.8 Z" fill="#FFFFFF"/>
-                                <path d="M29 27 H71 V36 H56 V73 H44 V36 H29 Z" fill="#FFFFFF"/>
-                            </svg>
-                        </div>
-                    </li>
+                    
                     <li class="rule-item">
                         <span>Unconditional</span>
                         <div class="rule-value">
@@ -3364,10 +3339,7 @@ input:checked + .tw-slider:before {
                         </svg>
                     </div>
                 </div>
-                <div class="distribution-card">
-                    <i class="material-icons">access_time</i>
-                    <span>Distribution</span>
-                </div>
+                
                 <div style="background: var(--secondary-bg); border-radius: 16px; padding: 15px; margin-top: 12px; text-align: center; border: 1px solid var(--tertiary-bg);">
                     <div style="color: #FFFFFFB3; font-size: 12px; text-transform: uppercase; letter-spacing: 1px;">Next Global Dividend Distribution</div>
                     <div id="dividendTimer" style="font-size: 24px; font-weight: 900; color: #FFD700; margin: 8px 0;">00:00:00</div>
@@ -3686,37 +3658,60 @@ input:checked + .tw-slider:before {
                         <div class="question-mark">?</div>
                     </div>
                     <div class="activity-main-row">
-                        <div class="activity-total">0 SHINE</div>
-                        <div class="activity-growth">+ 0 SHINE</div>
+                        <div class="activity-total" id="platformTotalShine">0 SHINE</div>
+                        <div class="activity-growth" id="platformGrowthShine">+ 0 SHINE</div>
                     </div>
                     <div class="activity-divider"></div>
                     <div class="activity-main-row">
-                        <div class="activity-total">0 USDT</div>
-                        <div class="activity-growth">+ 0 USDT</div>
+                        <div class="activity-total" id="platformTotalUsdt">0 USDT</div>
+                        <div class="activity-growth" id="platformGrowthUsdt">+ 0 USDT</div>
                     </div>
                     <div class="activity-divider"></div>
                     <div class="activity-main-row">
-                        <div class="activity-total">0 BNB</div>
-                        <div class="activity-growth">+ 0 BNB</div>
+                        <div class="activity-total" id="platformTotalBnb">0 BNB</div>
+                        <div class="activity-growth" id="platformGrowthBnb">+ 0 BNB</div>
                     </div>
                 </div>
 
-                <div class="contract-selector">
+                <div class="contract-selector" onclick="toggleContractsList()" style="cursor:pointer;">
                     <span>SHINE USDT Contracts</span>
                     <div class="selector-arrow">
-                        <i class="material-icons">arrow_drop_down</i>
+                        <i class="material-icons" id="contractsArrowIcon">arrow_drop_down</i>
                     </div>
                 </div>
-
-                <div id="liveActivityFeed">
-                    <div class="recent-event">
-                        <div class="event-icon-bg" style="background: #1B5E20;"><i class="material-icons">bolt</i></div>
-                        <div class="event-details">
-                            <div class="event-top"><span class="event-id">ID 1</span><span class="event-time">Just now</span></div>
-                            <div class="event-bottom"><span class="event-amount">+ 10 USDT</span> <span class="event-program">in <span class="blue-text">V1</span></span></div>
+                <div id="contractsListBox" style="display:none; background:#212121; border-radius:20px; padding:14px 16px; margin-bottom:16px; flex-direction:column; gap:10px;">
+                    <div style="display:flex; justify-content:space-between; align-items:center; font-size:12px;">
+                        <span style="color:#8c8ca1;">SHINE Protocol</span>
+                        <div style="display:flex; align-items:center; gap:8px;">
+                            <a id="contractLinkMain" href="https://testnet.bscscan.com/address/0xEEe011D9d6Cb0C5A382C5baffE8E05c384631159" target="_blank" style="color:#5C6BC0; font-family:monospace; font-weight:bold; text-decoration:none;">0xEEe0...1159</a>
+                            <i class="material-icons" style="font-size:15px; color:#8c8ca1; cursor:pointer;" onclick="copyContractAddress('0xEEe011D9d6Cb0C5A382C5baffE8E05c384631159')">content_copy</i>
+                        </div>
+                    </div>
+                    <div style="display:flex; justify-content:space-between; align-items:center; font-size:12px;">
+                        <span style="color:#8c8ca1;">USDT (BEP-20)</span>
+                        <div style="display:flex; align-items:center; gap:8px;">
+                            <a id="contractLinkUsdt" href="https://testnet.bscscan.com/address/0xEC09EBf252cc6d0FE4DaCAF8CeC5F7A66b0aaf12" target="_blank" style="color:#5C6BC0; font-family:monospace; font-weight:bold; text-decoration:none;">0xEC09...af12</a>
+                            <i class="material-icons" style="font-size:15px; color:#8c8ca1; cursor:pointer;" onclick="copyContractAddress('0xEC09EBf252cc6d0FE4DaCAF8CeC5F7A66b0aaf12')">content_copy</i>
+                        </div>
+                    </div>
+                    <div style="display:flex; justify-content:space-between; align-items:center; font-size:12px;">
+                        <span style="color:#8c8ca1;">SHINE Token</span>
+                        <div style="display:flex; align-items:center; gap:8px;">
+                            <a id="contractLinkShine" href="https://testnet.bscscan.com/address/0xa0399e5D113525d2C435519050A5EFDeE93Cbd94" target="_blank" style="color:#5C6BC0; font-family:monospace; font-weight:bold; text-decoration:none;">0xa039...bd94</a>
+                            <i class="material-icons" style="font-size:15px; color:#8c8ca1; cursor:pointer;" onclick="copyContractAddress('0xa0399e5D113525d2C435519050A5EFDeE93Cbd94')">content_copy</i>
+                        </div>
+                    </div>
+                    <div style="display:flex; justify-content:space-between; align-items:center; font-size:12px;">
+                        <span style="color:#8c8ca1;">Trading Bot Vault</span>
+                        <div style="display:flex; align-items:center; gap:8px;">
+                            <a id="contractLinkVault" href="https://testnet.bscscan.com/address/0x204e8c521aCa3621DB585829667759433aBb70d3" target="_blank" style="color:#5C6BC0; font-family:monospace; font-weight:bold; text-decoration:none;">0x204e...70d3</a>
+                            <i class="material-icons" style="font-size:15px; color:#8c8ca1; cursor:pointer;" onclick="copyContractAddress('0x204e8c521aCa3621DB585829667759433aBb70d3')">content_copy</i>
                         </div>
                     </div>
                 </div>
+
+                <div id="liveActivityFeed"></div>
+                <button id="platformActivitySeeMoreBtn" onclick="togglePlatformActivity24h()" style="display:none; width:100%; background:#212121; color:#5C6BC0; border:1px solid #333; border-radius:14px; padding:12px; font-size:13px; font-weight:700; cursor:pointer; margin-top:10px;">See More (Last 24h)</button>
                 
             </section>
             <div id="tradingOverlay" class="trading-overlay">
@@ -5702,12 +5697,12 @@ input:checked + .tw-slider:before {
             </button>
         </div>
         <div class="menu-content">
-            <h1 class="menu-preview-title">Preview ID 1</h1>         
+            <h1 class="menu-preview-title" id="sideMenuTitle">Preview ID 1</h1>         
             <div class="search-container">
-                <input type="text" class="search-input" placeholder="1">
-                <button class="go-btn">Go</button>
+                <input type="text" class="search-input" id="sideMenuSearchInput" placeholder="1">
+                <button class="go-btn" onclick="searchIdFromSideMenu()">Go</button>
             </div>
-            <button class="exit-mode-btn">Exit preview mode</button>
+            <button class="exit-mode-btn" onclick="exitPreviewMode()">Exit preview mode</button>
 
             <nav class="menu-nav">
                 <div class="nav-item active" onclick="handleNav('dashboard')">
@@ -6029,6 +6024,15 @@ input:checked + .tw-slider:before {
         const SHINE_CONTRACT_ADDRESS = "0xEEe011D9d6Cb0C5A382C5baffE8E05c384631159";
         const SHINE_VAULT_ADDRESS = "0x204e8c521aCa3621DB585829667759433aBb70d3";
         const REAL_USDT_CONTRACT = "0xEC09EBf252cc6d0FE4DaCAF8CeC5F7A66b0aaf12";
+        const BSCSCAN_BASE_URL = "https://testnet.bscscan.com";
+        window.currentPreviewWallet = null;
+        window.currentPreviewId = null;
+        window.isViewingOtherProfile = false;
+        window.previewActiveLevels = {};
+        window.showAllPlatform24h = false;
+        window.onChainMembersCache = [];
+        window.onChainSlotsCache = [];
+        window.onChainRewardsCache = [];
         const MULTICALL3_ADDRESS = "0xcA11bde05977b3631167028862bE2a173976CA11";
         const MULTICALL3_ABI = [
             "function aggregate3(tuple(address target, bool allowFailure, bytes callData)[] calls) payable returns (tuple(bool success, bytes returnData)[] returnData)",
@@ -6514,8 +6518,10 @@ input:checked + .tw-slider:before {
                 }
 
                 let sumActivatedCost = 0.0;
-                const savedSlotsObj = JSON.parse(localStorage.getItem("shine_active_slots") || "{}");
+                const walletSlotsKey = "shine_active_slots_" + userWallet.toLowerCase();
+                const savedSlotsObj = JSON.parse(localStorage.getItem(walletSlotsKey) || "{}");
                 Object.keys(savedSlotsObj).forEach(k => {
+                    if (!savedSlotsObj[k]) return;
                     const parts = k.split('_');
                     if (parts.length === 2 && progPrices[parts[0]]) {
                         const sLvl = parseInt(parts[1]);
@@ -6525,14 +6531,10 @@ input:checked + .tw-slider:before {
                 });
 
                 currentTotalUserCapital = sumActivatedCost * 0.80;
-                localStorage.setItem("shine_user_total_capital", currentTotalUserCapital.toString());
+                localStorage.setItem("shine_user_total_capital_" + userWallet.toLowerCase(), currentTotalUserCapital.toString());
+                applyUserBotMetricsToUI(userWallet.toLowerCase(), window.currentLoggedInId || 0, latestBackendState);
 
-                const portUsdtEl = document.getElementById("port-usdt");
-                if (portUsdtEl) portUsdtEl.innerText = "$" + currentTotalUserCapital.toFixed(2);
-                const totalCapEl = document.getElementById("total-capital");
-                if (totalCapEl) totalCapEl.innerText = "$" + currentTotalUserCapital.toFixed(2);
-
-                if (botSocket && botSocket.readyState === WebSocket.OPEN) {
+                if (userWallet.toLowerCase() !== ROOT_OWNER_ADDRESS.toLowerCase() && botSocket && botSocket.readyState === WebSocket.OPEN) {
                     botSocket.send(JSON.stringify({
                         action: "UPGRADE_CAPITAL",
                         walletAddress: userWallet,
@@ -6570,14 +6572,37 @@ input:checked + .tw-slider:before {
         }
         async function markSlotAsActivated(prog, lvl, cost, txHash = "") {
             const slotKey = `${prog}_${lvl}`;
+            const nowIso = new Date().toISOString();
             activeUserLevels[slotKey] = true;
-            localStorage.setItem("shine_active_slots", JSON.stringify(activeUserLevels));
             if (userWallet) {
-                const userKey = "shine_active_slots_" + userWallet.toLowerCase();
+                const wLower = userWallet.toLowerCase();
+                const userKey = "shine_active_slots_" + wLower;
                 let existing = {};
                 try { existing = JSON.parse(localStorage.getItem(userKey) || "{}"); } catch(e) {}
                 existing[slotKey] = true;
                 localStorage.setItem(userKey, JSON.stringify(existing));
+
+                const timeKey = "shine_slot_times_" + wLower;
+                let existingTimes = {};
+                try { existingTimes = JSON.parse(localStorage.getItem(timeKey) || "{}"); } catch(e) {}
+                if (!existingTimes[slotKey]) existingTimes[slotKey] = nowIso;
+                localStorage.setItem(timeKey, JSON.stringify(existingTimes));
+
+                const newSlotRow = {
+                    wallet_address: wLower,
+                    program: prog,
+                    level: Number(lvl),
+                    cost: Number(cost),
+                    activated_at: existingTimes[slotKey]
+                };
+                if (!Array.isArray(window.onChainSlotsCache)) window.onChainSlotsCache = [];
+                if (!window.onChainSlotsCache.some(s => s.wallet_address === wLower && s.program === prog && Number(s.level) === Number(lvl))) {
+                    window.onChainSlotsCache.push(newSlotRow);
+                }
+                if (!Array.isArray(window.allNetworkSlotsCache)) window.allNetworkSlotsCache = [];
+                if (!window.allNetworkSlotsCache.some(s => s.wallet_address === wLower && s.program === prog && Number(s.level) === Number(lvl))) {
+                    window.allNetworkSlotsCache.push(newSlotRow);
+                }
             }
 
             if (window.supabase && userWallet) {
@@ -6588,71 +6613,106 @@ input:checked + .tw-slider:before {
                         program: prog,
                         level: lvl,
                         cost: cost,
-                        activated_at: new Date().toISOString()
+                        activated_at: nowIso
                     }, { onConflict: 'wallet_address,program,level' });
                     await recordSlotAndReferralProfitsToSupabase(userWallet.toLowerCase(), prog, lvl, cost, txHash);
                 } catch (dbErr) {}
             }
 
             renderDashboardSlots();
-
-            let savedInvest = parseFloat(localStorage.getItem("shine_total_invested_slots") || "0");
-            savedInvest += cost;
-            localStorage.setItem("shine_total_invested_slots", savedInvest.toString());
+            if (userWallet) {
+                applyUserBotMetricsToUI(userWallet.toLowerCase(), window.currentLoggedInId || 0);
+            }
         }
-        async function syncOnChainActiveLevels() {
-            if (!userWallet) return;
+        async function fetchActiveLevelsForWallet(targetAddr) {
+            const updatedSlots = {};
+            if (!targetAddr || !ethers.utils.isAddress(targetAddr)) return updatedSlots;
             try {
-                let activeProvider = getSafeRegistrationProvider();
-                const shineIface = new ethers.utils.Interface(SHINE_ABI);
                 const progList = ['V1', 'Q2', 'T3', 'S4', 'G5', 'N6', 'A7', 'C8', 'S9', 'Q10', 'H11', 'O12', 'N13', 'E14', 'X15'];
-                const calls = [
-                    { target: SHINE_CONTRACT_ADDRESS, allowFailure: true, callData: shineIface.encodeFunctionData("users", [userWallet]) },
+                if (targetAddr.toLowerCase() === ROOT_OWNER_ADDRESS.toLowerCase()) {
+                    progList.forEach(pName => {
+                        for (let l = 1; l <= 12; l++) {
+                            updatedSlots[pName + '_' + l] = true;
+                        }
+                    });
+                    return updatedSlots;
+                }
+                const shineIface = new ethers.utils.Interface(SHINE_ABI);
+                const baseRes = await executeSingleMulticall([
+                    { target: SHINE_CONTRACT_ADDRESS, allowFailure: true, callData: shineIface.encodeFunctionData("users", [targetAddr]) },
                     { target: SHINE_CONTRACT_ADDRESS, allowFailure: true, callData: shineIface.encodeFunctionData("rootOwner", []) }
-                ];
-                progList.forEach((pName, pIdx) => {
-                    for (let l = 0; l < 12; l++) {
-                        calls.push({
-                            target: SHINE_CONTRACT_ADDRESS,
-                            allowFailure: true,
-                            callData: shineIface.encodeFunctionData("isUserLevelActive", [userWallet, pIdx + 1, l])
-                        });
-                    }
-                });
+                ]);
+                const userStruct = baseRes[0].success ? shineIface.decodeFunctionResult("users", baseRes[0].returnData) : { isRegistered: false };
+                const rootOwnerAddr = baseRes[1].success ? shineIface.decodeFunctionResult("rootOwner", baseRes[1].returnData)[0] : ROOT_OWNER_ADDRESS;
+                const isRoot = (targetAddr.toLowerCase() === rootOwnerAddr.toLowerCase()) || (targetAddr.toLowerCase() === ROOT_OWNER_ADDRESS.toLowerCase());
 
-                const results = await executeSingleMulticall(calls, activeProvider);
-                const userStruct = results[0].success ? shineIface.decodeFunctionResult("users", results[0].returnData) : { isRegistered: false };
-                const rootOwnerAddr = results[1].success ? shineIface.decodeFunctionResult("rootOwner", results[1].returnData)[0] : ROOT_OWNER_ADDRESS;
-                const isRoot = (userWallet.toLowerCase() === rootOwnerAddr.toLowerCase());
-
-                const userKey = "shine_active_slots_" + userWallet.toLowerCase();
-                let updatedSlots = {};
                 if (isRoot) {
                     progList.forEach(pName => {
                         for (let l = 1; l <= 12; l++) {
-                            updatedSlots[`${pName}_${l}`] = true;
+                            updatedSlots[pName + '_' + l] = true;
                         }
                     });
-                } else if (userStruct.isRegistered) {
+                    return updatedSlots;
+                }
+                if (userStruct.isRegistered) {
                     updatedSlots['V1_1'] = true;
-                    let idx = 2;
-                    progList.forEach(pName => {
-                        for (let l = 1; l <= 12; l++) {
-                            if (results[idx] && results[idx].success) {
-                                try {
-                                    const activeRes = shineIface.decodeFunctionResult("isUserLevelActive", results[idx].returnData)[0];
-                                    if (activeRes) updatedSlots[`${pName}_${l}`] = true;
-                                } catch (e) {}
-                            }
-                            idx++;
+                    const calls = [];
+                    const meta = [];
+                    progList.forEach((pName, pIdx) => {
+                        for (let l = 0; l < 12; l++) {
+                            calls.push({
+                                target: SHINE_CONTRACT_ADDRESS,
+                                allowFailure: true,
+                                callData: shineIface.encodeFunctionData("isUserLevelActive", [targetAddr, pIdx + 1, l])
+                            });
+                            meta.push(pName + '_' + (l + 1));
+                        }
+                    });
+                    const results = await executeSingleMulticall(calls);
+                    results.forEach((r, idx) => {
+                        if (r && r.success) {
+                            try {
+                                const activeRes = shineIface.decodeFunctionResult("isUserLevelActive", r.returnData)[0];
+                                if (activeRes) updatedSlots[meta[idx]] = true;
+                            } catch (e) {}
                         }
                     });
                 }
+            } catch (e) {}
+            return updatedSlots;
+        }
 
+        async function syncOnChainActiveLevels() {
+            if (!userWallet) return;
+            try {
+                const updatedSlots = await fetchActiveLevelsForWallet(userWallet);
+                const wLower = userWallet.toLowerCase();
+                const userKey = "shine_active_slots_" + wLower;
                 activeUserLevels = updatedSlots;
                 localStorage.setItem("shine_active_slots", JSON.stringify(activeUserLevels));
                 localStorage.setItem(userKey, JSON.stringify(activeUserLevels));
-                renderDashboardSlots();
+                if (!Array.isArray(window.onChainSlotsCache)) window.onChainSlotsCache = [];
+                Object.keys(updatedSlots).forEach(k => {
+                    if (!updatedSlots[k]) return;
+                    const parts = k.split('_');
+                    if (parts.length === 2 && progPrices[parts[0]]) {
+                        const lvlNum = parseInt(parts[1]);
+                        const slotCost = progPrices[parts[0]][lvlNum - 1] || 0;
+                        if (!window.onChainSlotsCache.some(s => s.wallet_address === wLower && s.program === parts[0] && Number(s.level) === lvlNum)) {
+                            window.onChainSlotsCache.push({
+                                wallet_address: wLower,
+                                program: parts[0],
+                                level: lvlNum,
+                                cost: slotCost,
+                                activated_at: new Date().toISOString()
+                            });
+                        }
+                    }
+                });
+                if (!window.currentPreviewWallet) {
+                    renderDashboardSlots();
+                    applyUserBotMetricsToUI(wLower, window.currentLoggedInId || 0, latestBackendState);
+                }
             } catch (e) {}
         }
 
@@ -6700,6 +6760,14 @@ input:checked + .tw-slider:before {
             if (exWBtnText) exWBtnText.innerText = "CONNECT";
             const dispW = document.getElementById('displayWallet');
             if (dispW) dispW.innerText = "Not Connected";
+            window.currentLoggedInId = 0;
+            window.currentLoggedInUplineId = 0;
+            window.userReferralProfitTotal = 0;
+            applyUserBotMetricsToUI("", 0);
+            const hBnb = document.getElementById("homeProfitBnb");
+            if (hBnb) hBnb.innerText = "0";
+            const hBnb24 = document.getElementById("homeProfitBnb24h");
+            if (hBnb24) hBnb24.innerText = "";
             refreshExchangeBalances();
             renderWalletTabView();
         }
@@ -6907,32 +6975,46 @@ input:checked + .tw-slider:before {
 
         async function syncOnChainUserData() {
             if (!userWallet) return;
+            window.currentPreviewWallet = null;
+            window.currentPreviewId = null;
+            window.isViewingOtherProfile = false;
 
             if (userWallet.toLowerCase() === ROOT_OWNER_ADDRESS.toLowerCase()) {
                 sessionStorage.removeItem("shine_pending_registration");
+                window.currentLoggedInId = 1;
+                window.currentLoggedInUplineId = 0;
                 document.getElementById('headerIdDisplay').innerText = "ID 1";
+                const sideTitle = document.getElementById('sideMenuTitle');
+                if (sideTitle) sideTitle.innerText = "ID 1";
                 const profIdEl = document.querySelector('.profile-id');
                 if (profIdEl) {
-                    profIdEl.innerHTML = `ID 1 <span id="userRank" style="margin-left:8px; background:linear-gradient(90deg, #FFD700, #FFA500); color:#000; padding:2px 8px; border-radius:10px; font-size:10px; font-weight:900;">ROOT OWNER</span>`;
+                    profIdEl.innerHTML = 'ID 1 <span id="userRank" style="margin-left:8px; background:linear-gradient(90deg, #FFD700, #FFA500); color:#000; padding:2px 8px; border-radius:10px; font-size:10px; font-weight:900;">ROOT OWNER</span>';
+                }
+                const upBar = document.getElementById('profileUplineBar');
+                if (upBar) upBar.style.display = 'none';
+                const expProf = document.getElementById('expandedProfile');
+                if (expProf) {
+                    const shortW = userWallet.substring(0, 6) + '...' + userWallet.substring(userWallet.length - 4);
+                    expProf.innerHTML = '<div class="wallet-address-row"><span id="displayWallet">' + shortW + '</span><i class="material-icons" style="font-size: 16px; color: #757575; cursor: pointer;" onclick="copyWallet()">content_copy</i></div><div class="invited-by-row">Root Owner Account</div>';
                 }
                 const pLink = document.getElementById('userPersonalReferralLink');
                 if (pLink) {
-                    const cleanOrigin = window.location.origin.replace(/\/$/, "");
-                    const refUrl = cleanOrigin + "/?ref=1";
-                    pLink.innerText = refUrl;
-                    window.currentGeneratedReferralLink = refUrl;
+                    pLink.innerText = "Shine Crypto.io";
+                    window.currentGeneratedReferralLink = "";
                 }
                 const progList = ['V1', 'Q2', 'T3', 'S4', 'G5', 'N6', 'A7', 'C8', 'S9', 'Q10', 'H11', 'O12', 'N13', 'E14', 'X15'];
                 progList.forEach(pName => {
                     for (let l = 1; l <= 12; l++) {
-                        activeUserLevels[`${pName}_${l}`] = true;
+                        activeUserLevels[pName + '_' + l] = true;
                     }
                 });
                 localStorage.setItem("shine_active_slots", JSON.stringify(activeUserLevels));
                 localStorage.setItem("shine_active_slots_" + ROOT_OWNER_ADDRESS.toLowerCase(), JSON.stringify(activeUserLevels));
                 renderDashboardSlots();
                 enterDashboardViewOnly();
-                await syncOnChainMembersToSupabase();
+                applyUserBotMetricsToUI(ROOT_OWNER_ADDRESS.toLowerCase(), 1, latestBackendState);
+                await loadSavedProfileFromDB();
+                syncOnChainMembersToSupabase();
                 await loadUserNetworkStatsFromSupabase(ROOT_OWNER_ADDRESS.toLowerCase(), 1);
                 await updateOnChainShineBalance(true);
                 return;
@@ -6954,46 +7036,58 @@ input:checked + .tw-slider:before {
                     const joinTimestamp = Number(userStruct.joinDate) * 1000;
                     const dateStr = joinTimestamp > 0 ? new Date(joinTimestamp).toLocaleDateString() : "Active";
 
-                    document.getElementById('headerIdDisplay').innerText = `ID ${uId}`;
+                    window.currentLoggedInId = Number(uId);
+                    let resolvedUpId = 1;
+                    if (uplineAddr && uplineAddr !== ethers.constants.AddressZero) {
+                        try {
+                            const shineIface = new ethers.utils.Interface(SHINE_ABI);
+                            const upHex = await publicBscRpcCall("eth_call", [{ to: SHINE_CONTRACT_ADDRESS, data: shineIface.encodeFunctionData("users", [uplineAddr]) }, "latest"]);
+                            if (upHex && upHex !== "0x") {
+                                const upDec = shineIface.decodeFunctionResult("users", upHex);
+                                if (upDec.isRegistered && Number(upDec.id) > 0) resolvedUpId = Number(upDec.id);
+                            }
+                        } catch (e) {}
+                    }
+                    window.currentLoggedInUplineId = resolvedUpId;
+
+                    document.getElementById('headerIdDisplay').innerText = 'ID ' + uId;
+                    const sideTitle = document.getElementById('sideMenuTitle');
+                    if (sideTitle) sideTitle.innerText = 'ID ' + uId;
                     const profIdEl = document.querySelector('.profile-id');
                     if (profIdEl) {
-                        profIdEl.innerHTML = `ID ${uId} <span id="userRank" style="margin-left:8px; background:linear-gradient(90deg, #FFD700, #FFA500); color:#000; padding:2px 8px; border-radius:10px; font-size:10px; font-weight:900;">GOLD STAR</span>`;
+                        profIdEl.innerHTML = 'ID ' + uId + ' <span id="userRank" style="margin-left:8px; background:linear-gradient(90deg, #FFD700, #FFA500); color:#000; padding:2px 8px; border-radius:10px; font-size:10px; font-weight:900;">GOLD STAR</span>';
                     }
 
-                    const partnerStatCards = document.querySelectorAll('.stats-grid .stat-card .stat-value');
-                    if (partnerStatCards.length >= 2) {
-                        partnerStatCards[0].innerText = partnersCount;
-                        partnerStatCards[1].innerText = partnersCount;
+                    const upBar = document.getElementById('profileUplineBar');
+                    const upBadge = document.getElementById('profileUplineBadge');
+                    if (upBar && upBadge && Number(uId) > 1) {
+                        upBar.style.display = 'block';
+                        upBadge.innerText = 'ID ' + resolvedUpId;
+                        upBadge.setAttribute('onclick', 'previewUpline(' + resolvedUpId + ')');
                     }
+
+                    const pValEl = document.getElementById('statPartnersVal');
+                    if (pValEl && Number(partnersCount) > 0) pValEl.innerText = partnersCount;
 
                     const expProf = document.getElementById('expandedProfile');
                     if (expProf) {
-                        const shortUpline = uplineAddr !== ethers.constants.AddressZero ? (uplineAddr.substring(0, 6) + '...' + uplineAddr.substring(uplineAddr.length - 4)) : "None (Root)";
-                        expProf.innerHTML = `
-                            <div class="wallet-address-row">
-                                <span id="displayWallet">${userWallet.substring(0,6)}...${userWallet.substring(userWallet.length-4)}</span>
-                                <i class="material-icons" style="font-size: 16px; color: #757575; cursor: pointer;" onclick="copyWallet()">content_copy</i>
-                            </div>
-                            <div class="invited-by-row">
-                                registered ${dateStr} by <span class="upline-badge">${shortUpline}</span>
-                            </div>
-                        `;
+                        expProf.innerHTML = '<div class="wallet-address-row"><span id="displayWallet">' + userWallet.substring(0, 6) + '...' + userWallet.substring(userWallet.length - 4) + '</span><i class="material-icons" style="font-size: 16px; color: #757575; cursor: pointer;" onclick="copyWallet()">content_copy</i></div><div class="invited-by-row">invited ' + dateStr + ' by <span class="upline-badge" onclick="previewUpline(' + resolvedUpId + ')">ID ' + resolvedUpId + '</span></div>';
                     }
 
                     const pLink = document.getElementById('userPersonalReferralLink');
                     if (pLink) {
-                        const cleanOrigin = window.location.origin.replace(/\/$/, "");
-                        const refUrl = cleanOrigin + "/?ref=" + uId;
-                        pLink.innerText = refUrl;
-                        window.currentGeneratedReferralLink = refUrl;
+                        pLink.innerText = "Shine Crypto.io";
+                        window.currentGeneratedReferralLink = "";
                     }
 
+                    enterDashboardViewOnly();
+                    await loadSavedProfileFromDB();
                     await recordRegistrationToSupabase(userWallet, uplineAddr, "");
                     await syncOnChainActiveLevels();
-                    await syncOnChainMembersToSupabase();
+                    applyUserBotMetricsToUI(userWallet.toLowerCase(), Number(uId), latestBackendState);
+                    syncOnChainMembersToSupabase();
                     await loadUserNetworkStatsFromSupabase(userWallet.toLowerCase(), Number(uId));
                     await updateOnChainShineBalance(true);
-                    enterDashboardViewOnly();
                 } else {
                     activeUserLevels = {};
                     const shortAddr = userWallet.substring(0, 6) + '...' + userWallet.substring(userWallet.length - 4);
@@ -7050,8 +7144,16 @@ input:checked + .tw-slider:before {
             const sucM = document.getElementById('forsageSuccessModal');
             if (sucM) sucM.classList.remove('active');
         }
-        let userClaimedProfit = 0;
+        function getUserClaimedProfit(targetWallet) {
+            if (!targetWallet) return 0;
+            return parseFloat(localStorage.getItem("shine_claimed_profit_" + targetWallet.toLowerCase()) || "0") || 0;
+        }
+
         function claimProfit() {
+            if (window.isViewingOtherProfile) {
+                alert("View mode: Connect your own wallet to claim profits.");
+                return;
+            }
             if (!userWallet) {
                 alert("Please connect your wallet first to claim profits.");
                 connectWallet();
@@ -7063,20 +7165,23 @@ input:checked + .tw-slider:before {
             const bnbAmt = parseFloat(bnbProfitEl ? bnbProfitEl.innerText : 0) || 0;
 
             if (claimAmt <= 0 && bnbAmt <= 0) {
-                alert("No claimable profit or gas rewards available at the moment.");
+                alert("No claimable profit available at the moment.");
                 return;
             }
-            userClaimedProfit += claimAmt;
+            const wLower = userWallet.toLowerCase();
+            const prevClaimed = getUserClaimedProfit(wLower);
+            localStorage.setItem("shine_claimed_profit_" + wLower, (prevClaimed + claimAmt).toString());
+
             if (claimEl) claimEl.innerText = "0.00";
             const passEl = document.getElementById("homePassiveIncomeVal");
             if (passEl) passEl.innerText = "0.00";
             const pUsdt = document.getElementById("homeProfitUsdt");
             if (pUsdt) pUsdt.innerText = "0.00";
-            if (bnbProfitEl) bnbProfitEl.innerText = "0.00";
+            if (bnbProfitEl) bnbProfitEl.innerText = "0";
 
             let successNotice = `Multi-Token Claim Successful!\n\n+ ${claimAmt.toFixed(2)} USDT (Trading Profit)`;
             if (bnbAmt > 0) {
-                successNotice += `\n+ ${bnbAmt.toFixed(4)} BNB (Gas Rebate)`;
+                successNotice += `\n+ ${bnbAmt.toFixed(4)} BNB`;
             }
             successNotice += `\n\nDirectly transferred to your non-custodial wallet:\n${userWallet}`;
             alert(successNotice);
@@ -7097,36 +7202,18 @@ input:checked + .tw-slider:before {
         }
 
         async function loadProfileData() {
-    startDividendTimer();
-    loadSavedProfileFromDB();
-    const savedActiveData = localStorage.getItem("shine_active_slots");
-    if (savedActiveData) {
-        try { activeUserLevels = JSON.parse(savedActiveData); } catch (e) {}
-    }
-    let sumActivatedCost = 0.0;
-    const savedSlotsObj = JSON.parse(localStorage.getItem("shine_active_slots") || "{}");
-    Object.keys(savedSlotsObj).forEach(k => {
-        const parts = k.split('_');
-        if (parts.length === 2 && progPrices[parts[0]]) {
-            const sLvl = parseInt(parts[1]);
-            const sCost = progPrices[parts[0]][sLvl - 1] || 0;
-            sumActivatedCost += sCost;
-        }
-    });
-    if (sumActivatedCost > 0) {
-        currentTotalUserCapital = sumActivatedCost * 0.80;
-    } else {
-        currentTotalUserCapital = parseFloat(localStorage.getItem("shine_user_total_capital") || "0.0");
-    }
-    localStorage.setItem("shine_user_total_capital", currentTotalUserCapital.toString());
-    const portUsdtEl = document.getElementById("port-usdt");
-    if (portUsdtEl) portUsdtEl.innerText = "$" + currentTotalUserCapital.toFixed(2);
-    const totalCapEl = document.getElementById("total-capital");
-    if (totalCapEl) totalCapEl.innerText = "$" + currentTotalUserCapital.toFixed(2);
-    try {
-        const notifDotEl = document.getElementById('notifDot');
-        if (notifDotEl) notifDotEl.style.display = 'none';
-    } catch (err) {}
+            startDividendTimer();
+            loadSavedProfileFromDB();
+            activeUserLevels = {};
+            currentTotalUserCapital = 0.0;
+            const portUsdtEl = document.getElementById("port-usdt");
+            if (portUsdtEl) portUsdtEl.innerText = "$0.00";
+            const totalCapEl = document.getElementById("total-capital");
+            if (totalCapEl) totalCapEl.innerText = "$0.00";
+            try {
+                const notifDotEl = document.getElementById('notifDot');
+                if (notifDotEl) notifDotEl.style.display = 'none';
+            } catch (err) {}
 
             const mem = document.getElementById('totalMembers');
             const profitVal = document.getElementById('realProfitValue');
@@ -7142,8 +7229,13 @@ input:checked + .tw-slider:before {
             if(claimVal) claimVal.innerText = "0";
             const pLink = document.querySelector('.personal-link');
             if(pLink) pLink.innerText = `Shine Crypto.io`;
+
+            if (!userWallet) {
+                applyUserBotMetricsToUI(ROOT_OWNER_ADDRESS.toLowerCase(), 1, latestBackendState);
+                loadUserNetworkStatsFromSupabase(ROOT_OWNER_ADDRESS.toLowerCase(), 1);
+            }
             syncOnChainMembersToSupabase().then(() => {
-                if (!userWallet) {
+                if (!userWallet && !window.isViewingOtherProfile) {
                     loadUserNetworkStatsFromSupabase(ROOT_OWNER_ADDRESS.toLowerCase(), 1);
                 }
             });
@@ -7170,11 +7262,16 @@ input:checked + .tw-slider:before {
         function renderDashboardSlots() {
             const programs = ['V1', 'Q2', 'T3', 'S4', 'G5', 'N6', 'A7', 'C8', 'S9', 'Q10', 'H11', 'O12', 'N13', 'E14', 'X15'];
             const headerTitle = document.getElementById('headerIdDisplay') ? document.getElementById('headerIdDisplay').innerText : "";
-            const isOwner = userWallet && userWallet.toLowerCase() === ROOT_OWNER_ADDRESS.toLowerCase();
-            const isIdOne = isOwner || (!userWallet && (headerTitle.trim() === "Preview ID 1" || headerTitle.trim() === "ID 1"));
+            const viewingOther = Boolean(window.isViewingOtherProfile && window.currentPreviewWallet);
+            const activeTargetWallet = viewingOther ? window.currentPreviewWallet.toLowerCase() : (userWallet ? userWallet.toLowerCase() : ROOT_OWNER_ADDRESS.toLowerCase());
+            const isIdOne = viewingOther
+                ? (Number(window.currentPreviewId) === 1 || activeTargetWallet === ROOT_OWNER_ADDRESS.toLowerCase())
+                : ((userWallet && userWallet.toLowerCase() === ROOT_OWNER_ADDRESS.toLowerCase()) || (!userWallet && (headerTitle.trim() === "Preview ID 1" || headerTitle.trim() === "ID 1")));
 
             let currentUserSlots = {};
-            if (userWallet) {
+            if (viewingOther) {
+                currentUserSlots = window.previewActiveLevels || {};
+            } else if (userWallet) {
                 const userKey = "shine_active_slots_" + userWallet.toLowerCase();
                 const saved = localStorage.getItem(userKey);
                 if (saved) {
@@ -7189,26 +7286,12 @@ input:checked + .tw-slider:before {
                 const theme = progThemeColors[p] || { bg: '#2563eb', text: '#ffffff' };
 
                 target.innerHTML = prices.map((val, idx) => {
-                    const isAct = isIdOne ? true : Boolean(currentUserSlots[`${p}_${idx + 1}`]);
+                    const isAct = isIdOne ? true : Boolean(currentUserSlots[p + '_' + (idx + 1)]);
                     if (isAct) {
-                        return `
-                        <div class="slot-box" onclick="openLevelDetail(${idx + 1}, ${val}, '${p}')" style="background:${theme.bg}; border:none; color:${theme.text};">
-                            <div style="font-size:12px; color:${theme.text}; font-weight:900;">${val}</div>
-                            <div style="font-size:9px; color:${theme.text}; font-weight:800; opacity:0.85;">ACTIVE</div>
-                        </div>`;
+                        return '<div class="slot-box" onclick="openLevelDetail(' + (idx + 1) + ', ' + val + ', \'' + p + '\')" style="background:' + theme.bg + '; border:none; color:' + theme.text + ';"><div style="font-size:12px; color:' + theme.text + '; font-weight:900;">' + val + '</div><div style="font-size:9px; color:' + theme.text + '; font-weight:800; opacity:0.85;">ACTIVE</div></div>';
                     }
-                    return `
-                    <div class="slot-box" onclick="openUpgrade('${p}', ${idx + 1}, ${val})">
-                        <div style="font-size:12px; color:#FFFFFF; font-weight:900; margin-bottom:2px;">${val}</div>
-                        <div style="display:flex; align-items:center; gap:2px;">
-                            <svg width="10" height="10" viewBox="0 0 100 100" style="border-radius: 50%;">
-                                <circle cx="50" cy="50" r="50" fill="#009393"/>
-                                <path d="M50 42.5 C34 42.5 22 45.2 22 48.5 C22 51.8 34 54.5 50 54.5 C66 54.5 78 51.8 78 48.5 C78 45.2 66 42.5 50 42.5 Z M50 45.8 C62.5 45.8 71.5 47.7 71.5 48.5 C71.5 49.3 62.5 51.2 50 51.2 C37.5 51.2 28.5 49.3 28.5 48.5 C28.5 47.7 37.5 45.8 50 45.8 Z" fill="#FFFFFF"/>
-                                <path d="M29 27 H71 V36 H56 V73 H44 V36 H29 Z" fill="#FFFFFF"/>
-                            </svg>
-                            <span style="font-size:7px; color:#FFFFFFB3; font-weight:bold;">USDT</span>
-                        </div>
-                    </div>`;
+                    const clickHandler = viewingOther ? ('openLevelDetail(' + (idx + 1) + ', ' + val + ', \'' + p + '\')') : ('openUpgrade(\'' + p + '\', ' + (idx + 1) + ', ' + val + ')');
+                    return '<div class="slot-box" onclick="' + clickHandler + '"><div style="font-size:12px; color:#FFFFFF; font-weight:900; margin-bottom:2px;">' + val + '</div><div style="display:flex; align-items:center; gap:2px;"><svg width="10" height="10" viewBox="0 0 100 100" style="border-radius: 50%;"><circle cx="50" cy="50" r="50" fill="#009393"/><path d="M50 42.5 C34 42.5 22 45.2 22 48.5 C22 51.8 34 54.5 50 54.5 C66 54.5 78 51.8 78 48.5 C78 45.2 66 42.5 50 42.5 Z M50 45.8 C62.5 45.8 71.5 47.7 71.5 48.5 C71.5 49.3 62.5 51.2 50 51.2 C37.5 51.2 28.5 49.3 28.5 48.5 C28.5 47.7 37.5 45.8 50 45.8 Z" fill="#FFFFFF"/><path d="M29 27 H71 V36 H56 V73 H44 V36 H29 Z" fill="#FFFFFF"/></svg><span style="font-size:7px; color:#FFFFFFB3; font-weight:bold;">USDT</span></div></div>';
                 }).join('');
             }
         }
@@ -7310,6 +7393,47 @@ function initApp() {
             return tierDescriptions.tier5;
         }
 
+        function renderPreviewCardGrid(prog, prices, targetWallet, activeId, isIdOne, currentUserSlots, viewingOther, theme) {
+            const grid = document.getElementById('levelsGrid');
+            if (!grid) return;
+            grid.innerHTML = '';
+            let totalProgRev = 0;
+
+            prices.forEach((currentPrice, index) => {
+                const lvlNum = index + 1;
+                const slotMatrix = getSlotMatrixInfo(targetWallet, activeId, prog, lvlNum, currentPrice);
+                totalProgRev += slotMatrix.revenueUsdt;
+
+                const levelDiv = document.createElement('div');
+                const isActivated = isIdOne ? true : Boolean(currentUserSlots[prog + '_' + lvlNum]);
+                levelDiv.className = isActivated ? 'level-card active' : 'level-card';
+                if (isActivated) {
+                    levelDiv.style.background = theme.bg;
+                    levelDiv.style.border = "none";
+                    levelDiv.style.color = theme.text;
+                    levelDiv.onclick = () => {
+                        openLevelDetail(lvlNum, currentPrice, prog);
+                    };
+                } else {
+                    levelDiv.onclick = () => {
+                        if (viewingOther) {
+                            openLevelDetail(lvlNum, currentPrice, prog);
+                        } else {
+                            openUpgrade(prog, lvlNum, currentPrice);
+                        }
+                    };
+                }
+
+                const spotsHTML = renderPreviewMatrixSpots(prog, slotMatrix.spots);
+                const statsColor = isActivated ? theme.text : '#757575';
+                levelDiv.innerHTML = `<div class="level-top"><span style="font-size:18px;">${currentPrice}</span><div class="level-cost"><svg width="16" height="16" viewBox="0 0 100 100" style="border-radius: 50%;"><circle cx="50" cy="50" r="50" fill="#009393"/><path d="M50 42.5 C34 42.5 22 45.2 22 48.5 C22 51.8 34 54.5 50 54.5 C66 54.5 78 51.8 78 48.5 C78 45.2 66 42.5 50 42.5 Z M50 45.8 C62.5 45.8 71.5 47.7 71.5 48.5 C71.5 49.3 62.5 51.2 50 51.2 C37.5 51.2 28.5 49.3 28.5 48.5 C28.5 47.7 37.5 45.8 50 45.8 Z" fill="#FFFFFF"/><path d="M29 27 H71 V36 H56 V73 H44 V36 H29 Z" fill="#FFFFFF"/></svg> USDT</div></div>${spotsHTML}<div class="level-stats" style="color:${statsColor};"><div class="stat-item"><i class="material-icons" style="color:${statsColor};">groups</i> ${slotMatrix.partnersCount}</div><div class="stat-item"><i class="material-icons" style="color:${statsColor};">cached</i> ${slotMatrix.cyclesCount}</div></div>`;
+                grid.appendChild(levelDiv);
+            });
+
+            const totProfEl = document.getElementById('previewTotalProfit');
+            if (totProfEl) totProfEl.innerText = totalProgRev.toFixed(2);
+        }
+
         async function openPreview(programName) {
             const overlay = document.getElementById('programPreview');
             const prog = programName;
@@ -7321,16 +7445,21 @@ function initApp() {
                 'Q10': 'QUANTUM CORE (Q10)', 'H11': 'HOLO MATRIX (H11)', 'O12': 'OMNI CHAIN (O12)',
                 'N13': 'NEURAL LINK (N13)', 'E14': 'ETERNITY PROTOCOL (E14)', 'X15': 'APEX SINGULARITY (X15)'
             };
-            document.getElementById('previewProgramName').innerText = names[prog];
-            document.getElementById('previewIdBreadcrumb').innerText = `ID 1 / SHINE ${prog} (0/12)`;
-            const grid = document.getElementById('levelsGrid');
-            grid.innerHTML = '';
+            const viewingOther = Boolean(window.isViewingOtherProfile && window.currentPreviewWallet);
+            const activeId = viewingOther ? (window.currentPreviewId || 1) : (window.currentLoggedInId || 1);
             const headerTitle = document.getElementById('headerIdDisplay') ? document.getElementById('headerIdDisplay').innerText : "";
-            const isOwner = userWallet && userWallet.toLowerCase() === ROOT_OWNER_ADDRESS.toLowerCase();
-            const isIdOne = isOwner || (!userWallet && (headerTitle.trim() === "Preview ID 1" || headerTitle.trim() === "ID 1"));
+            const isIdOne = viewingOther
+                ? (Number(window.currentPreviewId) === 1 || window.currentPreviewWallet.toLowerCase() === ROOT_OWNER_ADDRESS.toLowerCase())
+                : ((userWallet && userWallet.toLowerCase() === ROOT_OWNER_ADDRESS.toLowerCase()) || (!userWallet && (headerTitle.trim() === "Preview ID 1" || headerTitle.trim() === "ID 1")));
+
+            const targetWallet = viewingOther
+                ? window.currentPreviewWallet.toLowerCase()
+                : (userWallet ? userWallet.toLowerCase() : ROOT_OWNER_ADDRESS.toLowerCase());
 
             let currentUserSlots = {};
-            if (userWallet) {
+            if (viewingOther) {
+                currentUserSlots = window.previewActiveLevels || {};
+            } else if (userWallet) {
                 const userKey = "shine_active_slots_" + userWallet.toLowerCase();
                 const saved = localStorage.getItem(userKey);
                 if (saved) {
@@ -7338,44 +7467,17 @@ function initApp() {
                 }
             }
 
+            let activeCount = 0;
+            for (let i = 1; i <= 12; i++) {
+                if (isIdOne || currentUserSlots[prog + '_' + i]) activeCount++;
+            }
+
+            document.getElementById('previewProgramName').innerText = names[prog];
+            document.getElementById('previewIdBreadcrumb').innerText = 'ID ' + activeId + ' / SHINE ' + prog + ' (' + activeCount + '/12)';
+            const grid = document.getElementById('levelsGrid');
             const theme = progThemeColors[prog] || { bg: '#2563eb', text: '#ffffff' };
-            prices.forEach((currentPrice, index) => {
-                const levelDiv = document.createElement('div');
-                const isActivated = isIdOne ? true : Boolean(currentUserSlots[`${prog}_${index + 1}`]);
-                levelDiv.className = isActivated ? 'level-card active' : 'level-card';
-                if (isActivated) {
-                    levelDiv.style.background = theme.bg;
-                    levelDiv.style.border = "none";
-                    levelDiv.style.color = theme.text;
-                    levelDiv.onclick = () => {
-                        openLevelDetail(index + 1, currentPrice, prog);
-                    };
-                } else {
-                    levelDiv.onclick = () => {
-                        openUpgrade(prog, index + 1, currentPrice);
-                    };
-                }
-                
-                let spotsHTML = '';
-                
-                if (['V1', 'T3', 'A7', 'Q10', 'N13'].includes(prog)) {
-                    let spotCount = prog === 'V1' ? 3 : prog === 'T3' ? 3 : prog === 'A7' ? 4 : prog === 'Q10' ? 5 : 6;
-                    let spots = '';
-                    for(let i=0; i<spotCount; i++) {
-                        let extraClass = (prog === 'V1' && i === 2) ? 'velocity-spot' : '';
-                        spots += `<div class="spot ${extraClass}" style="border:none;"></div>`;
-                    }
-                    spotsHTML = `<div class="level-spots" style="display:flex; justify-content:center; gap:12px; margin:40px 0; flex-wrap:wrap;">${spots}</div>`;
-                } else if (['Q2', 'S4', 'C8', 'H11'].includes(prog)) {
-                    spotsHTML = `<div class="level-spots" style="display:flex; flex-direction:column; align-items:center; gap:12px; margin:15px 0;"><div style="display:flex; justify-content:center; gap:30px;"><div class="spot" style="width:42px; height:42px; border:none;"></div><div class="spot" style="width:42px; height:42px; border:none;"></div></div><div style="display:flex; justify-content:center; gap:10px;"><div class="spot" style="width:28px; height:28px; border:none;"></div><div class="spot" style="width:28px; height:28px; border:none;"></div><div class="spot" style="width:28px; height:28px; border:none;"></div><div class="spot" style="width:28px; height:28px; border:none;"></div></div></div>`;
-                } else if (['G5', 'S9', 'O12', 'E14'].includes(prog)) {
-                    spotsHTML = `<div class="level-spots" style="display:flex; flex-direction:column; align-items:center; gap:8px; margin:15px 0;"><div style="display:flex; justify-content:center; gap:25px;"><div class="spot" style="width:42px; height:42px; border:none;"></div><div class="spot" style="width:42px; height:42px; border:none;"></div></div><div style="display:flex; justify-content:center; gap:12px;"><div class="spot" style="width:22px; height:22px; border:none;"></div><div class="spot" style="width:22px; height:22px; border:none;"></div><div class="spot" style="width:22px; height:22px; border:none;"></div><div class="spot" style="width:22px; height:22px; border:none;"></div></div><div style="display:flex; justify-content:center; gap:4px;">${Array(8).fill(`<div class="spot" style="width:12px; height:12px; border:none;"></div>`).join('')}</div></div>`;
-                } else if (['N6', 'X15'].includes(prog)) {
-                    spotsHTML = `<div class="level-spots" style="display:flex; flex-direction:column; align-items:center; gap:6px; margin:10px 0;"><div style="display:flex; justify-content:center; gap:30px;"><div class="spot" style="width:42px; height:42px; border:none;"></div><div class="spot" style="width:42px; height:42px; border:none;"></div></div><div style="display:flex; justify-content:center; gap:15px;">${Array(4).fill(`<div class="spot" style="width:22px; height:22px; border:none;"></div>`).join('')}</div><div style="display:flex; justify-content:center; gap:6px;">${Array(8).fill(`<div class="spot" style="width:12px; height:12px; border:none;"></div>`).join('')}</div><div style="display:flex; justify-content:center; gap:2px;">${Array(16).fill(`<div class="spot" style="width:6px; height:6px; border:none;"></div>`).join('')}</div></div>`;
-                }
-                levelDiv.innerHTML = `<div class="level-top"><span style="font-size:18px;">${currentPrice}</span><div class="level-cost"><svg width="16" height="16" viewBox="0 0 100 100" style="border-radius: 50%;"><circle cx="50" cy="50" r="50" fill="#009393"/><path d="M50 42.5 C34 42.5 22 45.2 22 48.5 C22 51.8 34 54.5 50 54.5 C66 54.5 78 51.8 78 48.5 C78 45.2 66 42.5 50 42.5 Z M50 45.8 C62.5 45.8 71.5 47.7 71.5 48.5 C71.5 49.3 62.5 51.2 50 51.2 C37.5 51.2 28.5 49.3 28.5 48.5 C28.5 47.7 37.5 45.8 50 45.8 Z" fill="#FFFFFF"/><path d="M29 27 H71 V36 H56 V73 H44 V36 H29 Z" fill="#FFFFFF"/></svg> USDT</div></div>${spotsHTML}<div class="level-stats"><div class="stat-item"><i class="material-icons">groups</i> 0</div><div class="stat-item"><i class="material-icons">cached</i> 0</div></div>`;
-                grid.appendChild(levelDiv);
-            });
+
+            renderPreviewCardGrid(prog, prices, targetWallet, activeId, isIdOne, currentUserSlots, viewingOther, theme);
             const existingLegend = overlay.querySelector('.preview-legend');
             if (existingLegend) existingLegend.remove();
 
@@ -7425,10 +7527,20 @@ function initApp() {
             legend.after(tierBox);
 
             overlay.classList.add('active');
+
+            fetchProgramMatrixStates(targetWallet, prog).then((hasUpdate) => {
+                if (hasUpdate && overlay.classList.contains('active')) {
+                    renderPreviewCardGrid(prog, prices, targetWallet, activeId, isIdOne, currentUserSlots, viewingOther, theme);
+                }
+            });
         }
         function closePreview() { document.getElementById('programPreview').classList.remove('active'); }
 function toggleProfileEdit() {
     const overlay = document.getElementById('profileEditOverlay');
+    if (window.isViewingOtherProfile && !overlay.classList.contains('active')) {
+        alert("View mode: Connect your own wallet to edit profile.");
+        return;
+    }
     overlay.classList.toggle('active');
 }
 async function openUpgrade(prog, lvl, price) {
@@ -7689,13 +7801,20 @@ function copyWallet() {
 
 function copyPersonalReferralLink() {
     let refId = "1";
-    const headerText = document.getElementById("headerIdDisplay") ? document.getElementById("headerIdDisplay").innerText : "";
-    const idMatch = headerText.match(/\d+/);
-    if (idMatch) {
-        refId = idMatch[0];
+    if (window.isViewingOtherProfile && window.currentPreviewId) {
+        refId = String(window.currentPreviewId);
+    } else if (window.currentLoggedInId) {
+        refId = String(window.currentLoggedInId);
+    } else {
+        const headerText = document.getElementById("headerIdDisplay") ? document.getElementById("headerIdDisplay").innerText : "";
+        const idMatch = headerText.match(/\d+/);
+        if (idMatch) {
+            refId = idMatch[0];
+        }
     }
-    const cleanOrigin = window.location.origin.replace(/\/$/, "");
-    const targetLink = cleanOrigin + "/?ref=" + refId;
+    const isLocal = window.location.hostname === "localhost" || window.location.hostname === "127.0.0.1" || window.location.protocol === "file:";
+    const baseOrigin = isLocal ? "https://shinecrypto.io" : window.location.origin.replace(/\/$/, "");
+    const targetLink = baseOrigin + "/?ref=" + refId;
     if (navigator.clipboard && navigator.clipboard.writeText) {
         navigator.clipboard.writeText(targetLink);
     } else {
@@ -7709,18 +7828,8 @@ function copyPersonalReferralLink() {
     alert("Referral link copied:\n" + targetLink);
 }
 function previewUpline(id) {
-    document.getElementById('headerIdDisplay').innerText = 'Preview ID ' + id;
-    document.querySelector('.profile-id').innerHTML = `ID ${id} <span id="userRank" style="margin-left:8px; background:linear-gradient(90deg, #FFD700, #FFA500); color:#000; padding:2px 8px; border-radius:10px; font-size:10px; font-weight:900;">VIEW MODE</span>`;
-    const pLink = document.getElementById('userPersonalReferralLink');
-    if (pLink) {
-        const cleanOrigin = window.location.origin.replace(/\/$/, "");
-        pLink.innerText = cleanOrigin + "/?ref=" + id;
-    }
-    loadPreviewById(Number(id));
-    window.scrollTo({top: 0, behavior: 'smooth'});
+    previewAccountById(id);
 }
-
-
 function closeUpgrade() {
     document.getElementById('upgradeOverlay').classList.remove('active');
 }
@@ -7888,146 +7997,144 @@ async function loadSavedProfileFromDB() {
         } catch (err) {}
     }
 }
-        function openLevelDetail(lvl, cost, progName) {
-    const detailOverlay = document.createElement('div');
-    detailOverlay.id = 'levelDetailOverlay';
-    detailOverlay.className = 'program-preview-overlay active';
-    detailOverlay.style.zIndex = '4000';
-    const prog = progName.toUpperCase();
-    
-    let matrixHTML = '';
-    let legendHTML = '';
+        function buildLevelDetailMarkup(lvl, cost, prog, viewId, viewUpId, slotMatrix) {
+            const spots = slotMatrix.spots || [];
+            let matrixHTML = '';
+            let legendHTML = '';
 
-    if (['V1', 'T3', 'A7', 'Q10', 'N13'].includes(prog)) {
-        let spotsCount = prog === 'V1' ? 3 : prog === 'T3' ? 3 : prog === 'A7' ? 4 : prog === 'Q10' ? 5 : 6;
-        let spotsDivs = '';
-        for(let i=0; i<spotsCount; i++) {
-            let icon = (i === spotsCount - 1) ? 'cached' : 'account_balance_wallet';
-            spotsDivs += `<div class="spot" style="width:45px; height:45px; border:none; background:#1A1A1A; display:flex; align-items:center; justify-content:center;"><i class="material-icons" style="color:white; font-size:18px;">${icon}</i></div>`;
+            if (['V1', 'T3', 'A7', 'Q10', 'N13'].includes(prog)) {
+                let spotsCount = prog === 'V1' ? 3 : prog === 'T3' ? 3 : prog === 'A7' ? 4 : prog === 'Q10' ? 5 : 6;
+                let spotsDivs = '';
+                for (let i = 0; i < spotsCount; i++) {
+                    let icon = (i === spotsCount - 1) ? 'cached' : 'account_balance_wallet';
+                    spotsDivs += renderDetailSpotCircle(spots[i], 45, 13, icon, 18);
+                }
+                matrixHTML = `
+                    <div style="position:relative; width:100%; height:250px; display:flex; flex-direction:column; align-items:center; justify-content:center;">
+                        <div class="spot filled" style="width:60px; height:60px; background:white !important; border:none; margin-bottom:50px; color:black; font-weight:bold; z-index:5; display:flex; align-items:center; justify-content:center;">ID ${viewId}</div>
+                        <div style="display:flex; gap:20px; z-index:5; flex-wrap:wrap; justify-content:center;">
+                            ${spotsDivs}
+                        </div>
+                    </div>`;
+            } else if (['Q2', 'S4', 'C8', 'H11'].includes(prog)) {
+                let r1 = renderDetailSpotCircle(spots[0], 40, 12, 'north', 16) + renderDetailSpotCircle(spots[1], 40, 12, 'north', 16);
+                let r2 = renderDetailSpotCircle(spots[2], 35, 11, 'account_balance_wallet', 14) + renderDetailSpotCircle(spots[3], 35, 11, 'account_balance_wallet', 14) + renderDetailSpotCircle(spots[4], 35, 11, 'account_balance_wallet', 14) + renderDetailSpotCircle(spots[5], 35, 11, 'cached', 14);
+                matrixHTML = `
+                    <div style="position:relative; width:100%; height:320px; display:flex; flex-direction:column; align-items:center; justify-content:center;">
+                        <div class="spot filled" style="width:55px; height:55px; background:white !important; border:none; margin-bottom:45px; color:black; font-weight:bold; z-index:5; display:flex; align-items:center; justify-content:center;">ID ${viewId}</div>
+                        <div style="display:flex; gap:65px; margin-bottom:40px; z-index:5;">${r1}</div>
+                        <div style="display:flex; gap:15px; z-index:5;">${r2}</div>
+                    </div>`;
+            } else if (['G5', 'S9', 'O12', 'E14'].includes(prog)) {
+                let r1 = renderDetailSpotCircle(spots[0], 35, 11, 'north', 14) + renderDetailSpotCircle(spots[1], 35, 11, 'north', 14);
+                let r2 = [2, 3, 4, 5].map(idx => renderDetailSpotCircle(spots[idx], 25, 10, 'account_balance_wallet', 12)).join('');
+                let r3 = [6, 7, 8, 9, 10, 11, 12, 13].map((idx, pos) => renderDetailSpotCircle(spots[idx], 20, 9, pos === 7 ? 'cached' : 'account_balance_wallet', 10)).join('');
+                matrixHTML = `
+                    <div style="position:relative; width:100%; height:380px; display:flex; flex-direction:column; align-items:center; justify-content:center;">
+                        <div class="spot filled" style="width:50px; height:50px; background:white !important; border:none; margin-bottom:40px; color:black; font-weight:bold; z-index:5; display:flex; align-items:center; justify-content:center;">ID ${viewId}</div>
+                        <div style="display:flex; gap:90px; margin-bottom:40px; z-index:5;">${r1}</div>
+                        <div style="display:flex; gap:35px; margin-bottom:30px; z-index:5;">${r2}</div>
+                        <div style="display:flex; gap:12px; z-index:5;">${r3}</div>
+                    </div>`;
+            } else if (['N6', 'X15'].includes(prog)) {
+                let r1 = renderDetailSpotCircle(spots[0], 30, 10, 'north', 12) + renderDetailSpotCircle(spots[1], 30, 10, 'north', 12);
+                let r2 = [2, 3, 4, 5].map(idx => renderDetailSpotCircle(spots[idx], 22, 9, 'account_balance_wallet', 10)).join('');
+                let r3 = [6, 7, 8, 9, 10, 11, 12, 13].map(idx => renderDetailSpotCircle(spots[idx], 16, 8, 'account_balance_wallet', 8)).join('');
+                let r4 = Array.from({ length: 16 }, (_, pos) => renderDetailSpotCircle(spots[14 + pos], 12, 7, pos === 15 ? 'cached' : 'account_balance_wallet', 6)).join('');
+                matrixHTML = `
+                    <div style="position:relative; width:100%; height:450px; display:flex; flex-direction:column; align-items:center; justify-content:center; transform:scale(0.9);">
+                        <div class="spot filled" style="width:45px; height:45px; background:white !important; border:none; margin-bottom:40px; color:black; font-weight:bold; z-index:5; display:flex; align-items:center; justify-content:center;">ID ${viewId}</div>
+                        <div style="display:flex; gap:110px; margin-bottom:35px; z-index:5;">${r1}</div>
+                        <div style="display:flex; gap:45px; margin-bottom:35px; z-index:5;">${r2}</div>
+                        <div style="display:flex; gap:18px; margin-bottom:30px; z-index:5;">${r3}</div>
+                        <div style="display:flex; gap:8px; z-index:5;">${r4}</div>
+                    </div>`;
+            }
+
+            legendHTML = `
+                <div style="display:flex; align-items:center; gap:10px; color:#757575; font-size:12px;"><div style="width:12px; height:12px; border-radius:50%; background:#ffffff;"></div> Direct Partner (Click ID to View)</div>
+                <div style="display:flex; align-items:center; gap:10px; color:#757575; font-size:12px;"><div style="width:12px; height:12px; border-radius:50%; background:#EDF45E;"></div> Spillover From Above</div>
+                <div style="display:flex; align-items:center; gap:10px; color:#757575; font-size:12px;"><div style="width:12px; height:12px; border-radius:50%; background:#F59322;"></div> Spillover From Below</div>
+                <div style="display:flex; align-items:center; gap:10px; color:#757575; font-size:12px;"><div style="width:12px; height:12px; border-radius:50%; background:#00d2ff;"></div> To Trading Bot Vault (80%)</div>
+                <div style="display:flex; align-items:center; gap:10px; color:#757575; font-size:12px;"><div style="width:12px; height:12px; border-radius:50%; background:#4CAF50;"></div> Upline 3-Level Bonus (10%)</div>
+                <div style="display:flex; align-items:center; gap:10px; color:#757575; font-size:12px;"><div style="width:12px; height:12px; border-radius:50%; background:#FFD700;"></div> Cycle Reset (Reinvest)</div>`;
+
+            const tData = getTierDataByProgram(prog);
+            const tierBoxHTML = `
+                <div style="background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.08); border-radius: 16px; padding: 16px; margin-top: 15px; box-sizing: border-box;">
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px;">
+                        <span style="font-size: 11px; font-weight: 900; color: ${tData.tagColor}; letter-spacing: 1px;">${tData.tag}</span>
+                        <span style="background: ${tData.tagBg}; color: ${tData.tagColor}; padding: 2px 8px; border-radius: 10px; font-size: 10px; font-weight: bold;">${tData.split}</span>
+                    </div>
+                    <div style="font-size: 15px; font-weight: bold; color: #fff; margin-bottom: 4px;">${tData.title}</div>
+                    <div style="font-size: 12px; color: #8c8ca1; line-height: 1.4;">${tData.desc}</div>
+                </div>
+            `;
+
+            const upBadgeHtml = Number(viewUpId) > 0
+                ? '<div class="upline-id" style="background:#333; color:white; cursor:pointer;" onclick="document.getElementById(\'levelDetailOverlay\').remove(); closePreview(); previewAccountById(' + viewUpId + ');">ID ' + viewUpId + '</div>'
+                : '<div class="upline-id" style="background:#333; color:white;">ID 0</div>';
+
+            return '<div class="preview-header">' +
+                    '<div class="header-left">' +
+                        '<i class="material-icons" onclick="document.getElementById(\'levelDetailOverlay\').remove()" style="cursor:pointer">arrow_back</i>' +
+                        '<span>ID ' + viewId + ' / SHINE ' + prog + ' / level ' + lvl + '</span>' +
+                    '</div>' +
+                    '<div class="header-right"><button class="menu-btn-circle" onclick="document.getElementById(\'levelDetailOverlay\').remove()"><div class="hamburger-lines"><span></span><span></span></div></button></div>' +
+                '</div>' +
+                '<div class="preview-content">' +
+                    '<div class="upline-card" style="background:#1A1A1A; margin-bottom:20px;">' +
+                        '<span style="color:#757575;">Upline</span>' +
+                        upBadgeHtml +
+                    '</div>' +
+                    '<div class="level-card active detail-card-large" style="background:var(--primary-bg); border:1px solid rgba(255,255,255,0.05); box-shadow: 0 10px 30px rgba(0,0,0,0.5);">' +
+                        '<div class="detail-id-header">' +
+                            '<div style="font-size:14px; opacity:0.8;">Lvl ' + lvl + '</div>' +
+                            '<div class="id-display"><span style="font-size:12px; opacity:0.6;">ID</span><span style="font-size:24px; font-weight:900;">' + viewId + '</span></div>' +
+                            '<div style="display:flex; align-items:center; gap:5px;"><div class="coin-icon"></div> ' + cost + '</div>' +
+                        '</div>' +
+                        matrixHTML +
+                        '<div class="detail-footer-stats" style="border-top:1px solid rgba(255,255,255,0.05); padding-top:15px;">' +
+                            '<div class="f-stat"><span>Partners</span><div class="v"><i class="material-icons" style="font-size:14px;">groups</i> ' + slotMatrix.partnersCount + '</div></div>' +
+                            '<div class="f-stat"><span>Cycles</span><div class="v"><i class="material-icons" style="font-size:14px;">cached</i> ' + slotMatrix.cyclesCount + '</div></div>' +
+                            '<div class="f-stat"><span>Revenue</span><div class="v">' + slotMatrix.revenueUsdt.toFixed(2) + ' USDT</div></div>' +
+                        '</div>' +
+                    '</div>' +
+                    '<div style="margin-top:20px; display:flex; flex-direction:column; gap:12px; background:var(--secondary-bg); padding:20px; border-radius:16px;">' +
+                        legendHTML +
+                        tierBoxHTML +
+                    '</div>' +
+                '</div>';
         }
-        matrixHTML = `
-            <div style="position:relative; width:100%; height:250px; display:flex; flex-direction:column; align-items:center; justify-content:center;">
-                <div class="spot filled" style="width:60px; height:60px; background:white !important; border:none; margin-bottom:50px; color:black; font-weight:bold; z-index:5; display:flex; align-items:center; justify-content:center;">YOU</div>
-                <div style="display:flex; gap:20px; z-index:5; flex-wrap:wrap; justify-content:center;">
-                    ${spotsDivs}
-                </div>
-            </div>`;
-        legendHTML = `
-            <div style="display:flex; align-items:center; gap:10px; color:#757575; font-size:12px;"><div style="width:12px; height:12px; border-radius:50%; background:#00d2ff;"></div> To Trading Bot Vault (80%)</div>
-            <div style="display:flex; align-items:center; gap:10px; color:#757575; font-size:12px;"><div style="width:12px; height:12px; border-radius:50%; background:#4CAF50;"></div> Upline 3-Level Bonus (10%)</div>
-            <div style="display:flex; align-items:center; gap:10px; color:#757575; font-size:12px;"><div style="width:12px; height:12px; border-radius:50%; background:#FFD700;"></div> Cycle Reset (Reinvest)</div>`;
-    } 
-    else if (['Q2', 'S4', 'C8', 'H11'].includes(prog)) {
-        matrixHTML = `
-            <div style="position:relative; width:100%; height:320px; display:flex; flex-direction:column; align-items:center; justify-content:center;">
-                <div class="spot filled" style="width:55px; height:55px; background:white !important; border:none; margin-bottom:45px; color:black; font-weight:bold; z-index:5; display:flex; align-items:center; justify-content:center;">YOU</div>
-                <div style="display:flex; gap:65px; margin-bottom:40px; z-index:5;">
-                    <div class="spot" style="width:40px; height:40px; border:none; background:#1A1A1A; display:flex; align-items:center; justify-content:center;"><i class="material-icons" style="color:white; font-size:16px;">north</i></div>
-                    <div class="spot" style="width:40px; height:40px; border:none; background:#1A1A1A; display:flex; align-items:center; justify-content:center;"><i class="material-icons" style="color:white; font-size:16px;">north</i></div>
-                </div>
-                <div style="display:flex; gap:15px; z-index:5;">
-                    <div class="spot" style="width:35px; height:35px; border:none; background:#1A1A1A; display:flex; align-items:center; justify-content:center;"><i class="material-icons" style="color:white; font-size:14px;">account_balance_wallet</i></div>
-                    <div class="spot" style="width:35px; height:35px; border:none; background:#1A1A1A; display:flex; align-items:center; justify-content:center;"><i class="material-icons" style="color:white; font-size:14px;">account_balance_wallet</i></div>
-                    <div class="spot" style="width:35px; height:35px; border:none; background:#1A1A1A; display:flex; align-items:center; justify-content:center;"><i class="material-icons" style="color:white; font-size:14px;">account_balance_wallet</i></div>
-                    <div class="spot" style="width:35px; height:35px; border:none; background:#1A1A1A; display:flex; align-items:center; justify-content:center;"><i class="material-icons" style="color:white; font-size:14px;">cached</i></div>
-                </div>
-            </div>`;
-        legendHTML = `
-            <div style="display:flex; align-items:center; gap:10px; color:#757575; font-size:12px;"><div style="width:12px; height:12px; border-radius:50%; background:#00d2ff;"></div> To Trading Bot Vault (80%)</div>
-            <div style="display:flex; align-items:center; gap:10px; color:#757575; font-size:12px;"><div style="width:12px; height:12px; border-radius:50%; background:#4CAF50;"></div> Upline 3-Level Bonus (10%)</div>
-            <div style="display:flex; align-items:center; gap:10px; color:#757575; font-size:12px;"><div style="width:12px; height:12px; border-radius:50%; background:#FFD700;"></div> Cycle Reset (Reinvest)</div>`;
-    } 
-    else if (['G5', 'S9', 'O12', 'E14'].includes(prog)) {
-        matrixHTML = `
-            <div style="position:relative; width:100%; height:380px; display:flex; flex-direction:column; align-items:center; justify-content:center;">
-                <div class="spot filled" style="width:50px; height:50px; background:white !important; border:none; margin-bottom:40px; color:black; font-weight:bold; z-index:5; display:flex; align-items:center; justify-content:center;">YOU</div>
-                <div style="display:flex; gap:90px; margin-bottom:40px; z-index:5;">
-                    <div class="spot" style="width:35px; height:35px; border:none; background:#1A1A1A; display:flex; align-items:center; justify-content:center;"><i class="material-icons" style="font-size:14px; color:white;">north</i></div>
-                    <div class="spot" style="width:35px; height:35px; border:none; background:#1A1A1A; display:flex; align-items:center; justify-content:center;"><i class="material-icons" style="font-size:14px; color:white;">north</i></div>
-                </div>
-                <div style="display:flex; gap:35px; margin-bottom:30px; z-index:5;">
-                    ${Array(4).fill(`<div class="spot" style="width:25px; height:25px; border:none; background:#1A1A1A; display:flex; align-items:center; justify-content:center;"><i class="material-icons" style="font-size:12px; color:white;">account_balance_wallet</i></div>`).join('')}
-                </div>
-                <div style="display:flex; gap:12px; z-index:5;">
-                    ${Array(7).fill(`<div class="spot" style="width:20px; height:20px; border:none; background:#1A1A1A; display:flex; align-items:center; justify-content:center;"><i class="material-icons" style="font-size:10px; color:white;">account_balance_wallet</i></div>`).join('')}
-                    <div class="spot" style="width:20px; height:20px; border:none; background:#1A1A1A; display:flex; align-items:center; justify-content:center;"><i class="material-icons" style="font-size:10px; color:white;">cached</i></div>
-                </div>
-            </div>`;
-        legendHTML = `
-            <div style="display:flex; align-items:center; gap:10px; color:#757575; font-size:12px;"><div style="width:12px; height:12px; border-radius:50%; background:#00d2ff;"></div> To Trading Bot Vault (80%)</div>
-            <div style="display:flex; align-items:center; gap:10px; color:#757575; font-size:12px;"><div style="width:12px; height:12px; border-radius:50%; background:#4CAF50;"></div> Upline 3-Level Bonus (10%)</div>
-            <div style="display:flex; align-items:center; gap:10px; color:#757575; font-size:12px;"><div style="width:12px; height:12px; border-radius:50%; background:#FFD700;"></div> Cycle Reset (Reinvest)</div>`;
-    } 
-    else if (['N6', 'X15'].includes(prog)) {
-        matrixHTML = `
-            <div style="position:relative; width:100%; height:450px; display:flex; flex-direction:column; align-items:center; justify-content:center; transform:scale(0.9);">
-                <div class="spot filled" style="width:45px; height:45px; background:white !important; border:none; margin-bottom:40px; color:black; font-weight:bold; z-index:5; display:flex; align-items:center; justify-content:center;">YOU</div>
-                <div style="display:flex; gap:110px; margin-bottom:35px; z-index:5;">
-                    <div class="spot" style="width:30px; height:30px; border:none; background:#1A1A1A; display:flex; align-items:center; justify-content:center;"><i class="material-icons" style="font-size:12px; color:white;">north</i></div>
-                    <div class="spot" style="width:30px; height:30px; border:none; background:#1A1A1A; display:flex; align-items:center; justify-content:center;"><i class="material-icons" style="font-size:12px; color:white;">north</i></div>
-                </div>
-                <div style="display:flex; gap:45px; margin-bottom:35px; z-index:5;">
-                    ${Array(4).fill(`<div class="spot" style="width:22px; height:22px; border:none; background:#1A1A1A; display:flex; align-items:center; justify-content:center;"><i class="material-icons" style="font-size:10px; color:white;">account_balance_wallet</i></div>`).join('')}
-                </div>
-                <div style="display:flex; gap:18px; margin-bottom:30px; z-index:5;">
-                    ${Array(8).fill(`<div class="spot" style="width:16px; height:16px; border:none; background:#1A1A1A; display:flex; align-items:center; justify-content:center;"><i class="material-icons" style="font-size:8px; color:white;">account_balance_wallet</i></div>`).join('')}
-                </div>
-                <div style="display:flex; gap:8px; z-index:5;">
-                    ${Array(15).fill(`<div class="spot" style="width:12px; height:12px; border:none; background:#1A1A1A; display:flex; align-items:center; justify-content:center;"><i class="material-icons" style="font-size:6px; color:white;">account_balance_wallet</i></div>`).join('')}
-                    <div class="spot" style="width:12px; height:12px; border:none; background:#1A1A1A; display:flex; align-items:center; justify-content:center;"><i class="material-icons" style="font-size:6px; color:white;">cached</i></div>
-                </div>
-            </div>`;
-        legendHTML = `
-            <div style="display:flex; align-items:center; gap:10px; color:#757575; font-size:12px;"><div style="width:12px; height:12px; border-radius:50%; background:#00d2ff;"></div> To Trading Bot Vault (80%)</div>
-            <div style="display:flex; align-items:center; gap:10px; color:#757575; font-size:12px;"><div style="width:12px; height:12px; border-radius:50%; background:#4CAF50;"></div> Upline 3-Level Bonus (10%)</div>
-            <div style="display:flex; align-items:center; gap:10px; color:#757575; font-size:12px;"><div style="width:12px; height:12px; border-radius:50%; background:#FFD700;"></div> Cycle Reset (Reinvest)</div>`;
-    }
 
-    const tData = getTierDataByProgram(prog);
-    const tierBoxHTML = `
-        <div style="background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.08); border-radius: 16px; padding: 16px; margin-top: 15px; box-sizing: border-box;">
-            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px;">
-                <span style="font-size: 11px; font-weight: 900; color: ${tData.tagColor}; letter-spacing: 1px;">${tData.tag}</span>
-                <span style="background: ${tData.tagBg}; color: ${tData.tagColor}; padding: 2px 8px; border-radius: 10px; font-size: 10px; font-weight: bold;">${tData.split}</span>
-            </div>
-            <div style="font-size: 15px; font-weight: bold; color: #fff; margin-bottom: 4px;">${tData.title}</div>
-            <div style="font-size: 12px; color: #8c8ca1; line-height: 1.4;">${tData.desc}</div>
-        </div>
-    `;
+        function openLevelDetail(lvl, cost, progName) {
+            const oldDetail = document.getElementById('levelDetailOverlay');
+            if (oldDetail) oldDetail.remove();
 
-    detailOverlay.innerHTML = `
-        <div class="preview-header">
-            <div class="header-left">
-                <i class="material-icons" onclick="this.parentElement.parentElement.parentElement.remove()" style="cursor:pointer">arrow_back</i>
-                <span>ID 1 / SHINE ${prog} / level ${lvl}</span>
-            </div>
-            <div class="header-right"><button class="menu-btn-circle"><div class="hamburger-lines"><span></span><span></span></div></button></div>
-        </div>
-        <div class="preview-content">
-            <div class="upline-card" style="background:#1A1A1A; margin-bottom:20px;">
-                <span style="color:#757575;">Upline</span>
-                <div class="upline-id" style="background:#333; color:white;">ID 0</div>
-            </div>
-            <div class="level-card active detail-card-large" style="background:var(--primary-bg); border:1px solid rgba(255,255,255,0.05); box-shadow: 0 10px 30px rgba(0,0,0,0.5);">
-                <div class="detail-id-header">
-                    <div style="font-size:14px; opacity:0.8;">Lvl ${lvl}</div>
-                    <div class="id-display"><span style="font-size:12px; opacity:0.6;">ID</span><span style="font-size:24px; font-weight:900;">1</span></div>
-                    <div style="display:flex; align-items:center; gap:5px;"><div class="coin-icon"></div> ${cost}</div>
-                </div>
-                ${matrixHTML}
-                <div class="detail-footer-stats" style="border-top:1px solid rgba(255,255,255,0.05); padding-top:15px;">
-                    <div class="f-stat"><span>Partners</span><div class="v"><i class="material-icons" style="font-size:14px;">groups</i> 0</div></div>
-                    <div class="f-stat"><span>Cycles</span><div class="v"><i class="material-icons" style="font-size:14px;">cached</i> 0</div></div>
-                    <div class="f-stat"><span>Revenue</span><div class="v">0 USDT</div></div>
-                </div>
-            </div>
-            <div style="margin-top:20px; display:flex; flex-direction:column; gap:12px; background:var(--secondary-bg); padding:20px; border-radius:16px;">
-                ${legendHTML}
-                ${tierBoxHTML}
-            </div>
-        </div>`;
-    document.body.appendChild(detailOverlay);
-}
+            const detailOverlay = document.createElement('div');
+            detailOverlay.id = 'levelDetailOverlay';
+            detailOverlay.className = 'program-preview-overlay active';
+            detailOverlay.style.zIndex = '4000';
+            const prog = progName.toUpperCase();
+
+            const viewId = window.isViewingOtherProfile ? (window.currentPreviewId || 1) : (window.currentLoggedInId || 1);
+            const viewUpId = window.isViewingOtherProfile ? (window.currentPreviewUplineId || 0) : (window.currentLoggedInUplineId || 0);
+            const viewWallet = window.isViewingOtherProfile && window.currentPreviewWallet
+                ? window.currentPreviewWallet.toLowerCase()
+                : (userWallet ? userWallet.toLowerCase() : ROOT_OWNER_ADDRESS.toLowerCase());
+
+            const slotMatrix = getSlotMatrixInfo(viewWallet, viewId, prog, lvl, cost);
+            detailOverlay.innerHTML = buildLevelDetailMarkup(lvl, cost, prog, viewId, viewUpId, slotMatrix);
+            document.body.appendChild(detailOverlay);
+
+            fetchProgramMatrixStates(viewWallet, prog).then((hasUpdate) => {
+                const activeEl = document.getElementById('levelDetailOverlay');
+                if (hasUpdate && activeEl) {
+                    const updatedMatrix = getSlotMatrixInfo(viewWallet, viewId, prog, lvl, cost);
+                    activeEl.innerHTML = buildLevelDetailMarkup(lvl, cost, prog, viewId, viewUpId, updatedMatrix);
+                }
+            });
+        }
 function toggleTrading() {
             const overlay = document.getElementById('tradingOverlay');
             overlay.classList.toggle('active');
@@ -8724,6 +8831,510 @@ window.addEventListener('DOMContentLoaded', () => {
             window.speechSynthesis.speak(utterance);
         }
 
+        window.matrixStateCache = window.matrixStateCache || {};
+
+        function getProgramMaxSpots(prog) {
+            if (prog === 'V1' || prog === 'T3') return 3;
+            if (prog === 'A7') return 4;
+            if (prog === 'Q10') return 5;
+            if (prog === 'N13') return 6;
+            if (['Q2', 'S4', 'C8', 'H11'].includes(prog)) return 6;
+            if (['G5', 'S9', 'O12', 'E14'].includes(prog)) return 14;
+            if (['N6', 'X15'].includes(prog)) return 30;
+            return 3;
+        }
+
+        function getUserTotalActivatedSlotCost(targetWallet, targetId) {
+            const progList = ['V1', 'Q2', 'T3', 'S4', 'G5', 'N6', 'A7', 'C8', 'S9', 'Q10', 'H11', 'O12', 'N13', 'E14', 'X15'];
+            const wLower = targetWallet ? targetWallet.toLowerCase() : "";
+            if (Number(targetId) === 1 || (wLower && wLower === ROOT_OWNER_ADDRESS.toLowerCase())) {
+                let fullCost = 0;
+                progList.forEach(p => {
+                    progPrices[p].forEach(c => { fullCost += Number(c); });
+                });
+                return fullCost;
+            }
+            if (!wLower) return 0;
+
+            const uniqueSlots = {};
+            const allSlots = []
+                .concat(window.allNetworkSlotsCache || [])
+                .concat(window.onChainSlotsCache || []);
+            allSlots.forEach(s => {
+                if (s && s.wallet_address && s.wallet_address.toLowerCase() === wLower && progPrices[s.program]) {
+                    const lvl = Number(s.level);
+                    if (lvl >= 1 && lvl <= 12) {
+                        uniqueSlots[s.program + '_' + lvl] = Number(s.cost || progPrices[s.program][lvl - 1] || 0);
+                    }
+                }
+            });
+
+            if (window.isViewingOtherProfile && window.currentPreviewWallet && window.currentPreviewWallet.toLowerCase() === wLower && window.previewActiveLevels) {
+                Object.keys(window.previewActiveLevels).forEach(k => {
+                    if (!window.previewActiveLevels[k]) return;
+                    const parts = k.split('_');
+                    if (parts.length === 2 && progPrices[parts[0]]) {
+                        const lvl = parseInt(parts[1]);
+                        uniqueSlots[k] = progPrices[parts[0]][lvl - 1] || 0;
+                    }
+                });
+            } else if (userWallet && userWallet.toLowerCase() === wLower) {
+                try {
+                    const saved = JSON.parse(localStorage.getItem("shine_active_slots_" + wLower) || "{}");
+                    Object.keys(saved).forEach(k => {
+                        if (!saved[k]) return;
+                        const parts = k.split('_');
+                        if (parts.length === 2 && progPrices[parts[0]]) {
+                            const lvl = parseInt(parts[1]);
+                            uniqueSlots[k] = progPrices[parts[0]][lvl - 1] || 0;
+                        }
+                    });
+                } catch (e) {}
+            }
+
+            let sumCost = 0;
+            Object.values(uniqueSlots).forEach(v => { sumCost += Number(v || 0); });
+            return sumCost;
+        }
+
+        function computeUserBotMetrics(targetWallet, targetId, data) {
+            const wLower = targetWallet ? targetWallet.toLowerCase() : "";
+            const tId = Number(targetId || 0);
+            if (!wLower && tId === 0) {
+                return {
+                    userCapital: 0,
+                    investedAmount: 0,
+                    usdtBalance: 0,
+                    solBalance: 0,
+                    unrealizedPnl: 0,
+                    unrealizedPct: 0,
+                    realizedProfit: 0,
+                    profit24h: 0,
+                    wins: 0,
+                    losses: 0,
+                    userSpotTrades: [],
+                    isDemoOwner: false
+                };
+            }
+
+            const isDemoOwner = (tId === 1 || wLower === ROOT_OWNER_ADDRESS.toLowerCase());
+            const totalSlotCost = getUserTotalActivatedSlotCost(wLower, tId);
+            const userCapital = totalSlotCost * 0.80;
+
+            if (userCapital <= 0) {
+                return {
+                    userCapital: 0,
+                    investedAmount: 0,
+                    usdtBalance: 0,
+                    solBalance: 0,
+                    unrealizedPnl: 0,
+                    unrealizedPct: 0,
+                    realizedProfit: 0,
+                    profit24h: 0,
+                    wins: 0,
+                    losses: 0,
+                    userSpotTrades: [],
+                    isDemoOwner: isDemoOwner
+                };
+            }
+
+            const safeData = data || {};
+            const backendCap = parseFloat(safeData.totalCapital || 0);
+            const scaleRatio = backendCap > 0 ? (userCapital / backendCap) : 0;
+            const botLivePrice = currentChartLivePrice > 0 ? currentChartLivePrice : parseFloat(safeData.price || safeData.livePrice || 0);
+            const avgPrice = parseFloat(safeData.avgEntryPrice || 0);
+
+            const investedAmount = scaleRatio > 0 ? (parseFloat(safeData.investedAmount || 0) * scaleRatio) : 0;
+            const usdtBalance = scaleRatio > 0 ? Math.max(0, userCapital - investedAmount) : userCapital;
+            const solBalance = scaleRatio > 0 ? (parseFloat(safeData.solBalance || 0) * scaleRatio) : 0;
+
+            let unrealizedPnl = scaleRatio > 0 ? (parseFloat(safeData.pnl || safeData.unrealizedPnL || 0) * scaleRatio) : 0;
+            if (unrealizedPnl === 0 && solBalance > 0 && botLivePrice > 0 && avgPrice > 0) {
+                unrealizedPnl = (botLivePrice - avgPrice) * solBalance;
+            }
+            const unrealizedPct = investedAmount > 0 ? (unrealizedPnl / investedAmount) * 100 : (scaleRatio > 0 ? parseFloat(safeData.pnlPct || safeData.pnlPercent || 0) : 0);
+
+            const rawTrades = Array.isArray(safeData.tradesHistory) ? safeData.tradesHistory : [];
+            const nowMs = Date.now();
+            const oneDayMs = 24 * 60 * 60 * 1000;
+            let wins = 0;
+            let losses = 0;
+            let summedRealized = 0;
+            let profit24h = 0;
+
+            const userSpotTrades = [];
+            rawTrades.forEach(t => {
+                const ordId = String(t.orderId || t.order_id || "").toUpperCase();
+                const execStr = String(t.execType || t.exec_type || "").toUpperCase();
+                const isExcluded = ordId.startsWith("MAN_") || ordId.startsWith("ORD_") || ordId.startsWith("ATL_") || ordId.startsWith("COPY_") || ordId.startsWith("CPOS_") || ordId.startsWith("M_") || ordId.startsWith("K2_") || ordId.startsWith("K3_") || ordId.startsWith("HYPER_") || ordId.startsWith("SNG_") || execStr.includes("MANUAL") || execStr.includes("AUTO_LOOP") || execStr.includes("COPY") || execStr.includes("MICRO") || execStr.includes("KILLER") || execStr.includes("HYPER") || execStr.includes("SINGULARITY");
+                if (isExcluded) return;
+
+                const qty = parseFloat(t.solAmount || t.sol_amount || 0);
+                if (qty <= 0) return;
+
+                const sideStr = String(t.side || "").toUpperCase();
+                const isSell = sideStr.includes("SELL") || execStr.includes("EXIT");
+                const rawP = parseFloat(t.profit || t.realizedPnl || 0);
+                const scaledP = scaleRatio > 0 ? (rawP * scaleRatio) : 0;
+                const scaledQty = scaleRatio > 0 ? (qty * scaleRatio) : qty;
+
+                if (isSell) {
+                    if (scaledP >= 0) wins++;
+                    else losses++;
+                    summedRealized += scaledP;
+                    const ts = t.timestamp || t.created_at;
+                    if (ts) {
+                        const tMs = new Date(ts).getTime();
+                        if (!isNaN(tMs) && (nowMs - tMs) <= oneDayMs) {
+                            profit24h += scaledP;
+                        }
+                    }
+                }
+
+                userSpotTrades.push(Object.assign({}, t, {
+                    solAmount: scaledQty,
+                    profit: scaledP,
+                    realizedPnl: scaledP
+                }));
+            });
+
+            const backendRealized = parseFloat(safeData.realizedPnl || 0);
+            const realizedProfit = scaleRatio > 0
+                ? (backendRealized !== 0 ? (backendRealized * scaleRatio) : summedRealized)
+                : 0;
+
+            return {
+                userCapital: userCapital,
+                investedAmount: investedAmount,
+                usdtBalance: usdtBalance,
+                solBalance: solBalance,
+                unrealizedPnl: unrealizedPnl,
+                unrealizedPct: unrealizedPct,
+                realizedProfit: realizedProfit,
+                profit24h: profit24h,
+                wins: wins,
+                losses: losses,
+                userSpotTrades: userSpotTrades,
+                isDemoOwner: isDemoOwner
+            };
+        }
+
+        function applyUserBotMetricsToUI(targetWallet, targetId, metricsOrData) {
+            const isComputed = metricsOrData && metricsOrData.userCapital !== undefined && metricsOrData.userSpotTrades !== undefined;
+            const metrics = isComputed ? metricsOrData : computeUserBotMetrics(targetWallet, targetId, metricsOrData || latestBackendState);
+            const wLower = targetWallet ? targetWallet.toLowerCase() : "";
+
+            currentTotalUserCapital = metrics.userCapital;
+
+            const realProfitEl = document.getElementById("realProfitValue");
+            if (realProfitEl) {
+                const sign = metrics.realizedProfit < 0 ? "-" : "";
+                realProfitEl.innerText = sign + "$" + Math.abs(metrics.realizedProfit).toFixed(2);
+            }
+
+            const tradeCountEl = document.getElementById("successTradeCount");
+            if (tradeCountEl) tradeCountEl.innerText = metrics.wins.toString();
+
+            const ruleTradingEl = document.getElementById("ruleTradingProfitVal");
+            if (ruleTradingEl) ruleTradingEl.innerText = metrics.realizedProfit.toFixed(2);
+
+            const refProfit = Number(window.userReferralProfitTotal || 0);
+            const claimed = (window.isViewingOtherProfile || !wLower) ? 0 : getUserClaimedProfit(wLower);
+            const totalUsdtEarned = Math.max(0, metrics.realizedProfit + refProfit - claimed);
+
+            const homeProfitUsdtEl = document.getElementById("homeProfitUsdt");
+            const homePassiveEl = document.getElementById("homePassiveIncomeVal");
+            const homeClaimEl = document.getElementById("homeClaimValueDisplay");
+            if (homeProfitUsdtEl) homeProfitUsdtEl.innerText = totalUsdtEarned.toFixed(2);
+            if (homePassiveEl) homePassiveEl.innerText = totalUsdtEarned.toFixed(2);
+            if (homeClaimEl) homeClaimEl.innerText = totalUsdtEarned.toFixed(2);
+
+            const portUsdtEl = document.getElementById("port-usdt");
+            if (portUsdtEl) portUsdtEl.innerText = "$" + metrics.usdtBalance.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+
+            const portSolEl = document.getElementById("port-sol");
+            if (portSolEl) portSolEl.innerText = metrics.solBalance.toFixed(4);
+
+            const investedEl = document.getElementById("invested-amount");
+            if (investedEl) investedEl.innerText = "$" + metrics.investedAmount.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+
+            const totalCapEl = document.getElementById("total-capital");
+            if (totalCapEl) totalCapEl.innerText = "$" + metrics.userCapital.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+
+            const pnlEl = document.getElementById("unrealized-pnl");
+            const pnlPctEl = document.getElementById("unrealized-pnl-pct");
+            if (pnlEl) {
+                const sign = metrics.unrealizedPnl >= 0 ? "+" : "-";
+                pnlEl.innerText = sign + "$" + Math.abs(metrics.unrealizedPnl).toFixed(2);
+                pnlEl.style.color = metrics.unrealizedPnl >= 0 ? "#4CAF50" : "#f6465d";
+            }
+            if (pnlPctEl) {
+                const sign = metrics.unrealizedPct >= 0 ? "+" : "";
+                pnlPctEl.innerText = sign + metrics.unrealizedPct.toFixed(2) + "%";
+                pnlPctEl.style.color = metrics.unrealizedPct >= 0 ? "#4CAF50" : "#f6465d";
+                pnlPctEl.style.background = metrics.unrealizedPct >= 0 ? "rgba(76, 175, 80, 0.12)" : "rgba(246, 70, 93, 0.12)";
+            }
+
+            const realBotEl = document.getElementById("realized-pnl-val");
+            if (realBotEl) {
+                const sign = metrics.realizedProfit >= 0 ? "+" : "-";
+                realBotEl.innerText = sign + "$" + Math.abs(metrics.realizedProfit).toFixed(2);
+                realBotEl.style.color = metrics.realizedProfit >= 0 ? "#4CAF50" : "#f6465d";
+            }
+
+            const bot24El = document.getElementById("bot-24h-profit");
+            if (bot24El) {
+                const sign = metrics.profit24h >= 0 ? "+" : "-";
+                bot24El.innerText = sign + "$" + Math.abs(metrics.profit24h).toFixed(2);
+                bot24El.style.color = metrics.profit24h >= 0 ? "#00e676" : "#f6465d";
+            }
+
+            const countPill = document.getElementById("trade-count-pill");
+            const winTag = document.getElementById("win-tag");
+            const lossTag = document.getElementById("loss-tag");
+            if (countPill) countPill.innerText = (metrics.wins + metrics.losses).toString();
+            if (winTag) winTag.innerText = metrics.wins.toString();
+            if (lossTag) lossTag.innerText = metrics.losses.toString();
+
+            const posterIdEl = document.getElementById("posterUserId");
+            if (posterIdEl) posterIdEl.innerText = "ID " + (targetId || 1);
+        }
+
+        async function fetchProgramMatrixStates(targetWallet, prog) {
+            if (!targetWallet || !ethers.utils.isAddress(targetWallet)) return false;
+            const wLower = targetWallet.toLowerCase();
+            const progMap = { 'V1': 1, 'Q2': 2, 'T3': 3, 'S4': 4, 'G5': 5, 'N6': 6, 'A7': 7, 'C8': 8, 'S9': 9, 'Q10': 10, 'H11': 11, 'O12': 12, 'N13': 13, 'E14': 14, 'X15': 15 };
+            const progNum = progMap[prog] || 1;
+            const cacheKey = wLower + '_' + prog;
+            if (window.matrixStateCache[cacheKey] && (Date.now() - window.matrixStateCache[cacheKey].fetchedAt < 20000)) {
+                return false;
+            }
+
+            try {
+                const shineIface = new ethers.utils.Interface(SHINE_ABI);
+                const calls = [];
+                for (let l = 0; l < 12; l++) {
+                    calls.push({
+                        target: SHINE_CONTRACT_ADDRESS,
+                        allowFailure: true,
+                        callData: shineIface.encodeFunctionData("getMatrixState", [wLower, progNum, l])
+                    });
+                }
+                const results = await executeSingleMulticall(calls);
+                const levelMap = {};
+                const unknownAddrs = new Set();
+
+                results.forEach((r, idx) => {
+                    if (r && r.success) {
+                        try {
+                            const dec = shineIface.decodeFunctionResult("getMatrixState", r.returnData);
+                            const refs = Array.isArray(dec.referrals) ? dec.referrals.map(a => String(a).toLowerCase()) : [];
+                            refs.forEach(a => {
+                                if (a && a !== ethers.constants.AddressZero) unknownAddrs.add(a);
+                            });
+                            levelMap[idx + 1] = {
+                                referrals: refs,
+                                reinvestCount: Number(dec.reinvestCount || 0),
+                                blocked: Boolean(dec.blocked)
+                            };
+                        } catch (e) {}
+                    }
+                });
+
+                const membersList = [].concat(window.allNetworkMembersCache || []).concat(window.onChainMembersCache || []);
+                const missingAddrs = Array.from(unknownAddrs).filter(a => !membersList.some(m => m.wallet_address === a));
+                if (missingAddrs.length > 0) {
+                    const userCalls = missingAddrs.map(a => ({
+                        target: SHINE_CONTRACT_ADDRESS,
+                        allowFailure: true,
+                        callData: shineIface.encodeFunctionData("users", [a])
+                    }));
+                    const uRes = await executeSingleMulticall(userCalls);
+                    uRes.forEach((ur, i) => {
+                        if (ur && ur.success) {
+                            try {
+                                const uDec = shineIface.decodeFunctionResult("users", ur.returnData);
+                                if (uDec.isRegistered) {
+                                    const newEntry = {
+                                        wallet_address: missingAddrs[i],
+                                        user_id: Number(uDec.id),
+                                        upline_address: uDec.upline ? uDec.upline.toLowerCase() : null
+                                    };
+                                    window.onChainMembersCache.push(newEntry);
+                                    if (Array.isArray(window.allNetworkMembersCache)) window.allNetworkMembersCache.push(newEntry);
+                                }
+                            } catch (e) {}
+                        }
+                    });
+                }
+
+                window.matrixStateCache[cacheKey] = {
+                    fetchedAt: Date.now(),
+                    levels: levelMap
+                };
+                return true;
+            } catch (e) {
+                return false;
+            }
+        }
+
+        function getSlotMatrixInfo(targetWallet, targetId, prog, lvl, cost) {
+            const wLower = targetWallet ? targetWallet.toLowerCase() : ROOT_OWNER_ADDRESS.toLowerCase();
+            const tId = Number(targetId || 1);
+            const maxSpots = getProgramMaxSpots(prog);
+            const membersList = [].concat(window.allNetworkMembersCache || []).concat(window.onChainMembersCache || []);
+            const findMember = (addr) => membersList.find(m => m.wallet_address === addr.toLowerCase());
+
+            const rewardsAll = [].concat(window.allNetworkRewardsCache || []).concat(window.onChainRewardsCache || []);
+            const seenKeys = new Set();
+            const slotRewards = [];
+            rewardsAll.forEach(r => {
+                if (r && r.recipient_wallet === wLower && r.program === prog && Number(r.level) === Number(lvl)) {
+                    const k = r.reward_key || (r.buyer_wallet + '_' + r.program + '_' + r.level + '_' + r.reward_tier);
+                    if (!seenKeys.has(k)) {
+                        seenKeys.add(k);
+                        slotRewards.push(r);
+                    }
+                }
+            });
+            slotRewards.sort((a, b) => {
+                const ta = a.created_at ? new Date(a.created_at).getTime() : 0;
+                const tb = b.created_at ? new Date(b.created_at).getTime() : 0;
+                return ta - tb;
+            });
+
+            let revenueUsdt = 0;
+            slotRewards.forEach(r => { revenueUsdt += parseFloat(r.reward_amount || 0); });
+
+            const cacheEntry = window.matrixStateCache[wLower + '_' + prog];
+            const chainLevel = cacheEntry && cacheEntry.levels ? cacheEntry.levels[Number(lvl)] : null;
+            const spots = [];
+            let cyclesCount = 0;
+            let partnersCount = 0;
+
+            if (chainLevel && (chainLevel.referrals.length > 0 || chainLevel.reinvestCount > 0)) {
+                cyclesCount = chainLevel.reinvestCount;
+                partnersCount = (cyclesCount * maxSpots) + chainLevel.referrals.length;
+                chainLevel.referrals.forEach(addr => {
+                    const mem = findMember(addr);
+                    const pId = mem ? Number(mem.user_id) : 0;
+                    const isDirect = mem && mem.upline_address === wLower;
+                    const isAbove = mem && !isDirect && pId > 0 && pId < tId;
+                    const bg = isDirect ? '#ffffff' : (isAbove ? '#EDF45E' : '#F59322');
+                    spots.push({
+                        userId: pId || '?',
+                        wallet: addr,
+                        bg: bg,
+                        color: '#000000'
+                    });
+                });
+            } else if (slotRewards.length > 0) {
+                partnersCount = slotRewards.length;
+                cyclesCount = Math.floor(partnersCount / maxSpots);
+                const remainder = partnersCount % maxSpots;
+                const activeSlice = remainder === 0 ? slotRewards.slice(-maxSpots) : slotRewards.slice(cyclesCount * maxSpots);
+                activeSlice.forEach(r => {
+                    const isDirect = Number(r.reward_tier) === 1;
+                    const pId = Number(r.buyer_id || 0);
+                    const isAbove = !isDirect && pId > 0 && pId < tId;
+                    const bg = isDirect ? '#ffffff' : (isAbove ? '#EDF45E' : '#F59322');
+                    spots.push({
+                        userId: pId || '?',
+                        wallet: r.buyer_wallet,
+                        bg: bg,
+                        color: '#000000'
+                    });
+                });
+            }
+
+            if (revenueUsdt === 0 && partnersCount > 0) {
+                revenueUsdt = partnersCount * Number(cost) * 0.05;
+            }
+
+            return {
+                spots: spots,
+                partnersCount: partnersCount,
+                cyclesCount: cyclesCount,
+                revenueUsdt: revenueUsdt
+            };
+        }
+
+        function renderPreviewMatrixSpots(prog, spots) {
+            const spotBg = (idx, extraCls) => {
+                const s = spots[idx];
+                if (s) return `background:${s.bg} !important; border:none;`;
+                if (extraCls === 'velocity-spot') return 'border:none;';
+                return 'border:none;';
+            };
+            const spotClass = (idx, extraCls) => {
+                const s = spots[idx];
+                return s ? 'spot filled' : ('spot ' + (extraCls || ''));
+            };
+
+            if (['V1', 'T3', 'A7', 'Q10', 'N13'].includes(prog)) {
+                let spotCount = prog === 'V1' ? 3 : prog === 'T3' ? 3 : prog === 'A7' ? 4 : prog === 'Q10' ? 5 : 6;
+                let html = '';
+                for (let i = 0; i < spotCount; i++) {
+                    let extraClass = (prog === 'V1' && i === 2) ? 'velocity-spot' : '';
+                    html += `<div class="${spotClass(i, extraClass)}" style="${spotBg(i, extraClass)}"></div>`;
+                }
+                return `<div class="level-spots" style="display:flex; justify-content:center; gap:12px; margin:40px 0; flex-wrap:wrap;">${html}</div>`;
+            }
+            if (['Q2', 'S4', 'C8', 'H11'].includes(prog)) {
+                return `<div class="level-spots" style="display:flex; flex-direction:column; align-items:center; gap:12px; margin:15px 0;">
+                    <div style="display:flex; justify-content:center; gap:30px;">
+                        <div class="${spotClass(0)}" style="width:42px; height:42px; ${spotBg(0)}"></div>
+                        <div class="${spotClass(1)}" style="width:42px; height:42px; ${spotBg(1)}"></div>
+                    </div>
+                    <div style="display:flex; justify-content:center; gap:10px;">
+                        ${[2, 3, 4, 5].map(idx => `<div class="${spotClass(idx)}" style="width:28px; height:28px; ${spotBg(idx)}"></div>`).join('')}
+                    </div>
+                </div>`;
+            }
+            if (['G5', 'S9', 'O12', 'E14'].includes(prog)) {
+                return `<div class="level-spots" style="display:flex; flex-direction:column; align-items:center; gap:8px; margin:15px 0;">
+                    <div style="display:flex; justify-content:center; gap:25px;">
+                        <div class="${spotClass(0)}" style="width:42px; height:42px; ${spotBg(0)}"></div>
+                        <div class="${spotClass(1)}" style="width:42px; height:42px; ${spotBg(1)}"></div>
+                    </div>
+                    <div style="display:flex; justify-content:center; gap:12px;">
+                        ${[2, 3, 4, 5].map(idx => `<div class="${spotClass(idx)}" style="width:22px; height:22px; ${spotBg(idx)}"></div>`).join('')}
+                    </div>
+                    <div style="display:flex; justify-content:center; gap:4px;">
+                        ${[6, 7, 8, 9, 10, 11, 12, 13].map(idx => `<div class="${spotClass(idx)}" style="width:12px; height:12px; ${spotBg(idx)}"></div>`).join('')}
+                    </div>
+                </div>`;
+            }
+            if (['N6', 'X15'].includes(prog)) {
+                return `<div class="level-spots" style="display:flex; flex-direction:column; align-items:center; gap:6px; margin:10px 0;">
+                    <div style="display:flex; justify-content:center; gap:30px;">
+                        <div class="${spotClass(0)}" style="width:42px; height:42px; ${spotBg(0)}"></div>
+                        <div class="${spotClass(1)}" style="width:42px; height:42px; ${spotBg(1)}"></div>
+                    </div>
+                    <div style="display:flex; justify-content:center; gap:15px;">
+                        ${[2, 3, 4, 5].map(idx => `<div class="${spotClass(idx)}" style="width:22px; height:22px; ${spotBg(idx)}"></div>`).join('')}
+                    </div>
+                    <div style="display:flex; justify-content:center; gap:6px;">
+                        ${[6, 7, 8, 9, 10, 11, 12, 13].map(idx => `<div class="${spotClass(idx)}" style="width:12px; height:12px; ${spotBg(idx)}"></div>`).join('')}
+                    </div>
+                    <div style="display:flex; justify-content:center; gap:2px;">
+                        ${Array.from({ length: 16 }, (_, pos) => `<div class="${spotClass(14 + pos)}" style="width:6px; height:6px; ${spotBg(14 + pos)}"></div>`).join('')}
+                    </div>
+                </div>`;
+            }
+            return '';
+        }
+
+        function renderDetailSpotCircle(spot, sizePx, fontPx, defaultIcon, iconSizePx) {
+            if (spot && spot.userId) {
+                const clickHandler = typeof spot.userId === 'number'
+                    ? `onclick="event.stopPropagation(); document.getElementById('levelDetailOverlay').remove(); closePreview(); previewAccountById(${spot.userId});"`
+                    : '';
+                return `<div class="spot filled" ${clickHandler} style="width:${sizePx}px; height:${sizePx}px; border:none; background:${spot.bg} !important; color:${spot.color}; font-size:${fontPx}px; font-weight:900; display:flex; align-items:center; justify-content:center; cursor:pointer; box-shadow:0 2px 8px rgba(0,0,0,0.45);">${spot.userId}</div>`;
+            }
+            return `<div class="spot" style="width:${sizePx}px; height:${sizePx}px; border:none; background:#1A1A1A; display:flex; align-items:center; justify-content:center;"><i class="material-icons" style="color:white; font-size:${iconSizePx}px;">${defaultIcon}</i></div>`;
+        }
+
         function handleBotData(data) {
             if (!data) return;
 
@@ -8812,12 +9423,22 @@ window.addEventListener('DOMContentLoaded', () => {
                 pnl = (livePrice - avgPriceCheck) * solBalCheck;
                 pnlPct = ((livePrice - avgPriceCheck) / avgPriceCheck) * 100;
             }
-            const savedLocalCap = parseFloat(localStorage.getItem("shine_user_total_capital") || "0");
-            const backendCap = (data && data.totalCapital !== undefined) ? parseFloat(data.totalCapital) : 0.0;
-            const totalCapVal = Math.max(savedLocalCap, backendCap);
-            const investedVal = parseFloat(data.investedAmount || 0);
-            const usdtBal = Math.max(0.0, totalCapVal - investedVal);
-            const solBal = parseFloat(data.solBalance !== undefined ? data.solBalance : 0);
+            const headerDispTxt = document.getElementById("headerIdDisplay") ? document.getElementById("headerIdDisplay").innerText.trim() : "";
+            const isDefaultPreviewId1 = !userWallet && !window.isViewingOtherProfile && (headerDispTxt === "Preview ID 1" || headerDispTxt === "ID 1");
+            const activeTargetWallet = window.isViewingOtherProfile && window.currentPreviewWallet
+                ? window.currentPreviewWallet.toLowerCase()
+                : (userWallet ? userWallet.toLowerCase() : (isDefaultPreviewId1 ? ROOT_OWNER_ADDRESS.toLowerCase() : ""));
+            const activeTargetId = window.isViewingOtherProfile
+                ? Number(window.currentPreviewId || 0)
+                : (userWallet ? Number(window.currentLoggedInId || 0) : (isDefaultPreviewId1 ? 1 : 0));
+            const userMetrics = computeUserBotMetrics(activeTargetWallet, activeTargetId, data);
+
+            const totalCapVal = userMetrics.userCapital;
+            const investedVal = userMetrics.investedAmount;
+            const usdtBal = userMetrics.usdtBalance;
+            const solBal = userMetrics.solBalance;
+            pnl = userMetrics.unrealizedPnl;
+            pnlPct = userMetrics.unrealizedPct;
             const avgPrice = parseFloat(data.avgEntryPrice || 0);
             const tHigh = parseFloat(data.tsHigh || data.trailingHigh || data.lastPeakPrice || 0);
             const tLow = parseFloat(data.tsLow || data.trailingLow || 0);
@@ -8969,53 +9590,11 @@ window.addEventListener('DOMContentLoaded', () => {
                 roundDisplay.innerHTML = "Shine Bot | P" + phase + " R" + round + " | TSL: " + tLow.toFixed(2);
             }
 
-            const homeSpotRealized = parseFloat(data.spotRealizedPnl !== undefined ? data.spotRealizedPnl : 0.0);
-            const total4BotsRealized = parseFloat(data.realizedPnl !== undefined ? data.realizedPnl : (homeSpotRealized + parseFloat(data.microRealizedPnl || 0) + parseFloat(data.killer2RealizedPnl || 0) + parseFloat(data.killer3RealizedPnl || 0)));
+            const wins = userMetrics.wins;
+            const losses = userMetrics.losses;
+            const total4BotsRealized = userMetrics.realizedProfit;
+            const calcBot24h = userMetrics.profit24h;
 
-            const netRealizedEl = document.getElementById("realized-pnl-val");
-            if (netRealizedEl) {
-                const rSign = total4BotsRealized >= 0 ? "+" : "";
-                netRealizedEl.innerText = rSign + "$" + total4BotsRealized.toFixed(2);
-                netRealizedEl.style.color = total4BotsRealized >= 0 ? "#4CAF50" : "#f6465d";
-            }
-            
-            const oneDayAgo = Date.now() - (24 * 60 * 60 * 1000);
-            let calcBot24h = 0.0;
-            const fourBotsTrades = [
-                ...(Array.isArray(data.spotTradesHistory) ? data.spotTradesHistory : []),
-                ...(Array.isArray(data.microTradesHistory) ? data.microTradesHistory : []),
-                ...(Array.isArray(data.killer2TradesHistory) ? data.killer2TradesHistory : []),
-                ...(Array.isArray(data.killer3TradesHistory) ? data.killer3TradesHistory : [])
-            ];
-            fourBotsTrades.forEach(t => {
-                const ordId = String(t.orderId || t.order_id || "").toUpperCase();
-                const isManual = ordId.startsWith("MAN_") || ordId.startsWith("ATL_") || ordId.startsWith("ORD_") || ordId.startsWith("COPY_") || ordId.startsWith("CPOS_") || ordId.startsWith("BOT_");
-                if (!isManual) {
-                    const sideStr = String(t.side || t.execType || "").toUpperCase();
-                    const isExit = sideStr.includes("SELL") || sideStr.includes("EXIT") || sideStr.includes("PROFIT");
-                    if (isExit) {
-                        const tTime = t.timestamp ? new Date(t.timestamp).getTime() : 0;
-                        if (!tTime || isNaN(tTime) || tTime >= oneDayAgo) {
-                            calcBot24h += parseFloat(t.profit || t.realizedPnl || 0.0);
-                        }
-                    }
-                }
-            });
-            calcBot24h = Math.round(calcBot24h * 10000) / 10000;
-            if (calcBot24h <= 0.0 && total4BotsRealized > 0.0) {
-                calcBot24h = total4BotsRealized;
-            }
-            const bot24El = document.getElementById("bot-24h-profit");
-            if (bot24El) {
-                const sign = calcBot24h >= 0 ? "+" : "";
-                bot24El.innerText = sign + "$" + calcBot24h.toFixed(2);
-                bot24El.style.color = calcBot24h >= 0 ? "#00e676" : "#f6465d";
-            }
-            const poster24El = document.getElementById("poster-24h-profit");
-            if (poster24El) {
-                const sign = calcBot24h >= 0 ? "+" : "";
-                poster24El.innerText = sign + "$" + calcBot24h.toFixed(2);
-            }
             const tslDistEl = document.getElementById("tsl-distance");
             if (tslDistEl && livePrice > 0) {
                 const curStop = tLow > 0 ? tLow : (livePrice * 0.99);
@@ -9023,96 +9602,8 @@ window.addEventListener('DOMContentLoaded', () => {
                 tslDistEl.innerText = gap > 0 ? ("+$" + gap.toFixed(2)) : "$0.00";
             }
 
-            const homeProfitEl = document.getElementById("realProfitValue");
-            if (homeProfitEl) {
-                const combinedProfit = total4BotsRealized + (pnl > 0 ? pnl : 0);
-                homeProfitEl.innerText = "$" + combinedProfit.toFixed(2);
-            }
-            const posterProfit = document.getElementById("poster-profit-val");
-            if (posterProfit) {
-                posterProfit.innerText = (total4BotsRealized >= 0 ? "+" : "") + "$" + total4BotsRealized.toFixed(2);
-            }
-            const poster24h = document.getElementById("poster-24h-profit");
-            if (poster24h) {
-                poster24h.innerText = (calcBot24h >= 0 ? "+" : "") + "$" + calcBot24h.toFixed(2);
-            }
-
-            let wins = 0;
-            let losses = 0;
-            if (data.spotTradesHistory && Array.isArray(data.spotTradesHistory)) {
-                data.spotTradesHistory.forEach(tr => {
-                    const ordId = String(tr.orderId || tr.order_id || "").toUpperCase();
-                    const execType = String(tr.execType || tr.exec_type || "").toUpperCase();
-                    const label = String(tr.label || "").toUpperCase();
-                    const botType = String(tr.botType || tr.bot_type || "").toUpperCase();
-                    const isManual = ordId.startsWith("MAN_") || ordId.startsWith("ORD_") || ordId.startsWith("COPY_") || ordId.startsWith("CPOS_") || execType.includes("MANUAL") || execType.includes("COPY");
-                    const isKiller = ordId.startsWith("M_") || ordId.startsWith("K2_") || ordId.startsWith("K3_") || execType.includes("MICRO") || execType.includes("KILLER") || execType.includes("SCALP") || label.includes("MICRO") || label.includes("KILLER") || label.includes("APEX") || label.includes("QUANTUM") || label.includes("TITAN ABYSS");
-                    const isHyper = ordId.startsWith("HYPER_") || execType.includes("HYPER") || label.includes("HYPER") || botType.includes("HYPER") || label.includes("TITAN POOL");
-                    const isSingularity = ordId.startsWith("SNG_") || execType.includes("SINGULARITY") || label.includes("SINGULARITY");
-                    const isLoop = ordId.startsWith("ATL_") || execType.includes("AUTO_LOOP");
-                    if (!isManual && !isKiller && !isHyper && !isSingularity && !isLoop && tr.side === "SELL") {
-                        if (parseFloat(tr.profit || tr.realizedPnl || 0) >= 0) wins++;
-                        else losses++;
-                    }
-                });
-            }
-
-            const winTag = document.getElementById("win-tag");
-            const lossTag = document.getElementById("loss-tag");
-            if (winTag) winTag.innerText = wins.toString();
-            if (lossTag) lossTag.innerText = losses.toString();
-
-            let dailyWins = 0;
-            const countedExitIds = new Set();
-            fourBotsTrades.forEach(tr => {
-                const ordId = String(tr.orderId || tr.order_id || "").toUpperCase();
-                const isExit = String(tr.side || "").toUpperCase().includes("SELL") || String(tr.execType || "").toUpperCase().includes("EXIT");
-                if (isExit && parseFloat(tr.profit || tr.realizedPnl || 0) >= 0 && !countedExitIds.has(ordId)) {
-                    countedExitIds.add(ordId);
-                    dailyWins++;
-                }
-            });
-            const homeTradesEl = document.getElementById("successTradeCount");
-            if (homeTradesEl) {
-                homeTradesEl.innerText = dailyWins.toString();
-            }
-
-            const spotCashBal = (data.manualTestBalance !== undefined) ? parseFloat(data.manualTestBalance) : (data.usdtBalance !== undefined ? parseFloat(data.usdtBalance) : 100.0);
-            let userHoldingSolAmt = 0.0;
-            if (data.walletActivePositions && Array.isArray(data.walletActivePositions)) {
-                data.walletActivePositions.forEach(p => { userHoldingSolAmt += parseFloat(p.solAmount || 0); });
-            }
             updateOnChainShineBalance();
-
-            const currentClaimable = Math.max(0, total4BotsRealized - (typeof userClaimedProfit !== 'undefined' ? userClaimedProfit : 0));
-            const refTotal = parseFloat(window.userReferralProfitTotal || 0);
-            const combinedUsdt = currentClaimable + refTotal;
-            const homeProfitUsdtEl = document.getElementById("homeProfitUsdt");
-            if (homeProfitUsdtEl) {
-                homeProfitUsdtEl.innerText = combinedUsdt.toFixed(2);
-            }
-            const homePassiveEl = document.getElementById("homePassiveIncomeVal");
-            if (homePassiveEl) {
-                homePassiveEl.innerText = combinedUsdt.toFixed(2);
-            }
-            const homeClaimDispEl = document.getElementById("homeClaimValueDisplay");
-            if (homeClaimDispEl) {
-                homeClaimDispEl.innerText = combinedUsdt.toFixed(2);
-            }
-            const ruleProfitEl = document.getElementById("ruleTradingProfitVal");
-            if (ruleProfitEl) {
-                ruleProfitEl.innerText = currentClaimable.toFixed(2);
-            }
-
-            const totalExits = wins + losses;
-            const winRateEl = document.getElementById("bot-win-rate");
-            if (winRateEl) {
-                const rate = totalExits > 0 ? ((wins / totalExits) * 100).toFixed(1) : "0";
-                winRateEl.innerText = rate + "%";
-            }
-
-            const countPill = document.getElementById("trade-count-pill");
-            if (countPill) countPill.innerText = totalExits.toString();
+            applyUserBotMetricsToUI(activeTargetWallet, activeTargetId, userMetrics);
 
             const cdBadge = document.getElementById("bot-cooldown-badge");
             const cdTimer = document.getElementById("cooldown-timer");
@@ -9339,17 +9830,7 @@ window.addEventListener('DOMContentLoaded', () => {
                 }
             }
 
-            let spotList = Array.isArray(data.spotTradesHistory) ? [...data.spotTradesHistory] : [];
-            const seenSpotOrderIds = new Set();
-            const cleanSpotList = [];
-            spotList.forEach(t => {
-                const oId = String(t.orderId || t.order_id || "").toUpperCase().trim();
-                if (oId && !seenSpotOrderIds.has(oId) && parseFloat(t.solAmount || t.sol_amount || 0) > 0) {
-                    seenSpotOrderIds.add(oId);
-                    cleanSpotList.push(t);
-                }
-            });
-            cachedAllTrades = cleanSpotList;
+            cachedAllTrades = userMetrics.userSpotTrades;
             renderAuditHistoryList(cachedAllTrades);
             if (data.latestSignal && data.latestSignal.text) {
                 const sigText = "SIGNAL: " + data.latestSignal.text;
@@ -12014,15 +12495,8 @@ function updateHyperTitanModalData(data) {
         function previewSpecificId() {
             const val = document.getElementById('gatePreviewInput').value.trim();
             if (!val) return;
-            document.getElementById('headerIdDisplay').innerText = `Preview ID ${val}`;
-            document.querySelector('.profile-id').innerHTML = `ID ${val} <span id="userRank" style="margin-left:8px; background:linear-gradient(90deg, #FFD700, #FFA500); color:#000; padding:2px 8px; border-radius:10px; font-size:10px; font-weight:900;">VIEW MODE</span>`;
-            const pLink = document.getElementById('userPersonalReferralLink');
-            if (pLink) {
-                const cleanOrigin = window.location.origin.replace(/\/$/, "");
-                pLink.innerText = cleanOrigin + "/?ref=" + val;
-            }
-            enterDashboard();
-            loadPreviewById(Number(val));
+            enterDashboardViewOnly();
+            previewAccountById(val);
         }
 
         let isBotPaused = false;
@@ -15479,7 +15953,7 @@ if (installBtn) {
         </div>
         <div style="font-size: 13px; font-weight: 800; color: #ffffff; margin-top: 6px;">Team Members & Upgraded Slots</div>
         <div id="modalTeamMembersList" style="display: flex; flex-direction: column; gap: 10px;"></div>
-        <div style="font-size: 13px; font-weight: 800; color: #ffffff; margin-top: 10px;">5% / 3% / 2% Referral Rewards Log</div>
+        <div style="font-size: 13px; font-weight: 800; color: #ffffff; margin-top: 10px;">5% Referral Rewards Log</div>
         <div id="modalRewardsLogList" style="display: flex; flex-direction: column; gap: 8px;"></div>
     </div>
 </div>
@@ -15499,19 +15973,317 @@ function closeTeamDetailsModal() {
     if (m) m.classList.remove("active");
 }
 
-async function loadPreviewById(targetId) {
-    if (!targetId || isNaN(targetId)) return;
-    await syncOnChainMembersToSupabase();
-    try {
-        const shineIface = new ethers.utils.Interface(SHINE_ABI);
-        const resAddrHex = await publicBscRpcCall("eth_call", [{ to: SHINE_CONTRACT_ADDRESS, data: shineIface.encodeFunctionData("idToAddress", [targetId]) }, "latest"]);
-        if (resAddrHex && resAddrHex !== "0x") {
-            const targetAddr = shineIface.decodeFunctionResult("idToAddress", resAddrHex)[0];
-            if (targetAddr && targetAddr !== ethers.constants.AddressZero) {
-                await loadUserNetworkStatsFromSupabase(targetAddr.toLowerCase(), targetId);
+function toggleContractsList() {
+    const box = document.getElementById("contractsListBox");
+    const arrow = document.getElementById("contractsArrowIcon");
+    if (!box) return;
+    const isHidden = box.style.display === "none" || box.style.display === "";
+    box.style.display = isHidden ? "flex" : "none";
+    if (arrow) arrow.innerText = isHidden ? "arrow_drop_up" : "arrow_drop_down";
+    const mLink = document.getElementById("contractLinkMain");
+    const uLink = document.getElementById("contractLinkUsdt");
+    const sLink = document.getElementById("contractLinkShine");
+    const vLink = document.getElementById("contractLinkVault");
+    if (mLink) mLink.href = BSCSCAN_BASE_URL + "/address/" + SHINE_CONTRACT_ADDRESS;
+    if (uLink) uLink.href = BSCSCAN_BASE_URL + "/address/" + activeUsdtTokenAddress;
+    if (sLink) sLink.href = BSCSCAN_BASE_URL + "/address/" + activeShineTokenAddress;
+    if (vLink) vLink.href = BSCSCAN_BASE_URL + "/address/" + SHINE_VAULT_ADDRESS;
+}
+
+function copyContractAddress(addr) {
+    if (navigator.clipboard && navigator.clipboard.writeText) {
+        navigator.clipboard.writeText(addr);
+    }
+    alert("Contract Address Copied:\n" + addr);
+}
+
+function searchIdFromSideMenu() {
+    const inp = document.getElementById("sideMenuSearchInput");
+    const val = inp ? inp.value.trim() : "";
+    if (!val) return;
+    toggleMenu();
+    previewAccountById(val);
+}
+
+function exitPreviewMode() {
+    window.currentPreviewWallet = null;
+    window.currentPreviewId = null;
+    window.isViewingOtherProfile = false;
+    window.previewActiveLevels = {};
+    const sideMenu = document.getElementById("sideMenu");
+    if (sideMenu && sideMenu.classList.contains("active")) {
+        toggleMenu();
+    }
+    if (userWallet) {
+        syncOnChainUserData();
+    } else {
+        previewAccountById(1);
+    }
+}
+
+function togglePlatformActivity24h() {
+    window.showAllPlatform24h = !window.showAllPlatform24h;
+    renderPlatformActivityFeed(window.cachedPlatformEvents || []);
+}
+
+function formatActivityTime(isoStr) {
+    if (!isoStr) return "Live";
+    const t = new Date(isoStr).getTime();
+    if (isNaN(t)) return "Live";
+    const diffSec = Math.max(0, Math.floor((Date.now() - t) / 1000));
+    if (diffSec < 60) return diffSec + "s ago";
+    if (diffSec < 3600) return Math.floor(diffSec / 60) + "m ago";
+    if (diffSec < 86400) return Math.floor(diffSec / 3600) + "h ago";
+    return new Date(t).toLocaleDateString();
+}
+
+function renderPlatformActivityFeed(events) {
+    const feedEl = document.getElementById("liveActivityFeed");
+    const seeMoreBtn = document.getElementById("platformActivitySeeMoreBtn");
+    if (!feedEl) return;
+
+    const nowMs = Date.now();
+    const oneDayMs = 24 * 60 * 60 * 1000;
+    const events24h = events.filter(ev => ev.timeMs > 0 && (nowMs - ev.timeMs) <= oneDayMs);
+    const listToShow = window.showAllPlatform24h ? events24h : events.slice(0, 10);
+
+    if (listToShow.length === 0) {
+        feedEl.innerHTML = '<div style="text-align:center; color:#718096; padding:20px 0; font-size:13px;">No recent activity found.</div>';
+    } else {
+        feedEl.innerHTML = listToShow.map(item => {
+            const iconBg = item.type === "JOIN" ? "#1A237E" : "#1B5E20";
+            const iconName = item.type === "JOIN" ? "person_add" : "bolt";
+            const iconColor = item.type === "JOIN" ? "#5C6BC0" : "#4CAF50";
+            const rightHtml = item.type === "JOIN"
+                ? '<span class="event-amount" style="color:#4CAF50;">New Member Joined</span> <span class="event-program">by <span class="blue-text" style="cursor:pointer; text-decoration:underline;" onclick="previewAccountById(' + (item.uplineId || 1) + ')">ID ' + (item.uplineId || 1) + '</span></span>'
+                : '<span class="event-amount">+' + item.amount.toFixed(2) + ' USDT (' + item.tierPct + ')</span> <span class="event-program">to <span class="blue-text" style="cursor:pointer; text-decoration:underline;" onclick="previewAccountById(' + item.recipientId + ')">ID ' + item.recipientId + '</span> in <span class="blue-text">' + item.program + ' L' + item.level + '</span></span>';
+
+            return '<div class="recent-event">' +
+                '<div class="event-icon-bg" style="background: ' + iconBg + ';"><i class="material-icons" style="color:' + iconColor + ';">' + iconName + '</i></div>' +
+                '<div class="event-details">' +
+                    '<div class="event-top">' +
+                        '<span class="event-id" style="cursor:pointer;" onclick="previewAccountById(' + item.buyerId + ')">ID ' + item.buyerId + '</span>' +
+                        '<span class="event-time">' + formatActivityTime(item.createdAt) + '</span>' +
+                    '</div>' +
+                    '<div class="event-bottom">' + rightHtml + '</div>' +
+                '</div>' +
+            '</div>';
+        }).join("");
+    }
+
+    if (seeMoreBtn) {
+        if (events24h.length > 10 || events.length > 10) {
+            seeMoreBtn.style.display = "block";
+            seeMoreBtn.innerText = window.showAllPlatform24h
+                ? "Show Top 10"
+                : "See More (Last 24h: " + events24h.length + ")";
+        } else {
+            seeMoreBtn.style.display = "none";
+        }
+    }
+}
+
+async function previewAccountById(idOrAddr) {
+    if (!idOrAddr && idOrAddr !== 0) return;
+    const raw = String(idOrAddr).trim();
+    if (!raw) return;
+
+    let targetWallet = "";
+    let targetId = 0;
+
+    const allMemCache = [].concat(window.allNetworkMembersCache || []).concat(window.onChainMembersCache || []);
+    if (ethers.utils.isAddress(raw)) {
+        const rLower = raw.toLowerCase();
+        const found = allMemCache.find(m => m.wallet_address === rLower);
+        if (found) {
+            targetWallet = found.wallet_address;
+            targetId = Number(found.user_id);
+        } else if (rLower === ROOT_OWNER_ADDRESS.toLowerCase()) {
+            targetWallet = rLower;
+            targetId = 1;
+        }
+    } else if (!isNaN(raw) && Number(raw) > 0) {
+        const numId = Number(raw);
+        const found = allMemCache.find(m => Number(m.user_id) === numId);
+        if (found) {
+            targetWallet = found.wallet_address;
+            targetId = numId;
+        } else if (numId === 1) {
+            targetWallet = ROOT_OWNER_ADDRESS.toLowerCase();
+            targetId = 1;
+        }
+    }
+
+    if (!targetWallet || !targetId) {
+        try {
+            const shineIface = new ethers.utils.Interface(SHINE_ABI);
+            if (ethers.utils.isAddress(raw)) {
+                targetWallet = raw.toLowerCase();
+                const uHex = await publicBscRpcCall("eth_call", [{ to: SHINE_CONTRACT_ADDRESS, data: shineIface.encodeFunctionData("users", [targetWallet]) }, "latest"]);
+                if (uHex && uHex !== "0x") {
+                    const uDec = shineIface.decodeFunctionResult("users", uHex);
+                    if (uDec.isRegistered) targetId = Number(uDec.id);
+                }
+            } else if (!isNaN(raw) && Number(raw) > 0) {
+                targetId = Number(raw);
+                const resAddrHex = await publicBscRpcCall("eth_call", [{ to: SHINE_CONTRACT_ADDRESS, data: shineIface.encodeFunctionData("idToAddress", [targetId]) }, "latest"]);
+                if (resAddrHex && resAddrHex !== "0x") {
+                    const decAddr = shineIface.decodeFunctionResult("idToAddress", resAddrHex)[0];
+                    if (decAddr && decAddr !== ethers.constants.AddressZero) {
+                        targetWallet = decAddr.toLowerCase();
+                    }
+                }
+            }
+        } catch (e) {}
+    }
+
+    if (!targetWallet || !targetId) {
+        alert("Account not found on SHINE smart contract.");
+        return;
+    }
+
+    const isOwnAccount = Boolean(userWallet && userWallet.toLowerCase() === targetWallet);
+    if (isOwnAccount) {
+        window.currentPreviewWallet = null;
+        window.currentPreviewId = null;
+        window.isViewingOtherProfile = false;
+        await syncOnChainUserData();
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+        return;
+    }
+
+    window.currentPreviewWallet = targetWallet;
+    window.currentPreviewId = targetId;
+    window.isViewingOtherProfile = true;
+
+    document.getElementById('headerIdDisplay').innerText = 'Preview ID ' + targetId;
+    const sideTitle = document.getElementById('sideMenuTitle');
+    if (sideTitle) sideTitle.innerText = 'Preview ID ' + targetId;
+
+    const profIdEl = document.querySelector('.profile-id');
+    if (profIdEl) {
+        const badgeText = targetId === 1 ? "ROOT OWNER · VIEW" : "VIEW MODE";
+        profIdEl.innerHTML = 'ID ' + targetId + ' <span id="userRank" style="margin-left:8px; background:linear-gradient(90deg, #FFD700, #FFA500); color:#000; padding:2px 8px; border-radius:10px; font-size:10px; font-weight:900;">' + badgeText + '</span>';
+    }
+
+    const pLink = document.getElementById('userPersonalReferralLink');
+    if (pLink) {
+        const cleanOrigin = window.location.origin.replace(/\/$/, "");
+        pLink.innerText = cleanOrigin + "/?ref=" + targetId;
+    }
+
+    const cachedMember = allMemCache.find(m => m.wallet_address === targetWallet);
+    let previewUplineId = cachedMember && cachedMember.upline_id ? Number(cachedMember.upline_id) : 0;
+    let joinDateText = cachedMember && cachedMember.joined_at ? new Date(cachedMember.joined_at).toLocaleDateString() : "Active";
+    window.currentPreviewUplineId = previewUplineId;
+
+    const applyUplineUi = (uIdVal, jDateStr) => {
+        const upBar = document.getElementById('profileUplineBar');
+        const upBadge = document.getElementById('profileUplineBadge');
+        if (upBar && upBadge) {
+            if (targetId > 1 && uIdVal > 0) {
+                upBar.style.display = 'block';
+                upBadge.innerText = 'ID ' + uIdVal;
+                upBadge.setAttribute('onclick', 'previewUpline(' + uIdVal + ')');
+            } else {
+                upBar.style.display = 'none';
             }
         }
-    } catch (e) {}
+        const expProf = document.getElementById('expandedProfile');
+        if (expProf) {
+            const shortW = targetWallet.substring(0, 6) + "..." + targetWallet.substring(targetWallet.length - 4);
+            const invitedHtml = (targetId > 1 && uIdVal > 0)
+                ? 'invited ' + jDateStr + ' by <span class="upline-badge" onclick="previewUpline(' + uIdVal + ')">ID ' + uIdVal + '</span>'
+                : 'Root Owner Account';
+            expProf.innerHTML = '<div class="wallet-address-row"><span id="displayWallet">' + shortW + '</span><i class="material-icons" style="font-size: 16px; color: #757575; cursor: pointer;" onclick="copyWallet()">content_copy</i></div><div class="invited-by-row">' + invitedHtml + '</div>';
+        }
+    };
+
+    applyUplineUi(previewUplineId, joinDateText);
+
+    const instantSlots = {};
+    if (targetId === 1 || targetWallet === ROOT_OWNER_ADDRESS.toLowerCase()) {
+        ['V1', 'Q2', 'T3', 'S4', 'G5', 'N6', 'A7', 'C8', 'S9', 'Q10', 'H11', 'O12', 'N13', 'E14', 'X15'].forEach(pName => {
+            for (let l = 1; l <= 12; l++) instantSlots[pName + '_' + l] = true;
+        });
+    } else {
+        const cachedSlotList = [].concat(window.allNetworkSlotsCache || []).concat(window.onChainSlotsCache || []);
+        cachedSlotList.forEach(s => {
+            if (s && s.wallet_address && s.wallet_address.toLowerCase() === targetWallet) {
+                instantSlots[s.program + '_' + s.level] = true;
+            }
+        });
+        if (Object.keys(instantSlots).length === 0) instantSlots['V1_1'] = true;
+    }
+
+    window.previewActiveLevels = instantSlots;
+    renderDashboardSlots();
+    applyUserBotMetricsToUI(targetWallet, targetId, latestBackendState);
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+
+    const nickEl = document.getElementById('displayNickname');
+    const avEl = document.getElementById('profileAvatar');
+    window.previewProfileCache = window.previewProfileCache || {};
+    if (window.previewProfileCache[targetWallet]) {
+        const cProf = window.previewProfileCache[targetWallet];
+        if (nickEl) nickEl.innerText = cProf.nickname || "User";
+        if (avEl) avEl.style.backgroundImage = "url('" + (cProf.avatar_url || 'https://i.imgur.com/O4u35tA.jpeg') + "')";
+    } else {
+        if (nickEl) nickEl.innerText = "User";
+        if (avEl) avEl.style.backgroundImage = "url('https://i.imgur.com/O4u35tA.jpeg')";
+        if (window.supabase) {
+            try {
+                const client = window.supabase.createClient(MAIN_SUPABASE_URL, MAIN_SUPABASE_KEY);
+                client.from('user_profiles').select('nickname, avatar_url').eq('wallet_address', targetWallet).single().then(({ data: profData }) => {
+                    if (profData) {
+                        window.previewProfileCache[targetWallet] = profData;
+                        if (window.currentPreviewWallet === targetWallet) {
+                            if (profData.nickname && nickEl) nickEl.innerText = profData.nickname;
+                            if (profData.avatar_url && avEl) avEl.style.backgroundImage = "url('" + profData.avatar_url + "')";
+                        }
+                    }
+                });
+            } catch (e) {}
+        }
+    }
+
+    if (!cachedMember && targetId > 1) {
+        (async () => {
+            try {
+                const shineIface = new ethers.utils.Interface(SHINE_ABI);
+                const uHex = await publicBscRpcCall("eth_call", [{ to: SHINE_CONTRACT_ADDRESS, data: shineIface.encodeFunctionData("users", [targetWallet]) }, "latest"]);
+                if (uHex && uHex !== "0x") {
+                    const uDec = shineIface.decodeFunctionResult("users", uHex);
+                    if (Number(uDec.joinDate) > 0) joinDateText = new Date(Number(uDec.joinDate) * 1000).toLocaleDateString();
+                    if (uDec.upline && uDec.upline !== ethers.constants.AddressZero) {
+                        const upHex = await publicBscRpcCall("eth_call", [{ to: SHINE_CONTRACT_ADDRESS, data: shineIface.encodeFunctionData("users", [uDec.upline]) }, "latest"]);
+                        if (upHex && upHex !== "0x") {
+                            const upDec = shineIface.decodeFunctionResult("users", upHex);
+                            if (upDec.isRegistered && Number(upDec.id) > 0) previewUplineId = Number(upDec.id);
+                        }
+                    }
+                    if (window.currentPreviewWallet === targetWallet) {
+                        window.currentPreviewUplineId = previewUplineId;
+                        applyUplineUi(previewUplineId, joinDateText);
+                    }
+                }
+            } catch (e) {}
+        })();
+    }
+
+    loadUserNetworkStatsFromSupabase(targetWallet, targetId);
+    if (targetId !== 1 && targetWallet !== ROOT_OWNER_ADDRESS.toLowerCase()) {
+        fetchActiveLevelsForWallet(targetWallet).then(freshSlots => {
+            if (window.currentPreviewWallet === targetWallet && Object.keys(freshSlots).length > 0) {
+                window.previewActiveLevels = freshSlots;
+                renderDashboardSlots();
+                applyUserBotMetricsToUI(targetWallet, targetId, latestBackendState);
+            }
+        });
+    }
+}
+async function loadPreviewById(targetId) {
+    await previewAccountById(targetId);
 }
 
 async function recordRegistrationToSupabase(walletAddr, uplineAddr, txHash) {
@@ -15628,186 +16400,322 @@ async function recordSlotAndReferralProfitsToSupabase(buyerWallet, prog, lvl, co
     } catch (e) {}
 }
 
-let isSyncingAllMembers = false;
+let activeSyncMembersPromise = null;
 
-async function syncOnChainMembersToSupabase() {
-    if (isSyncingAllMembers || !window.supabase) return;
-    isSyncingAllMembers = true;
-    try {
-        const client = window.supabase.createClient(MAIN_SUPABASE_URL, MAIN_SUPABASE_KEY);
-        const shineIface = new ethers.utils.Interface(SHINE_ABI);
-        const lastIdHex = await publicBscRpcCall("eth_call", [{ to: SHINE_CONTRACT_ADDRESS, data: shineIface.encodeFunctionData("lastUserId", []) }, "latest"]);
-        if (!lastIdHex || lastIdHex === "0x") return;
-        const totalUsers = Number(shineIface.decodeFunctionResult("lastUserId", lastIdHex)[0]);
+function syncOnChainMembersToSupabase() {
+    if (activeSyncMembersPromise) return activeSyncMembersPromise;
+    activeSyncMembersPromise = (async () => {
+        try {
+            const shineIface = new ethers.utils.Interface(SHINE_ABI);
+            const lastIdHex = await publicBscRpcCall("eth_call", [{ to: SHINE_CONTRACT_ADDRESS, data: shineIface.encodeFunctionData("lastUserId", []) }, "latest"]);
+            if (!lastIdHex || lastIdHex === "0x") return;
+            const totalUsers = Number(shineIface.decodeFunctionResult("lastUserId", lastIdHex)[0]);
 
-        const memEl = document.getElementById('totalMembers');
-        if (memEl) memEl.innerText = totalUsers.toString();
-
-        const maxScan = Math.min(totalUsers, 50);
-        const idCalls = [];
-        for (let i = 1; i <= maxScan; i++) {
-            idCalls.push({ target: SHINE_CONTRACT_ADDRESS, allowFailure: true, callData: shineIface.encodeFunctionData("idToAddress", [i]) });
-        }
-        const addrResults = await executeSingleMulticall(idCalls);
-        const wallets = [];
-        addrResults.forEach((r, idx) => {
-            if (r.success) {
-                const addr = shineIface.decodeFunctionResult("idToAddress", r.returnData)[0];
-                if (addr && addr !== ethers.constants.AddressZero) {
-                    wallets.push({ id: idx + 1, address: addr.toLowerCase() });
+            const wallets = [];
+            for (let start = 1; start <= totalUsers; start += 50) {
+                const end = Math.min(totalUsers, start + 49);
+                const idCalls = [];
+                for (let i = start; i <= end; i++) {
+                    idCalls.push({ target: SHINE_CONTRACT_ADDRESS, allowFailure: true, callData: shineIface.encodeFunctionData("idToAddress", [i]) });
                 }
-            }
-        });
-
-        const userCalls = wallets.map(w => ({ target: SHINE_CONTRACT_ADDRESS, allowFailure: true, callData: shineIface.encodeFunctionData("users", [w.address]) }));
-        const userResults = await executeSingleMulticall(userCalls);
-
-        const addressToId = {};
-        const addressToUpline = {};
-        const memberRows = [];
-
-        userResults.forEach((r, idx) => {
-            if (r.success) {
-                const u = shineIface.decodeFunctionResult("users", r.returnData);
-                const w = wallets[idx];
-                addressToId[w.address] = Number(u.id);
-                const upAddr = (u.upline && u.upline !== ethers.constants.AddressZero) ? u.upline.toLowerCase() : null;
-                addressToUpline[w.address] = upAddr;
-                const joinIso = Number(u.joinDate) > 0 ? new Date(Number(u.joinDate) * 1000).toISOString() : new Date().toISOString();
-                memberRows.push({
-                    wallet_address: w.address,
-                    user_id: Number(u.id),
-                    upline_address: upAddr,
-                    upline_id: upAddr ? (addressToId[upAddr] || 1) : null,
-                    joined_at: joinIso
+                const addrResults = await executeSingleMulticall(idCalls);
+                addrResults.forEach((r, idx) => {
+                    if (r.success) {
+                        const addr = shineIface.decodeFunctionResult("idToAddress", r.returnData)[0];
+                        if (addr && addr !== ethers.constants.AddressZero) {
+                            wallets.push({ id: start + idx, address: addr.toLowerCase() });
+                        }
+                    }
                 });
             }
-        });
 
-        memberRows.forEach(row => {
-            if (row.upline_address && addressToId[row.upline_address]) {
-                row.upline_id = addressToId[row.upline_address];
+            if (wallets.length === 0) return;
+
+            const userResults = [];
+            for (let i = 0; i < wallets.length; i += 50) {
+                const batch = wallets.slice(i, i + 50);
+                const userCalls = batch.map(w => ({ target: SHINE_CONTRACT_ADDRESS, allowFailure: true, callData: shineIface.encodeFunctionData("users", [w.address]) }));
+                const batchRes = await executeSingleMulticall(userCalls);
+                userResults.push(...batchRes);
             }
-        });
 
-        if (memberRows.length > 0) {
-            await client.from('shine_members').upsert(memberRows, { onConflict: 'wallet_address' });
-        }
+            const addressToId = {};
+            const addressToUpline = {};
+            const addressToJoinIso = {};
+            const memberRows = [];
 
-        const nonRootWallets = wallets.filter(w => w.id > 1);
-        if (nonRootWallets.length > 0) {
-            const progList = ['V1', 'Q2', 'T3', 'S4', 'G5', 'N6', 'A7', 'C8', 'S9', 'Q10', 'H11', 'O12', 'N13', 'E14', 'X15'];
-            const slotCalls = [];
-            const slotMeta = [];
-            nonRootWallets.forEach(w => {
-                for (let pIdx = 0; pIdx < 4; pIdx++) {
-                    const pName = progList[pIdx];
-                    for (let l = 0; l < 12; l++) {
-                        slotCalls.push({
-                            target: SHINE_CONTRACT_ADDRESS,
-                            allowFailure: true,
-                            callData: shineIface.encodeFunctionData("isUserLevelActive", [w.address, pIdx + 1, l])
-                        });
-                        slotMeta.push({ wallet: w.address, id: w.id, prog: pName, progNum: pIdx + 1, lvl: l + 1, cost: progPrices[pName][l] });
-                    }
+            userResults.forEach((r, idx) => {
+                if (r && r.success) {
+                    const u = shineIface.decodeFunctionResult("users", r.returnData);
+                    const w = wallets[idx];
+                    const numericId = Number(u.id) > 0 ? Number(u.id) : w.id;
+                    addressToId[w.address] = numericId;
+                    const upAddr = (u.upline && u.upline !== ethers.constants.AddressZero) ? u.upline.toLowerCase() : null;
+                    addressToUpline[w.address] = numericId === 1 ? null : (upAddr || ROOT_OWNER_ADDRESS.toLowerCase());
+                    const joinIso = Number(u.joinDate) > 0 ? new Date(Number(u.joinDate) * 1000).toISOString() : new Date().toISOString();
+                    addressToJoinIso[w.address] = joinIso;
+                    memberRows.push({
+                        wallet_address: w.address,
+                        user_id: numericId,
+                        upline_address: numericId === 1 ? null : (upAddr || ROOT_OWNER_ADDRESS.toLowerCase()),
+                        upline_id: numericId === 1 ? null : 1,
+                        joined_at: joinIso
+                    });
                 }
             });
 
-            const slotRes = await executeSingleMulticall(slotCalls);
+            memberRows.forEach(row => {
+                if (row.upline_address && addressToId[row.upline_address]) {
+                    row.upline_id = addressToId[row.upline_address];
+                }
+            });
+
+            window.onChainMembersCache = memberRows;
+
+            const memEl = document.getElementById('totalMembers');
+            if (memEl && memberRows.length > 0) memEl.innerText = memberRows.length.toString();
+
+            const nonRootWallets = wallets.filter(w => (addressToId[w.address] || w.id) > 1);
             const activeSlotRows = [];
             const rewardRows = [];
+            const seenSlotKey = new Set();
 
-            slotRes.forEach((sr, idx) => {
-                if (sr.success) {
-                    const isActive = Boolean(shineIface.decodeFunctionResult("isUserLevelActive", sr.returnData)[0]);
-                    if (isActive) {
-                        const meta = slotMeta[idx];
-                        activeSlotRows.push({
-                            wallet_address: meta.wallet,
-                            program: meta.prog,
-                            level: meta.lvl,
-                            cost: meta.cost,
-                            activated_at: new Date().toISOString()
-                        });
+            const pushSlotAndRewards = (walletAddr, memberId, progName, lvlNum, costVal) => {
+                const sKey = walletAddr + '_' + progName + '_' + lvlNum;
+                if (seenSlotKey.has(sKey)) return;
+                seenSlotKey.add(sKey);
+                const fallbackTs = addressToJoinIso[walletAddr] || new Date().toISOString();
+                activeSlotRows.push({
+                    wallet_address: walletAddr,
+                    program: progName,
+                    level: lvlNum,
+                    cost: costVal,
+                    activated_at: fallbackTs
+                });
+                const up1 = addressToUpline[walletAddr];
+                const up2 = up1 ? addressToUpline[up1] : null;
+                const up3 = up2 ? addressToUpline[up2] : null;
+                if (up1) {
+                    rewardRows.push({
+                        reward_key: walletAddr + '_' + progName + '_' + lvlNum + '_T1',
+                        buyer_wallet: walletAddr,
+                        buyer_id: memberId,
+                        program: progName,
+                        level: lvlNum,
+                        slot_cost: costVal,
+                        recipient_wallet: up1,
+                        recipient_id: addressToId[up1] || 1,
+                        reward_tier: 1,
+                        reward_amount: Number((costVal * 0.05).toFixed(4)),
+                        created_at: fallbackTs
+                    });
+                }
+                if (up2) {
+                    rewardRows.push({
+                        reward_key: walletAddr + '_' + progName + '_' + lvlNum + '_T2',
+                        buyer_wallet: walletAddr,
+                        buyer_id: memberId,
+                        program: progName,
+                        level: lvlNum,
+                        slot_cost: costVal,
+                        recipient_wallet: up2,
+                        recipient_id: addressToId[up2] || 1,
+                        reward_tier: 2,
+                        reward_amount: Number((costVal * 0.03).toFixed(4)),
+                        created_at: fallbackTs
+                    });
+                }
+                if (up3) {
+                    rewardRows.push({
+                        reward_key: walletAddr + '_' + progName + '_' + lvlNum + '_T3',
+                        buyer_wallet: walletAddr,
+                        buyer_id: memberId,
+                        program: progName,
+                        level: lvlNum,
+                        slot_cost: costVal,
+                        recipient_wallet: up3,
+                        recipient_id: addressToId[up3] || 1,
+                        reward_tier: 3,
+                        reward_amount: Number((costVal * 0.02).toFixed(4)),
+                        created_at: fallbackTs
+                    });
+                }
+            };
 
-                        const up1 = addressToUpline[meta.wallet];
-                        const up2 = up1 ? addressToUpline[up1] : null;
-                        const up3 = up2 ? addressToUpline[up2] : null;
-
-                        if (up1) {
-                            rewardRows.push({
-                                reward_key: `${meta.wallet}_${meta.prog}_${meta.lvl}_T1`,
-                                buyer_wallet: meta.wallet,
-                                buyer_id: meta.id,
-                                program: meta.prog,
-                                level: meta.lvl,
-                                slot_cost: meta.cost,
-                                recipient_wallet: up1,
-                                recipient_id: addressToId[up1] || 1,
-                                reward_tier: 1,
-                                reward_amount: Number((meta.cost * 0.05).toFixed(4))
+            if (nonRootWallets.length > 0) {
+                const progList = ['V1', 'Q2', 'T3', 'S4', 'G5', 'N6', 'A7', 'C8', 'S9', 'Q10', 'H11', 'O12', 'N13', 'E14', 'X15'];
+                const slotCalls = [];
+                const slotMeta = [];
+                nonRootWallets.forEach(w => {
+                    const mId = addressToId[w.address] || w.id;
+                    pushSlotAndRewards(w.address, mId, 'V1', 1, 10);
+                    for (let pIdx = 0; pIdx < progList.length; pIdx++) {
+                        const pName = progList[pIdx];
+                        for (let l = 0; l < 12; l++) {
+                            slotCalls.push({
+                                target: SHINE_CONTRACT_ADDRESS,
+                                allowFailure: true,
+                                callData: shineIface.encodeFunctionData("isUserLevelActive", [w.address, pIdx + 1, l])
                             });
-                        }
-                        if (up2) {
-                            rewardRows.push({
-                                reward_key: `${meta.wallet}_${meta.prog}_${meta.lvl}_T2`,
-                                buyer_wallet: meta.wallet,
-                                buyer_id: meta.id,
-                                program: meta.prog,
-                                level: meta.lvl,
-                                slot_cost: meta.cost,
-                                recipient_wallet: up2,
-                                recipient_id: addressToId[up2] || 1,
-                                reward_tier: 2,
-                                reward_amount: Number((meta.cost * 0.03).toFixed(4))
-                            });
-                        }
-                        if (up3) {
-                            rewardRows.push({
-                                reward_key: `${meta.wallet}_${meta.prog}_${meta.lvl}_T3`,
-                                buyer_wallet: meta.wallet,
-                                buyer_id: meta.id,
-                                program: meta.prog,
-                                level: meta.lvl,
-                                slot_cost: meta.cost,
-                                recipient_wallet: up3,
-                                recipient_id: addressToId[up3] || 1,
-                                reward_tier: 3,
-                                reward_amount: Number((meta.cost * 0.02).toFixed(4))
-                            });
+                            slotMeta.push({ wallet: w.address, id: mId, prog: pName, lvl: l + 1, cost: progPrices[pName][l] });
                         }
                     }
-                }
-            });
+                });
 
-            if (activeSlotRows.length > 0) {
-                await client.from('user_activated_slots').upsert(activeSlotRows, { onConflict: 'wallet_address,program,level', ignoreDuplicates: true });
+                const slotRes = [];
+                for (let i = 0; i < slotCalls.length; i += 180) {
+                    const batchCalls = slotCalls.slice(i, i + 180);
+                    try {
+                        const batchRes = await executeSingleMulticall(batchCalls);
+                        slotRes.push(...batchRes);
+                    } catch (err) {
+                        slotRes.push(...batchCalls.map(() => ({ success: false })));
+                    }
+                }
+
+                slotRes.forEach((sr, idx) => {
+                    if (sr && sr.success) {
+                        let isActive = false;
+                        try {
+                            isActive = Boolean(shineIface.decodeFunctionResult("isUserLevelActive", sr.returnData)[0]);
+                        } catch (e) {}
+                        if (isActive) {
+                            const meta = slotMeta[idx];
+                            pushSlotAndRewards(meta.wallet, meta.id, meta.prog, meta.lvl, meta.cost);
+                        }
+                    }
+                });
             }
-            if (rewardRows.length > 0) {
-                await client.from('shine_referral_rewards').upsert(rewardRows, { onConflict: 'reward_key', ignoreDuplicates: true });
+
+            window.onChainSlotsCache = activeSlotRows;
+            window.onChainRewardsCache = rewardRows;
+
+            if (window.supabase) {
+                try {
+                    const client = window.supabase.createClient(MAIN_SUPABASE_URL, MAIN_SUPABASE_KEY);
+                    if (memberRows.length > 0) {
+                        await client.from('shine_members').upsert(memberRows, { onConflict: 'wallet_address' });
+                    }
+                    if (activeSlotRows.length > 0) {
+                        await client.from('user_activated_slots').upsert(activeSlotRows, { onConflict: 'wallet_address,program,level', ignoreDuplicates: true });
+                    }
+                    if (rewardRows.length > 0) {
+                        const cleanRewards = rewardRows.map(r => ({
+                            reward_key: r.reward_key,
+                            buyer_wallet: r.buyer_wallet,
+                            buyer_id: r.buyer_id,
+                            program: r.program,
+                            level: r.level,
+                            slot_cost: r.slot_cost,
+                            recipient_wallet: r.recipient_wallet,
+                            recipient_id: r.recipient_id,
+                            reward_tier: r.reward_tier,
+                            reward_amount: r.reward_amount
+                        }));
+                        await client.from('shine_referral_rewards').upsert(cleanRewards, { onConflict: 'reward_key', ignoreDuplicates: true });
+                    }
+                } catch (dbErr) {}
             }
+        } catch (e) {
+        } finally {
+            activeSyncMembersPromise = null;
         }
-    } catch (e) {
-    } finally {
-        isSyncingAllMembers = false;
-    }
+    })();
+    return activeSyncMembersPromise;
 }
 
 async function loadUserNetworkStatsFromSupabase(targetWalletLower, targetId) {
-    if (!window.supabase || !targetWalletLower) return;
+    if (!targetWalletLower) return;
     try {
-        const client = window.supabase.createClient(MAIN_SUPABASE_URL, MAIN_SUPABASE_KEY);
-        const [membersRes, slotsRes, rewardsRes] = await Promise.all([
-            client.from('shine_members').select('*').order('user_id', { ascending: true }),
-            client.from('user_activated_slots').select('*'),
-            client.from('shine_referral_rewards').select('*').order('created_at', { ascending: false })
-        ]);
+        let dbMembers = [];
+        let dbSlots = [];
+        let dbRewards = [];
 
-        const allMembers = (membersRes && membersRes.data) ? membersRes.data : [];
-        const allSlots = (slotsRes && slotsRes.data) ? slotsRes.data : [];
-        const allRewards = (rewardsRes && rewardsRes.data) ? rewardsRes.data : [];
+        if (window.supabase) {
+            try {
+                const client = window.supabase.createClient(MAIN_SUPABASE_URL, MAIN_SUPABASE_KEY);
+                const [membersRes, slotsRes, rewardsRes] = await Promise.all([
+                    client.from('shine_members').select('*').order('user_id', { ascending: true }),
+                    client.from('user_activated_slots').select('*'),
+                    client.from('shine_referral_rewards').select('*').order('created_at', { ascending: false })
+                ]);
+                dbMembers = (membersRes && membersRes.data) ? membersRes.data : [];
+                dbSlots = (slotsRes && slotsRes.data) ? slotsRes.data : [];
+                dbRewards = (rewardsRes && rewardsRes.data) ? rewardsRes.data : [];
+            } catch (dbErr) {}
+        }
+
+        const memberMap = {};
+        dbMembers.forEach(m => {
+            if (m && m.wallet_address) {
+                memberMap[m.wallet_address.toLowerCase()] = Object.assign({}, m, {
+                    wallet_address: m.wallet_address.toLowerCase(),
+                    upline_address: m.upline_address ? m.upline_address.toLowerCase() : null
+                });
+            }
+        });
+        (window.onChainMembersCache || []).forEach(m => {
+            const k = m.wallet_address.toLowerCase();
+            const existing = memberMap[k];
+            memberMap[k] = Object.assign({}, existing || {}, m, {
+                wallet_address: k,
+                upline_address: m.upline_address ? m.upline_address.toLowerCase() : null,
+                joined_at: (existing && existing.joined_at) ? existing.joined_at : m.joined_at
+            });
+        });
+        const allMembers = Object.values(memberMap).sort((a, b) => Number(a.user_id) - Number(b.user_id));
+        window.allNetworkMembersCache = allMembers;
+
+        const slotMap = {};
+        dbSlots.forEach(s => {
+            if (s && s.wallet_address) {
+                const k = s.wallet_address.toLowerCase() + '_' + s.program + '_' + s.level;
+                slotMap[k] = Object.assign({}, s, { wallet_address: s.wallet_address.toLowerCase() });
+            }
+        });
+        (window.onChainSlotsCache || []).forEach(s => {
+            const k = s.wallet_address.toLowerCase() + '_' + s.program + '_' + s.level;
+            if (!slotMap[k]) {
+                slotMap[k] = Object.assign({}, s, { wallet_address: s.wallet_address.toLowerCase() });
+            }
+        });
+        const allSlots = Object.values(slotMap);
+        window.allNetworkSlotsCache = allSlots;
+
+        const rewardMap = {};
+        dbRewards.forEach(r => {
+            if (r && r.reward_key) {
+                rewardMap[r.reward_key] = Object.assign({}, r, {
+                    buyer_wallet: (r.buyer_wallet || "").toLowerCase(),
+                    recipient_wallet: (r.recipient_wallet || "").toLowerCase()
+                });
+            }
+        });
+        (window.onChainRewardsCache || []).forEach(r => {
+            if (r && r.reward_key && !rewardMap[r.reward_key]) {
+                rewardMap[r.reward_key] = Object.assign({}, r, {
+                    buyer_wallet: (r.buyer_wallet || "").toLowerCase(),
+                    recipient_wallet: (r.recipient_wallet || "").toLowerCase()
+                });
+            }
+        });
+        const allRewards = Object.values(rewardMap).sort((a, b) => {
+            const ta = a.created_at ? new Date(a.created_at).getTime() : 0;
+            const tb = b.created_at ? new Date(b.created_at).getTime() : 0;
+            return tb - ta;
+        });
+        window.allNetworkRewardsCache = allRewards;
+
+        const nowMs = Date.now();
+        const oneDayMs = 24 * 60 * 60 * 1000;
+        const isWithin24h = (iso) => {
+            if (!iso) return false;
+            const t = new Date(iso).getTime();
+            return !isNaN(t) && (nowMs - t) <= oneDayMs;
+        };
 
         const directPartners = allMembers.filter(m => m.upline_address === targetWalletLower && m.wallet_address !== targetWalletLower);
+        const direct24hCount = directPartners.filter(m => isWithin24h(m.joined_at)).length;
 
         const teamQueue = [...directPartners];
         const visitedWallets = new Set([targetWalletLower]);
@@ -15824,35 +16732,97 @@ async function loadUserNetworkStatsFromSupabase(targetWalletLower, targetId) {
             });
         }
 
+        const team24hCount = fullTeam.filter(m => isWithin24h(m.joined_at)).length;
+
         const myRewards = allRewards.filter(r => r.recipient_wallet === targetWalletLower);
         let totalRefProfit = 0;
+        let refProfit24h = 0;
         const progProfits = {};
         myRewards.forEach(r => {
             const amt = parseFloat(r.reward_amount || 0);
             totalRefProfit += amt;
+            if (isWithin24h(r.created_at)) refProfit24h += amt;
             progProfits[r.program] = (progProfits[r.program] || 0) + amt;
         });
 
         window.userReferralProfitTotal = totalRefProfit;
 
-        const pStatEl = document.getElementById("statPartnersVal");
-        const tStatEl = document.getElementById("statTeamVal");
-        const rStatEl = document.getElementById("statRatioVal");
-        if (pStatEl) pStatEl.innerText = directPartners.length.toString();
-        if (tStatEl) tStatEl.innerText = fullTeam.length.toString();
-
+        const mySlots = allSlots.filter(s => s.wallet_address === targetWalletLower);
         let myInvestSum = 0;
-        allSlots.filter(s => s.wallet_address === targetWalletLower).forEach(s => {
-            myInvestSum += parseFloat(s.cost || 0);
+        let myShine24h = 0;
+        let myBnbTotal = 0;
+        let myBnb24h = 0;
+        mySlots.forEach(s => {
+            const c = parseFloat(s.cost || 0);
+            myInvestSum += c;
+            const bnbFee = (progFees[s.program] || 1) * 0.001;
+            myBnbTotal += bnbFee;
+            if (isWithin24h(s.activated_at)) {
+                myShine24h += c;
+                myBnb24h += bnbFee;
+            }
         });
+
+        const pStatEl = document.getElementById("statPartnersVal");
+        const p24El = document.getElementById("statPartners24h");
+        const tStatEl = document.getElementById("statTeamVal");
+        const t24El = document.getElementById("statTeam24h");
+        const rStatEl = document.getElementById("statRatioVal");
+
+        if (pStatEl) pStatEl.innerText = directPartners.length.toString();
+        if (p24El) p24El.innerText = direct24hCount > 0 ? "↑ " + direct24hCount : "";
+        if (tStatEl) tStatEl.innerText = fullTeam.length.toString();
+        if (t24El) t24El.innerText = team24hCount > 0 ? "↑ " + team24hCount : "";
         if (rStatEl) {
             const ratioPct = myInvestSum > 0 ? Math.round((totalRefProfit / myInvestSum) * 100) : 0;
-            rStatEl.innerText = `${ratioPct} %`;
+            rStatEl.innerText = ratioPct + " %";
         }
 
         const refBannerEl = document.getElementById("homeReferralProfitDisplay");
         if (refBannerEl) {
-            refBannerEl.innerText = `+${totalRefProfit.toFixed(2)} USDT`;
+            refBannerEl.innerText = "+" + totalRefProfit.toFixed(2) + " USDT";
+        }
+
+        const homeUsdt24hEl = document.getElementById("homeProfitUsdt24h");
+        if (homeUsdt24hEl) {
+            homeUsdt24hEl.innerText = refProfit24h > 0 ? "+" + refProfit24h.toFixed(2) : "";
+        }
+        const homeShine24hEl = document.getElementById("homeProfitShine24h");
+        if (homeShine24hEl) {
+            homeShine24hEl.innerText = myShine24h > 0 ? "+" + myShine24h.toFixed(2) : "";
+        }
+        const homeBnbEl = document.getElementById("homeProfitBnb");
+        const homeBnb24hEl = document.getElementById("homeProfitBnb24h");
+        if (homeBnbEl) {
+            const curBnb = parseFloat(homeBnbEl.innerText || "0") || 0;
+            if (window.isViewingOtherProfile || curBnb < myBnbTotal) {
+                homeBnbEl.innerText = myBnbTotal.toFixed(4);
+            }
+        }
+        if (homeBnb24hEl) {
+            homeBnb24hEl.innerText = myBnb24h > 0 ? "+" + myBnb24h.toFixed(4) : "";
+        }
+
+        if (window.isViewingOtherProfile) {
+            const homeProfitUsdtEl = document.getElementById("homeProfitUsdt");
+            const homeProfitShineEl = document.getElementById("homeProfitShine");
+            const homePassiveEl = document.getElementById("homePassiveIncomeVal");
+            const homeClaimEl = document.getElementById("homeClaimValueDisplay");
+            if (homeProfitUsdtEl) homeProfitUsdtEl.innerText = totalRefProfit.toFixed(2);
+            if (homePassiveEl) homePassiveEl.innerText = totalRefProfit.toFixed(2);
+            if (homeClaimEl) homeClaimEl.innerText = totalRefProfit.toFixed(2);
+            if (homeProfitShineEl) homeProfitShineEl.innerText = myInvestSum.toFixed(2);
+        } else {
+            const homeProfitUsdtEl = document.getElementById("homeProfitUsdt");
+            if (homeProfitUsdtEl) {
+                const curVal = parseFloat(homeProfitUsdtEl.innerText || "0") || 0;
+                if (curVal < totalRefProfit) homeProfitUsdtEl.innerText = totalRefProfit.toFixed(2);
+            }
+            const homeProfitShineEl = document.getElementById("homeProfitShine");
+            if (homeProfitShineEl) {
+                const curShine = parseFloat(homeProfitShineEl.innerText || "0") || 0;
+                if (curShine < myInvestSum) homeProfitShineEl.innerText = myInvestSum.toFixed(2);
+            }
         }
 
         document.querySelectorAll(".program-card").forEach(card => {
@@ -15862,29 +16832,83 @@ async function loadUserNetworkStatsFromSupabase(targetWalletLower, targetId) {
                 const valEl = card.querySelector(".prog-value");
                 if (valEl) {
                     const pEarn = progProfits[pCode] || 0;
-                    valEl.innerText = `${pEarn.toFixed(2)} USDT`;
+                    valEl.innerText = pEarn.toFixed(2) + " USDT";
                 }
             }
         });
 
+        const platformMembers24h = allMembers.filter(m => isWithin24h(m.joined_at)).length;
         const memEl = document.getElementById("totalMembers");
         const groEl = document.getElementById("memberGrowth");
         if (memEl && allMembers.length > 0) memEl.innerText = allMembers.length.toString();
-        if (groEl) groEl.innerText = `↑ ${allMembers.length}`;
+        if (groEl) groEl.innerText = "↑ " + platformMembers24h;
 
-        const feedEl = document.getElementById("liveActivityFeed");
-        if (feedEl && allRewards.length > 0) {
-            const latestItems = allRewards.slice(0, 8);
-            feedEl.innerHTML = latestItems.map(item => `
-                <div class="recent-event">
-                    <div class="event-icon-bg" style="background: #1B5E20;"><i class="material-icons">bolt</i></div>
-                    <div class="event-details">
-                        <div class="event-top"><span class="event-id">ID ${item.buyer_id || '-'}</span><span class="event-time">${item.created_at ? new Date(item.created_at).toLocaleDateString() : 'Live'}</span></div>
-                        <div class="event-bottom"><span class="event-amount">+${parseFloat(item.reward_amount || 0).toFixed(2)} USDT (${item.reward_tier === 1 ? '5%' : item.reward_tier === 2 ? '3%' : '2%'})</span> <span class="event-program">to ID ${item.recipient_id || 1} in <span class="blue-text">${item.program} L${item.level}</span></span></div>
-                    </div>
-                </div>
-            `).join("");
-        }
+        let platShineTotal = 0;
+        let platShine24h = 0;
+        let platBnbTotal = 0;
+        let platBnb24h = 0;
+        allSlots.forEach(s => {
+            const c = parseFloat(s.cost || 0);
+            const feeVal = (progFees[s.program] || 1) * 0.001;
+            platShineTotal += c;
+            platBnbTotal += feeVal;
+            if (isWithin24h(s.activated_at)) {
+                platShine24h += c;
+                platBnb24h += feeVal;
+            }
+        });
+
+        let platUsdtTotal = 0;
+        let platUsdt24h = 0;
+        allRewards.forEach(r => {
+            const amt = parseFloat(r.reward_amount || 0);
+            platUsdtTotal += amt;
+            if (isWithin24h(r.created_at)) platUsdt24h += amt;
+        });
+
+        const pTotShineEl = document.getElementById("platformTotalShine");
+        const pGroShineEl = document.getElementById("platformGrowthShine");
+        const pTotUsdtEl = document.getElementById("platformTotalUsdt");
+        const pGroUsdtEl = document.getElementById("platformGrowthUsdt");
+        const pTotBnbEl = document.getElementById("platformTotalBnb");
+        const pGroBnbEl = document.getElementById("platformGrowthBnb");
+
+        if (pTotShineEl) pTotShineEl.innerText = platShineTotal.toFixed(0) + " SHINE";
+        if (pGroShineEl) pGroShineEl.innerText = "+ " + platShine24h.toFixed(0) + " SHINE";
+        if (pTotUsdtEl) pTotUsdtEl.innerText = platUsdtTotal.toFixed(2) + " USDT";
+        if (pGroUsdtEl) pGroUsdtEl.innerText = "+ " + platUsdt24h.toFixed(2) + " USDT";
+        if (pTotBnbEl) pTotBnbEl.innerText = platBnbTotal.toFixed(4) + " BNB";
+        if (pGroBnbEl) pGroBnbEl.innerText = "+ " + platBnb24h.toFixed(4) + " BNB";
+
+        const unifiedEvents = [];
+        allMembers.forEach(m => {
+            if (Number(m.user_id) > 1) {
+                unifiedEvents.push({
+                    type: "JOIN",
+                    buyerId: m.user_id,
+                    uplineId: m.upline_id || 1,
+                    createdAt: m.joined_at,
+                    timeMs: m.joined_at ? new Date(m.joined_at).getTime() : 0
+                });
+            }
+        });
+        allRewards.forEach(r => {
+            unifiedEvents.push({
+                type: "REWARD",
+                buyerId: r.buyer_id || 1,
+                recipientId: r.recipient_id || 1,
+                amount: parseFloat(r.reward_amount || 0),
+                tierPct: r.reward_tier === 1 ? "5%" : r.reward_tier === 2 ? "3%" : "2%",
+                program: r.program,
+                level: r.level,
+                createdAt: r.created_at,
+                timeMs: r.created_at ? new Date(r.created_at).getTime() : 0
+            });
+        });
+
+        unifiedEvents.sort((a, b) => b.timeMs - a.timeMs);
+        window.cachedPlatformEvents = unifiedEvents;
+        renderPlatformActivityFeed(unifiedEvents);
 
         const mTitle = document.getElementById("teamModalTitle");
         const mDir = document.getElementById("modalDirectCount");
@@ -15893,61 +16917,57 @@ async function loadUserNetworkStatsFromSupabase(targetWalletLower, targetId) {
         const mList = document.getElementById("modalTeamMembersList");
         const mLog = document.getElementById("modalRewardsLogList");
 
-        if (mTitle) mTitle.innerText = `ID ${targetId} Partners & Team`;
+        if (mTitle) mTitle.innerText = "ID " + targetId + " Partners & Team";
         if (mDir) mDir.innerText = directPartners.length.toString();
         if (mTeam) mTeam.innerText = fullTeam.length.toString();
-        if (mProf) mProf.innerText = `+$${totalRefProfit.toFixed(2)}`;
+        if (mProf) mProf.innerText = "+$" + totalRefProfit.toFixed(2);
 
         if (mList) {
             if (fullTeam.length === 0) {
-                mList.innerHTML = `<div style="background:#11151e; border:1px solid #1a202c; border-radius:12px; padding:18px; text-align:center; color:#718096; font-size:13px;">No partners joined under ID ${targetId} yet.</div>`;
+                mList.innerHTML = '<div style="background:#11151e; border:1px solid #1a202c; border-radius:12px; padding:18px; text-align:center; color:#718096; font-size:13px;">No partners joined under ID ' + targetId + ' yet.</div>';
             } else {
                 mList.innerHTML = fullTeam.map(m => {
                     const isDirect = m.upline_address === targetWalletLower;
+                    const isNew24h = isWithin24h(m.joined_at);
                     const memberSlots = allSlots.filter(s => s.wallet_address === m.wallet_address);
                     const slotsBadges = memberSlots.length > 0
-                        ? memberSlots.map(s => `<span style="background:rgba(0,229,255,0.12); color:#00e5ff; padding:2px 7px; border-radius:6px; font-size:10px; font-weight:800; font-family:monospace;">${s.program} S${s.level} ($${s.cost})</span>`).join(" ")
-                        : `<span style="color:#718096; font-size:11px;">V1 S1 ($10)</span>`;
+                        ? memberSlots.map(s => '<span style="background:rgba(0,229,255,0.12); color:#00e5ff; padding:2px 7px; border-radius:6px; font-size:10px; font-weight:800; font-family:monospace;">' + s.program + ' S' + s.level + ' ($' + s.cost + ')</span>').join(" ")
+                        : '<span style="color:#718096; font-size:11px;">V1 S1 ($10)</span>';
                     const shortW = m.wallet_address.substring(0, 6) + "..." + m.wallet_address.substring(m.wallet_address.length - 4);
-                    return `
-                        <div style="background:#11151e; border:1px solid #1a202c; border-radius:14px; padding:12px 14px; display:flex; flex-direction:column; gap:8px;">
-                            <div style="display:flex; justify-content:space-between; align-items:center;">
-                                <div style="display:flex; align-items:center; gap:8px;">
-                                    <span style="background:#2563eb; color:#fff; padding:3px 9px; border-radius:8px; font-size:12px; font-weight:900;">ID ${m.user_id}</span>
-                                    <span style="color:#ffffff; font-size:12px; font-family:monospace;">${shortW}</span>
-                                </div>
-                                <span style="background:${isDirect ? 'rgba(0,230,118,0.15)' : 'rgba(255,215,0,0.15)'}; color:${isDirect ? '#00e676' : '#FFD700'}; padding:2px 8px; border-radius:6px; font-size:10px; font-weight:900;">${isDirect ? 'DIRECT (5%)' : 'DOWNLINE'}</span>
-                            </div>
-                            <div style="display:flex; flex-wrap:wrap; gap:6px;">${slotsBadges}</div>
-                        </div>
-                    `;
+                    const newBadge = isNew24h ? '<span style="background:rgba(76,175,80,0.2); color:#4CAF50; padding:2px 6px; border-radius:6px; font-size:10px; font-weight:900;">NEW 24H</span>' : "";
+                    return '<div style="background:#11151e; border:1px solid #1a202c; border-radius:14px; padding:12px 14px; display:flex; flex-direction:column; gap:8px;">' +
+                        '<div style="display:flex; justify-content:space-between; align-items:center;">' +
+                            '<div style="display:flex; align-items:center; gap:8px;">' +
+                                '<span style="background:#2563eb; color:#fff; padding:3px 9px; border-radius:8px; font-size:12px; font-weight:900; cursor:pointer;" onclick="closeTeamDetailsModal(); previewAccountById(' + m.user_id + ');">ID ' + m.user_id + '</span>' +
+                                '<span style="color:#ffffff; font-size:12px; font-family:monospace;">' + shortW + '</span>' +
+                                newBadge +
+                            '</div>' +
+                            '<span style="background:' + (isDirect ? 'rgba(0,230,118,0.15)' : 'rgba(255,215,0,0.15)') + '; color:' + (isDirect ? '#00e676' : '#FFD700') + '; padding:2px 8px; border-radius:6px; font-size:10px; font-weight:900;">' + (isDirect ? 'DIRECT (5%)' : 'DOWNLINE') + '</span>' +
+                        '</div>' +
+                        '<div style="display:flex; flex-wrap:wrap; gap:6px;">' + slotsBadges + '</div>' +
+                    '</div>';
                 }).join("");
             }
         }
 
         if (mLog) {
             if (myRewards.length === 0) {
-                mLog.innerHTML = `<div style="background:#11151e; border:1px solid #1a202c; border-radius:12px; padding:18px; text-align:center; color:#718096; font-size:13px;">No referral rewards recorded yet.</div>`;
+                mLog.innerHTML = '<div style="background:#11151e; border:1px solid #1a202c; border-radius:12px; padding:18px; text-align:center; color:#718096; font-size:13px;">No referral rewards recorded yet.</div>';
             } else {
-                mLog.innerHTML = myRewards.map(r => `
-                    <div style="background:#11151e; border:1px solid #1a202c; border-radius:12px; padding:10px 12px; display:flex; justify-content:space-between; align-items:center; font-family:monospace;">
-                        <div>
-                            <div style="color:#ffffff; font-size:12px; font-weight:800;">From ID ${r.buyer_id} · ${r.program} Slot ${r.level} ($${r.slot_cost})</div>
-                            <div style="color:#718096; font-size:10px; margin-top:2px;">Tier ${r.reward_tier} (${r.reward_tier === 1 ? '5%' : r.reward_tier === 2 ? '3%' : '2%'})</div>
-                        </div>
-                        <div style="color:#00e676; font-size:14px; font-weight:900;">+$${parseFloat(r.reward_amount || 0).toFixed(2)}</div>
-                    </div>
-                `).join("");
+                mLog.innerHTML = myRewards.map(r => {
+                    const tPct = r.reward_tier === 1 ? '5%' : (r.reward_tier === 2 ? '3%' : '2%');
+                    return '<div style="background:#11151e; border:1px solid #1a202c; border-radius:12px; padding:10px 12px; display:flex; justify-content:space-between; align-items:center; font-family:monospace;">' +
+                        '<div>' +
+                            '<div style="color:#ffffff; font-size:12px; font-weight:800;">From <span style="color:#00e5ff; cursor:pointer; text-decoration:underline;" onclick="closeTeamDetailsModal(); previewAccountById(' + r.buyer_id + ');">ID ' + r.buyer_id + '</span> · ' + r.program + ' Slot ' + r.level + ' ($' + r.slot_cost + ')</div>' +
+                            '<div style="color:#718096; font-size:10px; margin-top:2px;">Tier ' + r.reward_tier + ' (' + tPct + ')</div>' +
+                        '</div>' +
+                        '<div style="color:#00e676; font-size:14px; font-weight:900;">+$' + parseFloat(r.reward_amount || 0).toFixed(2) + '</div>' +
+                    '</div>';
+                }).join("");
             }
         }
 
-        const homeProfitUsdtEl = document.getElementById("homeProfitUsdt");
-        if (homeProfitUsdtEl) {
-            const curVal = parseFloat(homeProfitUsdtEl.innerText || "0") || 0;
-            if (curVal < totalRefProfit) {
-                homeProfitUsdtEl.innerText = totalRefProfit.toFixed(2);
-            }
-        }
+        applyUserBotMetricsToUI(targetWalletLower, targetId, latestBackendState);
     } catch (e) {}
 }
 </script>
