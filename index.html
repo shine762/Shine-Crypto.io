@@ -521,21 +521,15 @@
 .bg-badge-l3 { width: 30px; height: 30px; font-size: 10px; }
 
 .badge-x2 { border: none; color: #00BCD4; box-shadow: none; transform: translate(75px, 0px); }
-.badge-x3 { border: none; color: #5C6BC0; box-shadow: none; transform: translate(23px, 71px); }
-.badge-x4 { border: none; color: #8A2BE2; box-shadow: none; transform: translate(-60px, 44px); }
-.badge-x5 { border: none; color: #E91E63; box-shadow: none; transform: translate(-60px, -44px); }
-.badge-x6 { border: none; color: #2196F3; box-shadow: none; transform: translate(23px, -71px); }
+.badge-x3 { border: none; color: #5C6BC0; box-shadow: none; transform: translate(0px, 75px); }
+.badge-x4 { border: none; color: #8A2BE2; box-shadow: none; transform: translate(-75px, 0px); }
+.badge-x5 { border: none; color: #E91E63; box-shadow: none; transform: translate(0px, -75px); }
 
-.badge-x7 { border: none; color: #FF4500; box-shadow: none; transform: translate(101px, 73px); }
-.badge-x8 { border: none; color: #32CD32; box-shadow: none; transform: translate(-38px, 119px); }
-.badge-x9 { border: none; color: #FF1493; box-shadow: none; transform: translate(-125px, 0px); }
-.badge-x10 { border: none; color: #00FA9A; box-shadow: none; transform: translate(-38px, -119px); }
-.badge-x11 { border: none; color: #9400D3; box-shadow: none; transform: translate(101px, -73px); }
-
-.badge-x12 { border: none; color: #FF8C00; box-shadow: none; transform: translate(120px, 120px); }
-.badge-x13 { border: none; color: #00FFFF; box-shadow: none; transform: translate(-120px, 120px); }
-.badge-x14 { border: none; color: #DC143C; box-shadow: none; transform: translate(-120px, -120px); }
-.badge-x15 { border: none; color: #FFFFFF; box-shadow: none; transform: translate(120px, -120px); }
+.badge-x6 { border: none; color: #2196F3; box-shadow: none; transform: translate(125px, 0px); }
+.badge-x7 { border: none; color: #FF4500; box-shadow: none; transform: translate(39px, 119px); }
+.badge-x8 { border: none; color: #32CD32; box-shadow: none; transform: translate(-101px, 73px); }
+.badge-x9 { border: none; color: #FF1493; box-shadow: none; transform: translate(-101px, -73px); }
+.badge-x10 { border: none; color: #00FA9A; box-shadow: none; transform: translate(39px, -119px); }
 
 .circle-overlay {
     position: absolute;
@@ -594,11 +588,6 @@
 .program-card.C8 { background: linear-gradient(135deg, #32CD32 0%, #151515 40%); }
 .program-card.S9 { background: linear-gradient(135deg, #FF1493 0%, #151515 40%); }
 .program-card.Q10 { background: linear-gradient(135deg, #00FA9A 0%, #151515 40%); }
-.program-card.H11 { background: linear-gradient(135deg, #9400D3 0%, #151515 40%); }
-.program-card.O12 { background: linear-gradient(135deg, #FF8C00 0%, #151515 40%); }
-.program-card.N13 { background: linear-gradient(135deg, #00FFFF 0%, #151515 40%); }
-.program-card.E14 { background: linear-gradient(135deg, #DC143C 0%, #151515 40%); }
-.program-card.X15 { background: linear-gradient(135deg, #FFFFFF 0%, #151515 40%); }
 .program-inner {
     background: #1A1A1A;
     border-radius: 22px;
@@ -1157,13 +1146,14 @@
         }
         .preview-content { padding: 20px; }
         .program-title-row {
-            display: flex;
-            justify-content: space-between;
-            align-items: baseline;
-            margin-bottom: 20px;
-        }
-        .program-title-row h1 { font-size: 32px; margin: 0; }
-        .program-total-profit { font-size: 28px; font-weight: 800; }
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    gap: 12px;
+    margin-bottom: 20px;
+}
+.program-title-row h1 { font-size: 26px; margin: 0; line-height: 1.2; }
+.program-total-profit { font-size: 24px; font-weight: 800; white-space: nowrap; flex-shrink: 0; }
         .school-banner {
             background: #1A1A1A;
             border-radius: 16px;
@@ -1556,11 +1546,6 @@
 .program-card.C8 { border: 1px solid rgba(50, 205, 50, 0.3); }
 .program-card.S9 { border: 1px solid rgba(255, 20, 147, 0.3); }
 .program-card.Q10 { border: 1px solid rgba(0, 250, 154, 0.3); }
-.program-card.H11 { border: 1px solid rgba(148, 0, 211, 0.3); }
-.program-card.O12 { border: 1px solid rgba(255, 140, 0, 0.3); }
-.program-card.N13 { border: 1px solid rgba(0, 255, 255, 0.3); }
-.program-card.E14 { border: 1px solid rgba(220, 20, 60, 0.3); }
-.program-card.X15 { border: 1px solid rgba(255, 255, 255, 0.3); }
 .slot-price { font-size: 9px; margin-top: 2px; }
 
 .preview-btn {
@@ -1882,7 +1867,7 @@
 .upgrade-amount-bnb { color: #E8755B; }
 .service-fee-row { display: flex; justify-content: space-between; align-items: center; font-size: 14px; color: #5C6BC0; margin-bottom: 20px; }
 .notification-wrapper { position: relative; cursor: pointer; display: flex; align-items: center; justify-content: center; width: 36px; height: 36px; background: rgba(255,255,255,0.1); border-radius: 50%; }
-.notif-dot { position: absolute; top: 8px; right: 8px; width: 8px; height: 8px; background: #E8755B; border-radius: 50%; border: 2px solid var(--primary-blue); }
+.notif-dot { position: absolute; top: 6px; right: 6px; width: 9px; height: 9px; background: #ff3b30; border-radius: 50%; border: 2px solid var(--primary-blue); display: none; box-shadow: 0 0 6px rgba(255, 59, 48, 0.8); }
 .expanded-profile { display: none; flex-direction: column; gap: 10px; margin-top: 15px; width: 100%; animation: fadeIn 0.3s ease; }
 .expanded-profile.active { display: flex; }
 .wallet-address-row { display: flex; align-items: center; gap: 8px; font-size: 16px; font-weight: bold; }
@@ -2930,7 +2915,7 @@ input:checked + .tw-slider:before {
 <header class="header">
     <div class="header-title">
         <svg viewBox="0 0 24 24" fill="white"><path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"/></svg>
-        <span id="headerIdDisplay">Preview ID 1</span>
+        <span id="headerIdDisplay">SHINE</span>
     </div>
             <div style="display: flex; align-items: center; gap: 10px;">
                 <button id="walletBtn" onclick="connectWallet()" style="background: #3A47A6; border: none; border-radius: 12px; color: white; padding: 8px 16px; font-size: 12px; font-weight: bold; cursor: pointer; display: flex; align-items: center; gap: 6px;">
@@ -3013,30 +2998,7 @@ input:checked + .tw-slider:before {
                 <button class="close-edit-btn" onclick="toggleNotifications()" style="position:static;"><i class="material-icons">close</i></button>
             </div>
             <div id="notifList">
-                <div class="notif-item">
-                    <div class="notif-icon"><i class="material-icons">payments</i></div>
-                    <div class="notif-content">
-                        <div class="notif-title">Profit Received</div>
-                        <div class="notif-desc">+ 10 USDT received from ID 4582 in V1 Program.</div>
-                        <div class="notif-time">Today, 10:24 AM</div>
-                    </div>
-                </div>
-                <div class="notif-item">
-                    <div class="notif-icon" style="background: rgba(58, 71, 166, 0.2); color: #5C6BC0;"><i class="material-icons">person_add</i></div>
-                    <div class="notif-content">
-                        <div class="notif-title">New Partner</div>
-                        <div class="notif-desc">ID 8923 joined your team.</div>
-                        <div class="notif-time">Yesterday, 14:30 PM</div>
-                    </div>
-                </div>
-                <div class="notif-item">
-                    <div class="notif-icon" style="background: rgba(255, 215, 0, 0.2); color: #FFD700;"><i class="material-icons">upgrade</i></div>
-                    <div class="notif-content">
-                        <div class="notif-title">Level Upgraded</div>
-                        <div class="notif-desc">Successfully upgraded Q2 Level 3.</div>
-                        <div class="notif-time">12 Oct 2023, 09:15 AM</div>
-                    </div>
-                </div>
+                <div style="padding: 36px 20px; text-align: center; color: #757575; font-size: 13px;">No notifications yet</div>
             </div>
         </div>
 
@@ -3056,7 +3018,7 @@ input:checked + .tw-slider:before {
                             <i class="material-icons">settings</i>
                         </button>
                     </div>
-                    <div class="profile-id">ID 1 <span id="userRank" style="margin-left:8px; background:linear-gradient(90deg, #FFD700, #FFA500); color:#000; padding:2px 8px; border-radius:10px; font-size:10px; font-weight:900;">GOLD STAR</span></div>
+                    <div class="profile-id">ID -- <span id="userRank" style="margin-left:8px; background:linear-gradient(90deg, #FFD700, #FFA500); color:#000; padding:2px 8px; border-radius:10px; font-size:10px; font-weight:900;">SYNCING</span></div>
                     <button class="show-more-btn" id="showMoreBtn" onclick="toggleExpandedProfile()">
                         <span>Show more</span>
                         <i class="material-icons" style="font-size: 20px;">keyboard_arrow_down</i>
@@ -3234,7 +3196,10 @@ input:checked + .tw-slider:before {
                             </svg>
                             <span>USDT</span>
                         </div>
-                        <span class="currency-balance" id="homeProfitUsdt">0</span>
+                        <div style="display:flex; align-items:baseline; gap:6px;">
+                            <span class="currency-balance" id="homeProfitUsdt">0</span>
+                            <span id="homeProfitUsdt24h" style="color:#4CAF50; font-size:12px; font-weight:700;"></span>
+                        </div>
                     </div>
                     <div class="currency-row">
                         <div class="currency-info">
@@ -3277,7 +3242,10 @@ input:checked + .tw-slider:before {
                         <i class="material-icons" style="color: #4CAF50; font-size: 20px;">group_add</i>
                         <span style="font-size: 13px; font-weight: 700; color: #ffffff;">Referral Profit (5%)</span>
                     </div>
-                    <span id="homeReferralProfitDisplay" style="color: #4CAF50; font-size: 13px; font-weight: 800; font-family: monospace;">+0.00 USDT</span>
+                    <div style="display:flex; align-items:baseline; gap:6px;">
+                        <span id="homeReferralProfitDisplay" style="color: #4CAF50; font-size: 13px; font-weight: 800; font-family: monospace;">+0.00 USDT</span>
+                        <span id="homeReferralProfit24h" style="color: #00e676; font-size: 11px; font-weight: 800; font-family: monospace;"></span>
+                    </div>
                 </div>
                 <hr class="divider">
                 <ul class="rules-list">
@@ -3328,16 +3296,19 @@ input:checked + .tw-slider:before {
 
             <section class="rewards-section">
                 <div class="rewards-title">Daily rewards balances</div>
-                <div class="reward-card">
-                    <div class="reward-label">Total V1</div>
-                    <div class="reward-value-row">
-                        <span>0</span>
-                        <svg class="icon-md" viewBox="0 0 100 100" style="width: 24px; height: 24px; border-radius: 50%;">
-                            <circle cx="50" cy="50" r="50" fill="#009393"/>
-                            <path d="M50 42.5 C34 42.5 22 45.2 22 48.5 C22 51.8 34 54.5 50 54.5 C66 54.5 78 51.8 78 48.5 C78 45.2 66 42.5 50 42.5 Z M50 45.8 C62.5 45.8 71.5 47.7 71.5 48.5 C71.5 49.3 62.5 51.2 50 51.2 C37.5 51.2 28.5 49.3 28.5 48.5 C28.5 47.7 37.5 45.8 50 45.8 Z" fill="#FFFFFF"/>
-                            <path d="M29 27 H71 V36 H56 V73 H44 V36 H29 Z" fill="#FFFFFF"/>
-                        </svg>
+                <div class="reward-card" style="display:flex; justify-content:space-between; align-items:center;">
+                    <div>
+                        <div class="reward-label">Global Dividend Claimable</div>
+                        <div class="reward-value-row">
+                            <span id="homeTotalGlobalDivVal">0.00</span>
+                            <svg class="icon-md" viewBox="0 0 100 100" style="width: 24px; height: 24px; border-radius: 50%;">
+                                <circle cx="50" cy="50" r="50" fill="#009393"/>
+                                <path d="M50 42.5 C34 42.5 22 45.2 22 48.5 C22 51.8 34 54.5 50 54.5 C66 54.5 78 51.8 78 48.5 C78 45.2 66 42.5 50 42.5 Z M50 45.8 C62.5 45.8 71.5 47.7 71.5 48.5 C71.5 49.3 62.5 51.2 50 51.2 C37.5 51.2 28.5 49.3 28.5 48.5 C28.5 47.7 37.5 45.8 50 45.8 Z" fill="#FFFFFF"/>
+                                <path d="M29 27 H71 V36 H56 V73 H44 V36 H29 Z" fill="#FFFFFF"/>
+                            </svg>
+                        </div>
                     </div>
+                    <button id="btnClaimGlobalDiv" onclick="claimOnChainGlobalDividend()" style="background:#3A47A6; color:#fff; border:none; border-radius:10px; padding:10px 16px; font-size:12px; font-weight:800; cursor:pointer;">Claim</button>
                 </div>
                 
                 <div style="background: var(--secondary-bg); border-radius: 16px; padding: 15px; margin-top: 12px; text-align: center; border: 1px solid var(--tertiary-bg);">
@@ -3406,19 +3377,12 @@ input:checked + .tw-slider:before {
     <div class="circle-overlay ring-2"></div>
     <div class="circle-overlay ring-3"></div>
     
-    <div class="orbit-layer-3">
-        <div class="sci-badge bg-badge-l3 badge-x12"><div class="counter-rotate-slow">O12</div></div>
-        <div class="sci-badge bg-badge-l3 badge-x13"><div class="counter-rotate-slow">N13</div></div>
-        <div class="sci-badge bg-badge-l3 badge-x14"><div class="counter-rotate-slow">E14</div></div>
-        <div class="sci-badge bg-badge-l3 badge-x15"><div class="counter-rotate-slow">X15</div></div>
-    </div>
-
     <div class="orbit-layer-2">
+        <div class="sci-badge bg-badge-l2 badge-x6"><div class="counter-rotate-normal">N6</div></div>
         <div class="sci-badge bg-badge-l2 badge-x7"><div class="counter-rotate-normal">A7</div></div>
         <div class="sci-badge bg-badge-l2 badge-x8"><div class="counter-rotate-normal">C8</div></div>
         <div class="sci-badge bg-badge-l2 badge-x9"><div class="counter-rotate-normal">S9</div></div>
         <div class="sci-badge bg-badge-l2 badge-x10"><div class="counter-rotate-normal">Q10</div></div>
-        <div class="sci-badge bg-badge-l2 badge-x11"><div class="counter-rotate-normal">H11</div></div>
     </div>
 
     <div class="orbit-container">
@@ -3426,7 +3390,6 @@ input:checked + .tw-slider:before {
         <div class="sci-badge bg-badge badge-x3"><div class="counter-rotate">T3</div></div>
         <div class="sci-badge bg-badge badge-x4"><div class="counter-rotate">S4</div></div>
         <div class="sci-badge bg-badge badge-x5"><div class="counter-rotate">G5</div></div>
-        <div class="sci-badge bg-badge badge-x6"><div class="counter-rotate">N6</div></div>
     </div>
     
     <div class="main-badge">V1</div>
@@ -3447,195 +3410,130 @@ input:checked + .tw-slider:before {
                     <div class="program-inner">
                         <div class="program-top">
                             <div class="program-stats">
-                                <div class="prog-label">Velocity Engine (Global Pool)</div>
+                                <div class="prog-label">Velocity X3 (Direct 3-Spot)</div>
                                 <div class="prog-value">0 USDT</div>
                             </div>
                             <div class="watermark" style="color: #FFD700; opacity: 0.2;">V1</div>
                         </div>
                         <div class="slots-grid" id="slots-V1"></div>
-                        <button class="preview-btn" onclick="openPreview('V1')" style="background: var(--primary-blue); color: #fff; border: none; padding: 18px; font-weight: 900;"><span>V1</span> Quantum Preview</button>
+                        <button class="preview-btn" onclick="openPreview('V1')" style="background: var(--primary-blue); color: #fff; border: none; padding: 18px; font-weight: 900;"><span>V1</span> X3 Preview</button>
                     </div>
                 </div>
                 <div class="program-card Q2">
                     <div class="program-inner">
                         <div class="program-top">
                             <div class="program-stats">
-                                <div class="prog-label">Quantum Matrix (Ghost Support)</div>
+                                <div class="prog-label">Quantum X4 (6-Spot Spillover)</div>
                                 <div class="prog-value">0 USDT</div>
                             </div>
                             <div class="watermark" style="color: #00BCD4; opacity: 0.2;">Q2</div>
                         </div>
                         <div class="slots-grid" id="slots-Q2"></div>
-                        <button class="preview-btn" onclick="openPreview('Q2')" style="background: var(--primary-blue); color: #fff; border: none; padding: 18px; font-weight: 900;"><span>Q2</span> Quantum Preview</button>
+                        <button class="preview-btn" onclick="openPreview('Q2')" style="background: var(--primary-blue); color: #fff; border: none; padding: 18px; font-weight: 900;"><span>Q2</span> X4 Preview</button>
                     </div>
                 </div>
                 <div class="program-card T3">
                     <div class="program-inner">
                         <div class="program-top">
                             <div class="program-stats">
-                                <div class="prog-label">Trinity Force (Direct Power)</div>
+                                <div class="prog-label">Trinity xXx (14-Spot Matrix)</div>
                                 <div class="prog-value">0 USDT</div>
                             </div>
                             <div class="watermark" style="color: #3A47A6; opacity: 0.2;">T3</div>
                         </div>
                         <div class="slots-grid" id="slots-T3"></div>
-                        <button class="preview-btn" onclick="openPreview('T3')" style="background: var(--primary-blue); color: #fff; border: none; padding: 18px; font-weight: 900;"><span>T3</span> Trinity Preview</button>
+                        <button class="preview-btn" onclick="openPreview('T3')" style="background: var(--primary-blue); color: #fff; border: none; padding: 18px; font-weight: 900;"><span>T3</span> xXx Preview</button>
                     </div>
                 </div>
                 <div class="program-card S4">
                     <div class="program-inner">
                         <div class="program-top">
                             <div class="program-stats">
-                                <div class="prog-label">Dual Synergy (Team Spillover)</div>
+                                <div class="prog-label">Synergy xGold (30-Spot Matrix)</div>
                                 <div class="prog-value">0 USDT</div>
                             </div>
                             <div class="watermark" style="color: #8A2BE2; opacity: 0.2;">S4</div>
                         </div>
                         <div class="slots-grid" id="slots-S4"></div>
-                        <button class="preview-btn" onclick="openPreview('S4')" style="background: var(--primary-blue); color: #fff; border: none; padding: 18px; font-weight: 900;"><span>S4</span> Synergy Preview</button>
+                        <button class="preview-btn" onclick="openPreview('S4')" style="background: var(--primary-blue); color: #fff; border: none; padding: 18px; font-weight: 900;"><span>S4</span> xGold Preview</button>
                     </div>
                 </div>
                 <div class="program-card G5">
                     <div class="program-inner">
                         <div class="program-top">
                             <div class="program-stats">
-                                <div class="prog-label">Galaxy Orbit (Deep Network)</div>
+                                <div class="prog-label">Galaxy maxQore (39-Spot Matrix)</div>
                                 <div class="prog-value">0 USDT</div>
                             </div>
                             <div class="watermark" style="color: #E91E63; opacity: 0.2;">G5</div>
                         </div>
                         <div class="slots-grid" id="slots-G5"></div>
-                        <button class="preview-btn" onclick="openPreview('G5')" style="background: var(--primary-blue); color: #fff; border: none; padding: 18px; font-weight: 900;"><span>G5</span> Galaxy Preview</button>
+                        <button class="preview-btn" onclick="openPreview('G5')" style="background: var(--primary-blue); color: #fff; border: none; padding: 18px; font-weight: 900;"><span>G5</span> maxQore Preview</button>
                     </div>
                 </div>
                 <div class="program-card N6">
                     <div class="program-inner">
                         <div class="program-top">
                             <div class="program-stats">
-                                <div class="prog-label">Infinite Nexus (Global Reach)</div>
+                                <div class="prog-label">Auto-Bot Compound (4-Spot Vault)</div>
                                 <div class="prog-value">0 USDT</div>
                             </div>
                             <div class="watermark" style="color: #00BCD4; opacity: 0.2;">N6</div>
                         </div>
                         <div class="slots-grid" id="slots-N6"></div>
-                        <button class="preview-btn" onclick="openPreview('N6')" style="background: var(--primary-blue); color: #fff; border: none; padding: 18px; font-weight: 900;"><span>N6</span> Nexus Preview</button>
+                        <button class="preview-btn" onclick="openPreview('N6')" style="background: var(--primary-blue); color: #fff; border: none; padding: 18px; font-weight: 900;"><span>N6</span> Auto-Bot Preview</button>
                     </div>
                 </div>
                 <div class="program-card A7">
                     <div class="program-inner">
                         <div class="program-top">
                             <div class="program-stats">
-                                <div class="prog-label">AI Genesis (Quant Desk)</div>
+                                <div class="prog-label">Reverse Magnet (5-Spot Booster)</div>
                                 <div class="prog-value">0 USDT</div>
                             </div>
                             <div class="watermark" style="color: #FF4500; opacity: 0.2;">A7</div>
                         </div>
                         <div class="slots-grid" id="slots-A7"></div>
-                        <button class="preview-btn" onclick="openPreview('A7')" style="background: var(--primary-blue); color: #fff; border: none; padding: 18px; font-weight: 900;"><span>A7</span> Genesis Preview</button>
+                        <button class="preview-btn" onclick="openPreview('A7')" style="background: var(--primary-blue); color: #fff; border: none; padding: 18px; font-weight: 900;"><span>A7</span> Magnet Preview</button>
                     </div>
                 </div>
                 <div class="program-card C8">
                     <div class="program-inner">
                         <div class="program-top">
                             <div class="program-stats">
-                                <div class="prog-label">Cyber Node (Quant Desk)</div>
+                                <div class="prog-label">Global Dividend Pool (6-Spot)</div>
                                 <div class="prog-value">0 USDT</div>
                             </div>
                             <div class="watermark" style="color: #32CD32; opacity: 0.2;">C8</div>
                         </div>
                         <div class="slots-grid" id="slots-C8"></div>
-                        <button class="preview-btn" onclick="openPreview('C8')" style="background: var(--primary-blue); color: #fff; border: none; padding: 18px; font-weight: 900;"><span>C8</span> Cyber Preview</button>
+                        <button class="preview-btn" onclick="openPreview('C8')" style="background: var(--primary-blue); color: #fff; border: none; padding: 18px; font-weight: 900;"><span>C8</span> Dividend Preview</button>
                     </div>
                 </div>
                 <div class="program-card S9">
                     <div class="program-inner">
                         <div class="program-top">
                             <div class="program-stats">
-                                <div class="prog-label">Synapse Grid (Quant Desk)</div>
+                                <div class="prog-label">Auto-Upgrade Shield (8-Spot)</div>
                                 <div class="prog-value">0 USDT</div>
                             </div>
                             <div class="watermark" style="color: #FF1493; opacity: 0.2;">S9</div>
                         </div>
                         <div class="slots-grid" id="slots-S9"></div>
-                        <button class="preview-btn" onclick="openPreview('S9')" style="background: var(--primary-blue); color: #fff; border: none; padding: 18px; font-weight: 900;"><span>S9</span> Synapse Preview</button>
+                        <button class="preview-btn" onclick="openPreview('S9')" style="background: var(--primary-blue); color: #fff; border: none; padding: 18px; font-weight: 900;"><span>S9</span> Shield Preview</button>
                     </div>
                 </div>
                 <div class="program-card Q10">
                     <div class="program-inner">
                         <div class="program-top">
                             <div class="program-stats">
-                                <div class="prog-label">Quantum Core (VIP Semi-Whale)</div>
+                                <div class="prog-label">SHINE DEX Accelerator (10-Spot)</div>
                                 <div class="prog-value">0 USDT</div>
                             </div>
                             <div class="watermark" style="color: #00FA9A; opacity: 0.2;">Q10</div>
                         </div>
                         <div class="slots-grid" id="slots-Q10"></div>
-                        <button class="preview-btn" onclick="openPreview('Q10')" style="background: var(--primary-blue); color: #fff; border: none; padding: 18px; font-weight: 900;"><span>Q10</span> Quantum Preview</button>
-                    </div>
-                </div>
-                <div class="program-card H11">
-                    <div class="program-inner">
-                        <div class="program-top">
-                            <div class="program-stats">
-                                <div class="prog-label">Holo Matrix (VIP Semi-Whale)</div>
-                                <div class="prog-value">0 USDT</div>
-                            </div>
-                            <div class="watermark" style="color: #9400D3; opacity: 0.2;">H11</div>
-                        </div>
-                        <div class="slots-grid" id="slots-H11"></div>
-                        <button class="preview-btn" onclick="openPreview('H11')" style="background: var(--primary-blue); color: #fff; border: none; padding: 18px; font-weight: 900;"><span>H11</span> Holo Preview</button>
-                    </div>
-                </div>
-                <div class="program-card O12">
-                    <div class="program-inner">
-                        <div class="program-top">
-                            <div class="program-stats">
-                                <div class="prog-label">Omni Chain (VIP Semi-Whale)</div>
-                                <div class="prog-value">0 USDT</div>
-                            </div>
-                            <div class="watermark" style="color: #FF8C00; opacity: 0.2;">O12</div>
-                        </div>
-                        <div class="slots-grid" id="slots-O12"></div>
-                        <button class="preview-btn" onclick="openPreview('O12')" style="background: var(--primary-blue); color: #fff; border: none; padding: 18px; font-weight: 900;"><span>O12</span> Omni Preview</button>
-                    </div>
-                </div>
-                <div class="program-card N13">
-                    <div class="program-inner">
-                        <div class="program-top">
-                            <div class="program-stats">
-                                <div class="prog-label">Neural Link (Whale Vault)</div>
-                                <div class="prog-value">0 USDT</div>
-                            </div>
-                            <div class="watermark" style="color: #00FFFF; opacity: 0.2;">N13</div>
-                        </div>
-                        <div class="slots-grid" id="slots-N13"></div>
-                        <button class="preview-btn" onclick="openPreview('N13')" style="background: var(--primary-blue); color: #fff; border: none; padding: 18px; font-weight: 900;"><span>N13</span> Neural Preview</button>
-                    </div>
-                </div>
-                <div class="program-card E14">
-                    <div class="program-inner">
-                        <div class="program-top">
-                            <div class="program-stats">
-                                <div class="prog-label">Eternity Protocol (Whale Vault)</div>
-                                <div class="prog-value">0 USDT</div>
-                            </div>
-                            <div class="watermark" style="color: #DC143C; opacity: 0.2;">E14</div>
-                        </div>
-                        <div class="slots-grid" id="slots-E14"></div>
-                        <button class="preview-btn" onclick="openPreview('E14')" style="background: var(--primary-blue); color: #fff; border: none; padding: 18px; font-weight: 900;"><span>E14</span> Eternity Preview</button>
-                    </div>
-                </div>
-                <div class="program-card X15">
-                    <div class="program-inner">
-                        <div class="program-top">
-                            <div class="program-stats">
-                                <div class="prog-label">Apex Singularity (Whale Vault)</div>
-                                <div class="prog-value">0 USDT</div>
-                            </div>
-                            <div class="watermark" style="color: #FFFFFF; opacity: 0.2;">X15</div>
-                        </div>
-                        <div class="slots-grid" id="slots-X15"></div>
-                        <button class="preview-btn" onclick="openPreview('X15')" style="background: var(--primary-blue); color: #fff; border: none; padding: 18px; font-weight: 900;"><span>X15</span> Apex Preview</button>
+                        <button class="preview-btn" onclick="openPreview('Q10')" style="background: var(--primary-blue); color: #fff; border: none; padding: 18px; font-weight: 900;"><span>Q10</span> Accelerator Preview</button>
                     </div>
                 </div>
             </section>
@@ -4799,19 +4697,22 @@ input:checked + .tw-slider:before {
                 </div>
 
                 <div class="bot-card" id="hyperTitanDashboardCard" style="border: none; background: radial-gradient(circle at top right, #121824 0%, #0d111a 100%); margin-top: 16px;">
-                    <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid rgba(255,255,255,0.08); padding-bottom: 12px; margin-bottom: 14px;">
+                    <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid rgba(255,255,255,0.08); padding-bottom: 12px; margin-bottom: 14px; gap: 6px;">
                         <div style="display: flex; align-items: center; gap: 8px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">
                             <div style="width: 9px; height: 9px; background: #00e5ff; border-radius: 50%; box-shadow: 0 0 10px #00e5ff; animation: livePulseDot 1.2s infinite; flex-shrink: 0;"></div>
-                            <span style="font-size: 13px; font-weight: 900; color: #fff; letter-spacing: 0.5px; text-transform: uppercase;">SHINE HYPER TITAN POOL</span>
+                            <span style="font-size: 13px; font-weight: 900; color: #fff; letter-spacing: 0.5px; text-transform: uppercase;">SHINE HYPER TITAN</span>
                         </div>
-                        <span id="hyper-orders-badge" style="background: rgba(0, 229, 255, 0.15); color: #00e5ff; border: 1px solid #00e5ff; padding: 2px 8px; border-radius: 12px; font-size: 10px; font-weight: 900; font-family: monospace;">0 OPEN</span>
+                        <div style="display: flex; align-items: center; gap: 6px; flex-shrink: 0;">
+                            <span id="hyper-status-badge" style="background: rgba(246, 70, 93, 0.15); color: #f6465d; border: 1px solid #f6465d; padding: 2px 7px; border-radius: 12px; font-size: 9px; font-weight: 900; font-family: monospace;">REQ $500+</span>
+                            <span id="hyper-orders-badge" style="background: rgba(0, 229, 255, 0.15); color: #00e5ff; border: 1px solid #00e5ff; padding: 2px 8px; border-radius: 12px; font-size: 10px; font-weight: 900; font-family: monospace;">0 OPEN</span>
+                        </div>
                     </div>
 
                     <div style="background: rgba(0, 0, 0, 0.3); border: 1px solid rgba(255,255,255,0.05); border-radius: 12px; padding: 12px; margin-bottom: 14px;">
                         <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 10px;">
                             <div style="flex: 1;">
-                                <div style="font-size: 10px; color: #8c8ca1; font-weight: 800; text-transform: uppercase; white-space: nowrap;">TOTAL POOL CAPITAL</div>
-                                <div id="hyper-pool-total" style="font-size: 16px; font-weight: 900; color: #00e5ff; font-family: monospace; margin-top: 2px; white-space: nowrap;">$9,999.00</div>
+                                <div style="font-size: 10px; color: #8c8ca1; font-weight: 800; text-transform: uppercase; white-space: nowrap;">SHARED POOL CAPITAL</div>
+                                <div id="hyper-pool-total" style="font-size: 16px; font-weight: 900; color: #00e5ff; font-family: monospace; margin-top: 2px; white-space: nowrap;">$0.00</div>
                             </div>
                             <div style="flex: 1; padding-left: 12px;">
                                 <div style="font-size: 10px; color: #8c8ca1; font-weight: 800; text-transform: uppercase; white-space: nowrap;">SOL HOLDING</div>
@@ -4892,8 +4793,8 @@ input:checked + .tw-slider:before {
                     </div>
 
                     <div style="background: rgba(255,255,255,0.02); border: 1px solid rgba(255,255,255,0.04); border-radius: 10px; padding: 10px 12px; margin-bottom: 12px; display: flex; justify-content: space-between; align-items: center; font-family: monospace;">
-                        <span style="color: #8c8ca1; font-size: 11px;">YOUR SHARE INVESTED:</span>
-                        <span id="hyper-user-invest-display" style="color: #00e5ff; font-weight: 900; font-size: 13px;">$99.99 USDT</span>
+                        <span style="color: #8c8ca1; font-size: 11px;">SHARED VAULT CAPITAL:</span>
+                        <span id="hyper-user-invest-display" style="color: #00e5ff; font-weight: 900; font-size: 13px;">$0.00 USDT</span>
                     </div>
 
                     <button onclick="openHyperTitanDetailsModal()" style="width: 100%; background: #1c2433; color: #00e5ff; border: 1px solid #2d3748; border-radius: 10px; padding: 12px 0; font-size: 11px; font-weight: 900; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 6px; letter-spacing: 0.5px; text-transform: uppercase;">
@@ -4906,19 +4807,22 @@ input:checked + .tw-slider:before {
                     <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid rgba(255,255,255,0.08); padding-bottom: 12px; margin-bottom: 14px; gap: 6px;">
                         <div style="display: flex; align-items: center; gap: 8px; min-width: 0;">
                             <div style="width: 10px; height: 10px; background: #e040fb; border-radius: 50%; box-shadow: 0 0 12px #e040fb; animation: livePulseDot 1.2s infinite; flex-shrink: 0;"></div>
-                            <span style="font-size: 12px; font-weight: 900; color: #fff; letter-spacing: 0.3px; text-transform: uppercase; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">SHINE TITAN SINGULARITY (100K)</span>
+                            <span style="font-size: 12px; font-weight: 900; color: #fff; letter-spacing: 0.3px; text-transform: uppercase; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">SHINE TITAN SINGULARITY</span>
                         </div>
-                        <span id="sng-orders-badge" style="background: rgba(224, 64, 251, 0.15); color: #e040fb; border: 1px solid #e040fb; padding: 2px 8px; border-radius: 12px; font-size: 10px; font-weight: 900; font-family: monospace; flex-shrink: 0;">0 OPEN</span>
+                        <div style="display: flex; align-items: center; gap: 6px; flex-shrink: 0;">
+                            <span id="sng-status-badge" style="background: rgba(246, 70, 93, 0.15); color: #f6465d; border: 1px solid #f6465d; padding: 2px 7px; border-radius: 12px; font-size: 9px; font-weight: 900; font-family: monospace;">REQ $1K+</span>
+                            <span id="sng-orders-badge" style="background: rgba(224, 64, 251, 0.15); color: #e040fb; border: 1px solid #e040fb; padding: 2px 8px; border-radius: 12px; font-size: 10px; font-weight: 900; font-family: monospace;">0 OPEN</span>
+                        </div>
                     </div>
 
                     <div style="background: rgba(0, 0, 0, 0.35); border: 1px solid rgba(255,255,255,0.05); border-radius: 12px; padding: 12px; margin-bottom: 14px;">
                         <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 10px;">
                             <div style="flex: 1;">
-                                <div style="font-size: 10px; color: #8c8ca1; font-weight: 800; text-transform: uppercase; white-space: nowrap;">TOTAL POOL CAPITAL</div>
-                                <div id="sng-pool-total" style="font-size: 16px; font-weight: 900; color: #e040fb; font-family: monospace; margin-top: 2px; white-space: nowrap;">$100,000.00</div>
+                                <div style="font-size: 10px; color: #8c8ca1; font-weight: 800; text-transform: uppercase; white-space: nowrap;">SHARED POOL CAPITAL</div>
+                                <div id="sng-pool-total" style="font-size: 16px; font-weight: 900; color: #e040fb; font-family: monospace; margin-top: 2px; white-space: nowrap;">$0.00</div>
                             </div>
                             <div style="flex: 1; padding-left: 12px;">
-                                <div style="font-size: 10px; color: #8c8ca1; font-weight: 800; text-transform: uppercase; white-space: nowrap;">SOL HOLDING (5 ENGINES)</div>
+                                <div style="font-size: 10px; color: #8c8ca1; font-weight: 800; text-transform: uppercase; white-space: nowrap;">SINGULARITY SOL HOLDING</div>
                                 <div id="sng-sol-pos" style="font-size: 16px; font-weight: 900; color: #fff; font-family: monospace; margin-top: 2px; white-space: nowrap;">0.0000 SOL</div>
                             </div>
                         </div>
@@ -4998,8 +4902,8 @@ input:checked + .tw-slider:before {
                     </div>
 
                     <div style="background: rgba(255,255,255,0.02); border: 1px solid rgba(255,255,255,0.04); border-radius: 10px; padding: 10px 12px; margin-bottom: 12px; display: flex; justify-content: space-between; align-items: center; font-family: monospace;">
-                        <span style="color: #8c8ca1; font-size: 11px;">YOUR SHARE INVESTED:</span>
-                        <span id="sng-user-invest-display" style="color: #e040fb; font-weight: 900; font-size: 13px;">$100.00 USDT (0.10%)</span>
+                        <span style="color: #8c8ca1; font-size: 11px;">SHARED VAULT CAPITAL:</span>
+                        <span id="sng-user-invest-display" style="color: #e040fb; font-weight: 900; font-size: 13px;">$0.00 USDT</span>
                     </div>
 
                     <button onclick="openSingularityDetailsModal()" style="width: 100%; background: #1c2433; color: #e040fb; border: 1px solid #2d3748; border-radius: 10px; padding: 12px 0; font-size: 11px; font-weight: 900; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 6px; letter-spacing: 0.5px; text-transform: uppercase;">
@@ -5697,7 +5601,7 @@ input:checked + .tw-slider:before {
             </button>
         </div>
         <div class="menu-content">
-            <h1 class="menu-preview-title" id="sideMenuTitle">Preview ID 1</h1>         
+             <h1 class="menu-preview-title" id="sideMenuTitle">SHINE</h1>        
             <div class="search-container">
                 <input type="text" class="search-input" id="sideMenuSearchInput" placeholder="1">
                 <button class="go-btn" onclick="searchIdFromSideMenu()">Go</button>
@@ -6306,7 +6210,10 @@ input:checked + .tw-slider:before {
             "function feeWallet() view returns (address)",
             "function airdropWallet() view returns (address)",
             "function charityWallet() view returns (address)",
-            "function lastUserId() view returns (uint256)"
+            "function lastUserId() view returns (uint256)",
+            "function globalDividendPool() view returns (uint256)",
+            "function getClaimableGlobalDividend(address _user) view returns (uint256)",
+            "function claimGlobalDividend() external"
         ];
         const ERC20_ABI = [
             "function balanceOf(address account) view returns (uint256)",
@@ -6318,28 +6225,24 @@ input:checked + .tw-slider:before {
         let isTradeWalletConnected = false;
         let activeUserLevels = {};
 
+        const progListAll = ['V1', 'Q2', 'T3', 'S4', 'G5', 'N6', 'A7', 'C8', 'S9', 'Q10'];
+
         const progPrices = {
             'V1': [10, 20, 30, 40, 50, 60, 70, 80, 90, 100, 110, 120],
             'Q2': [130, 140, 150, 160, 170, 180, 190, 200, 210, 220, 230, 240],
             'T3': [250, 260, 270, 280, 290, 300, 310, 320, 330, 340, 350, 360],
             'S4': [370, 380, 390, 400, 410, 420, 430, 440, 450, 460, 470, 480],
             'G5': [490, 500, 510, 520, 530, 540, 550, 560, 570, 580, 590, 600],
-            'N6': [610, 620, 630, 640, 650, 660, 670, 680, 690, 700, 710, 720],
-            'A7': [730, 740, 750, 760, 770, 780, 790, 800, 810, 820, 830, 840],
-            'C8': [850, 860, 870, 880, 890, 900, 910, 920, 930, 940, 950, 960],
-            'S9': [970, 980, 990, 1000, 1010, 1020, 1030, 1040, 1050, 1060, 1070, 1080],
-            'Q10': [1090, 1100, 1110, 1120, 1130, 1140, 1150, 1160, 1170, 1180, 1190, 1200],
-            'H11': [1210, 1220, 1230, 1240, 1250, 1260, 1270, 1280, 1290, 1300, 1310, 1320],
-            'O12': [1330, 1340, 1350, 1360, 1370, 1380, 1390, 1400, 1410, 1420, 1430, 1440],
-            'N13': [1450, 1460, 1470, 1480, 1490, 1500, 1510, 1520, 1530, 1540, 1550, 1560],
-            'E14': [1570, 1580, 1590, 1600, 1610, 1620, 1630, 1640, 1650, 1660, 1670, 1680],
-            'X15': [1690, 1700, 1710, 1720, 1730, 1740, 1750, 1760, 1770, 1780, 1790, 1800]
+            'N6': [620, 640, 660, 680, 700, 720, 740, 770, 800, 830, 860, 900],
+            'A7': [950, 980, 1010, 1040, 1070, 1100, 1130, 1160, 1190, 1220, 1250, 1280],
+            'C8': [1300, 1320, 1340, 1360, 1380, 1400, 1420, 1440, 1460, 1480, 1500, 1520],
+            'S9': [1540, 1560, 1580, 1600, 1620, 1640, 1660, 1680, 1700, 1720, 1740, 1760],
+            'Q10': [1780, 1800, 1820, 1840, 1860, 1880, 1900, 1920, 1940, 1960, 1980, 2000]
         };
 
         const progFees = {
             'V1': 1, 'Q2': 2, 'T3': 3, 'S4': 4, 'G5': 5,
-            'N6': 6, 'A7': 7, 'C8': 8, 'S9': 9, 'Q10': 10,
-            'H11': 11, 'O12': 12, 'N13': 14, 'E14': 16, 'X15': 18
+            'N6': 6, 'A7': 7, 'C8': 8, 'S9': 9, 'Q10': 10
         };
 
         let connectedWalletType = "";
@@ -6458,7 +6361,7 @@ input:checked + .tw-slider:before {
             try {
                 const shineIface = new ethers.utils.Interface(SHINE_ABI);
                 const erc20Iface = new ethers.utils.Interface(ERC20_ABI);
-                const progMap = { 'V1': 1, 'Q2': 2, 'T3': 3, 'S4': 4, 'G5': 5, 'N6': 6, 'A7': 7, 'C8': 8, 'S9': 9, 'Q10': 10, 'H11': 11, 'O12': 12, 'N13': 13, 'E14': 14, 'X15': 15 };
+                const progMap = { 'V1': 1, 'Q2': 2, 'T3': 3, 'S4': 4, 'G5': 5, 'N6': 6, 'A7': 7, 'C8': 8, 'S9': 9, 'Q10': 10 };
                 const progNum = progMap[prog] || 1;
 
                 if (confirmBtn) {
@@ -6621,14 +6524,16 @@ input:checked + .tw-slider:before {
 
             renderDashboardSlots();
             if (userWallet) {
-                applyUserBotMetricsToUI(userWallet.toLowerCase(), window.currentLoggedInId || 0);
+                const wLower = userWallet.toLowerCase();
+                applyUserBotMetricsToUI(wLower, window.currentLoggedInId || 0);
+                loadUserNetworkStatsFromSupabase(wLower, Number(window.currentLoggedInId || 1));
             }
         }
         async function fetchActiveLevelsForWallet(targetAddr) {
             const updatedSlots = {};
             if (!targetAddr || !ethers.utils.isAddress(targetAddr)) return updatedSlots;
             try {
-                const progList = ['V1', 'Q2', 'T3', 'S4', 'G5', 'N6', 'A7', 'C8', 'S9', 'Q10', 'H11', 'O12', 'N13', 'E14', 'X15'];
+                const progList = progListAll;
                 if (targetAddr.toLowerCase() === ROOT_OWNER_ADDRESS.toLowerCase()) {
                     progList.forEach(pName => {
                         for (let l = 1; l <= 12; l++) {
@@ -6730,26 +6635,61 @@ input:checked + .tw-slider:before {
             }
         }
 
+        function resetDashboardAccountUI(statusLabel, addrText) {
+            window.currentLoggedInId = 0;
+            window.currentLoggedInUplineId = 0;
+            window.userReferralProfitTotal = 0;
+            activeUserLevels = {};
+            currentTotalUserCapital = 0.0;
+            const hEl = document.getElementById('headerIdDisplay');
+            if (hEl) hEl.innerText = addrText || "SHINE";
+            const sideTitle = document.getElementById('sideMenuTitle');
+            if (sideTitle) sideTitle.innerText = addrText || "SHINE";
+            const profIdEl = document.querySelector('.profile-id');
+            if (profIdEl) {
+                profIdEl.innerHTML = `ID -- <span id="userRank" style="margin-left:8px; background:#3A47A6; color:#fff; padding:2px 8px; border-radius:10px; font-size:10px; font-weight:900;">${statusLabel || 'LOADING'}</span>`;
+            }
+            const pStat = document.getElementById("statPartnersVal");
+            const p24 = document.getElementById("statPartners24h");
+            const tStat = document.getElementById("statTeamVal");
+            const t24 = document.getElementById("statTeam24h");
+            const refDisp = document.getElementById("homeReferralProfitDisplay");
+            const ref24 = document.getElementById("homeReferralProfit24h");
+            const hUsdt24 = document.getElementById("homeProfitUsdt24h");
+            const hShine = document.getElementById("homeProfitShine");
+            const hShine24 = document.getElementById("homeProfitShine24h");
+            const hBnb = document.getElementById("homeProfitBnb");
+            const hBnb24 = document.getElementById("homeProfitBnb24h");
+            if (pStat) pStat.innerText = "0";
+            if (p24) p24.innerText = "";
+            if (tStat) tStat.innerText = "0";
+            if (t24) t24.innerText = "";
+            if (refDisp) refDisp.innerText = "+0.00 USDT";
+            if (ref24) ref24.innerText = "";
+            if (hUsdt24) hUsdt24.innerText = "";
+            if (hShine) hShine.innerText = "0";
+            if (hShine24) hShine24.innerText = "";
+            if (hBnb) hBnb.innerText = "0";
+            if (hBnb24) hBnb24.innerText = "";
+            renderDashboardSlots();
+            applyUserBotMetricsToUI("", 0);
+        }
+
         function disconnectCurrentWallet() {
+            window.walletSyncSeq = (window.walletSyncSeq || 0) + 1;
+            window.lastSyncedWallet = "";
             isTradeWalletConnected = false;
             userWallet = "";
             connectedWalletType = "";
-            activeUserLevels = {};
             localStorage.removeItem("shine_saved_wallet_addr");
             localStorage.removeItem("shine_saved_wallet_type");
             localStorage.removeItem("shine_active_slots");
             window.currentGeneratedReferralLink = "";
-            document.getElementById('headerIdDisplay').innerText = "Not Connected";
-            const profIdEl = document.querySelector('.profile-id');
-            if (profIdEl) {
-                profIdEl.innerHTML = `ID -- <span id="userRank" style="margin-left:8px; background:#718096; color:#000; padding:2px 8px; border-radius:10px; font-size:10px; font-weight:900;">DISCONNECTED</span>`;
-            }
             const pLink = document.getElementById('userPersonalReferralLink');
             if (pLink) {
                 pLink.innerText = "Shine Crypto.io";
                 pLink.href = "#";
             }
-            renderDashboardSlots();
             const btn = document.getElementById('walletBtn');
             if (btn) {
                 btn.style.background = "#3A47A6";
@@ -6760,14 +6700,7 @@ input:checked + .tw-slider:before {
             if (exWBtnText) exWBtnText.innerText = "CONNECT";
             const dispW = document.getElementById('displayWallet');
             if (dispW) dispW.innerText = "Not Connected";
-            window.currentLoggedInId = 0;
-            window.currentLoggedInUplineId = 0;
-            window.userReferralProfitTotal = 0;
-            applyUserBotMetricsToUI("", 0);
-            const hBnb = document.getElementById("homeProfitBnb");
-            if (hBnb) hBnb.innerText = "0";
-            const hBnb24 = document.getElementById("homeProfitBnb24h");
-            if (hBnb24) hBnb24.innerText = "";
+            resetDashboardAccountUI("DISCONNECTED", "Not Connected");
             refreshExchangeBalances();
             renderWalletTabView();
         }
@@ -6896,10 +6829,7 @@ input:checked + .tw-slider:before {
 
             if (targetProvider && typeof targetProvider.request === "function") {
                 try {
-                    let accounts = targetProvider.selectedAddress ? [targetProvider.selectedAddress] : [];
-                    if (!accounts || accounts.length === 0) {
-                        accounts = await targetProvider.request({ method: "eth_requestAccounts" });
-                    }
+                    let accounts = await targetProvider.request({ method: "eth_requestAccounts" });
                     if (accounts && accounts.length > 0) {
                         userWallet = accounts[0];
                         isTradeWalletConnected = true;
@@ -6975,11 +6905,20 @@ input:checked + .tw-slider:before {
 
         async function syncOnChainUserData() {
             if (!userWallet) return;
+            const wLower = userWallet.toLowerCase();
+            const shortW = userWallet.substring(0, 6) + '...' + userWallet.substring(userWallet.length - 4);
+            window.walletSyncSeq = (window.walletSyncSeq || 0) + 1;
+            const mySyncSeq = window.walletSyncSeq;
             window.currentPreviewWallet = null;
             window.currentPreviewId = null;
             window.isViewingOtherProfile = false;
 
-            if (userWallet.toLowerCase() === ROOT_OWNER_ADDRESS.toLowerCase()) {
+            if (window.lastSyncedWallet !== wLower) {
+                window.lastSyncedWallet = wLower;
+                resetDashboardAccountUI("LOADING", shortW);
+            }
+
+            if (wLower === ROOT_OWNER_ADDRESS.toLowerCase()) {
                 sessionStorage.removeItem("shine_pending_registration");
                 window.currentLoggedInId = 1;
                 window.currentLoggedInUplineId = 0;
@@ -6994,28 +6933,33 @@ input:checked + .tw-slider:before {
                 if (upBar) upBar.style.display = 'none';
                 const expProf = document.getElementById('expandedProfile');
                 if (expProf) {
-                    const shortW = userWallet.substring(0, 6) + '...' + userWallet.substring(userWallet.length - 4);
                     expProf.innerHTML = '<div class="wallet-address-row"><span id="displayWallet">' + shortW + '</span><i class="material-icons" style="font-size: 16px; color: #757575; cursor: pointer;" onclick="copyWallet()">content_copy</i></div><div class="invited-by-row">Root Owner Account</div>';
                 }
                 const pLink = document.getElementById('userPersonalReferralLink');
                 if (pLink) {
-                    pLink.innerText = "Shine Crypto.io";
-                    window.currentGeneratedReferralLink = "";
+                    const cleanOrigin = window.location.origin.replace(/\/$/, "");
+                    pLink.innerText = cleanOrigin + "/?ref=1";
+                    window.currentGeneratedReferralLink = cleanOrigin + "/?ref=1";
                 }
-                const progList = ['V1', 'Q2', 'T3', 'S4', 'G5', 'N6', 'A7', 'C8', 'S9', 'Q10', 'H11', 'O12', 'N13', 'E14', 'X15'];
-                progList.forEach(pName => {
+                progListAll.forEach(pName => {
                     for (let l = 1; l <= 12; l++) {
                         activeUserLevels[pName + '_' + l] = true;
                     }
                 });
                 localStorage.setItem("shine_active_slots", JSON.stringify(activeUserLevels));
-                localStorage.setItem("shine_active_slots_" + ROOT_OWNER_ADDRESS.toLowerCase(), JSON.stringify(activeUserLevels));
+                localStorage.setItem("shine_active_slots_" + wLower, JSON.stringify(activeUserLevels));
                 renderDashboardSlots();
                 enterDashboardViewOnly();
-                applyUserBotMetricsToUI(ROOT_OWNER_ADDRESS.toLowerCase(), 1, latestBackendState);
+                applyUserBotMetricsToUI(wLower, 1, latestBackendState);
                 await loadSavedProfileFromDB();
-                syncOnChainMembersToSupabase();
-                await loadUserNetworkStatsFromSupabase(ROOT_OWNER_ADDRESS.toLowerCase(), 1);
+                if (mySyncSeq !== window.walletSyncSeq) return;
+                await loadUserNetworkStatsFromSupabase(wLower, 1);
+                if (mySyncSeq !== window.walletSyncSeq) return;
+                syncOnChainMembersToSupabase().then(() => {
+                    if (mySyncSeq === window.walletSyncSeq && !window.isViewingOtherProfile && userWallet && userWallet.toLowerCase() === wLower) {
+                        loadUserNetworkStatsFromSupabase(wLower, 1);
+                    }
+                });
                 await updateOnChainShineBalance(true);
                 return;
             }
@@ -7026,6 +6970,7 @@ input:checked + .tw-slider:before {
 
             try {
                 const bundle = await fetchForsageUnifiedBundle(userWallet, hasRef || "1");
+                if (mySyncSeq !== window.walletSyncSeq) return;
                 const userStruct = bundle.userStruct;
 
                 if (bundle.isRegistered && userStruct) {
@@ -7048,6 +6993,7 @@ input:checked + .tw-slider:before {
                             }
                         } catch (e) {}
                     }
+                    if (mySyncSeq !== window.walletSyncSeq) return;
                     window.currentLoggedInUplineId = resolvedUpId;
 
                     document.getElementById('headerIdDisplay').innerText = 'ID ' + uId;
@@ -7067,26 +7013,35 @@ input:checked + .tw-slider:before {
                     }
 
                     const pValEl = document.getElementById('statPartnersVal');
-                    if (pValEl && Number(partnersCount) > 0) pValEl.innerText = partnersCount;
+                    if (pValEl) pValEl.innerText = partnersCount;
 
                     const expProf = document.getElementById('expandedProfile');
                     if (expProf) {
-                        expProf.innerHTML = '<div class="wallet-address-row"><span id="displayWallet">' + userWallet.substring(0, 6) + '...' + userWallet.substring(userWallet.length - 4) + '</span><i class="material-icons" style="font-size: 16px; color: #757575; cursor: pointer;" onclick="copyWallet()">content_copy</i></div><div class="invited-by-row">invited ' + dateStr + ' by <span class="upline-badge" onclick="previewUpline(' + resolvedUpId + ')">ID ' + resolvedUpId + '</span></div>';
+                        expProf.innerHTML = '<div class="wallet-address-row"><span id="displayWallet">' + shortW + '</span><i class="material-icons" style="font-size: 16px; color: #757575; cursor: pointer;" onclick="copyWallet()">content_copy</i></div><div class="invited-by-row">invited ' + dateStr + ' by <span class="upline-badge" onclick="previewUpline(' + resolvedUpId + ')">ID ' + resolvedUpId + '</span></div>';
                     }
 
                     const pLink = document.getElementById('userPersonalReferralLink');
                     if (pLink) {
-                        pLink.innerText = "Shine Crypto.io";
-                        window.currentGeneratedReferralLink = "";
+                        const isLocal = window.location.hostname === "localhost" || window.location.hostname === "127.0.0.1" || window.location.protocol === "file:";
+                        const cleanOrigin = isLocal ? "https://shinecrypto.io" : window.location.origin.replace(/\/$/, "");
+                        pLink.innerText = cleanOrigin + "/?ref=" + uId;
+                        window.currentGeneratedReferralLink = cleanOrigin + "/?ref=" + uId;
                     }
 
                     enterDashboardViewOnly();
                     await loadSavedProfileFromDB();
+                    if (mySyncSeq !== window.walletSyncSeq) return;
                     await recordRegistrationToSupabase(userWallet, uplineAddr, "");
                     await syncOnChainActiveLevels();
-                    applyUserBotMetricsToUI(userWallet.toLowerCase(), Number(uId), latestBackendState);
-                    syncOnChainMembersToSupabase();
-                    await loadUserNetworkStatsFromSupabase(userWallet.toLowerCase(), Number(uId));
+                    if (mySyncSeq !== window.walletSyncSeq) return;
+                    applyUserBotMetricsToUI(wLower, Number(uId), latestBackendState);
+                    await loadUserNetworkStatsFromSupabase(wLower, Number(uId));
+                    if (mySyncSeq !== window.walletSyncSeq) return;
+                    syncOnChainMembersToSupabase().then(() => {
+                        if (mySyncSeq === window.walletSyncSeq && !window.isViewingOtherProfile && userWallet && userWallet.toLowerCase() === wLower) {
+                            loadUserNetworkStatsFromSupabase(wLower, Number(uId));
+                        }
+                    });
                     await updateOnChainShineBalance(true);
                 } else {
                     activeUserLevels = {};
@@ -7187,6 +7142,57 @@ input:checked + .tw-slider:before {
             alert(successNotice);
         }
 
+        async function syncGlobalDividendPoolUI(targetWallet) {
+            const poolEl = document.getElementById('globalPoolAmt');
+            const claimValEl = document.getElementById('homeTotalGlobalDivVal');
+            if (!poolEl && !claimValEl) return;
+            try {
+                const shineIface = new ethers.utils.Interface(SHINE_ABI);
+                const calls = [
+                    { target: SHINE_CONTRACT_ADDRESS, allowFailure: true, callData: shineIface.encodeFunctionData("globalDividendPool", []) }
+                ];
+                const addr = (targetWallet && ethers.utils.isAddress(targetWallet)) ? targetWallet : (userWallet && ethers.utils.isAddress(userWallet) ? userWallet : ROOT_OWNER_ADDRESS);
+                calls.push({ target: SHINE_CONTRACT_ADDRESS, allowFailure: true, callData: shineIface.encodeFunctionData("getClaimableGlobalDividend", [addr]) });
+                const res = await executeSingleMulticall(calls);
+                if (res[0] && res[0].success && poolEl) {
+                    const rawPool = shineIface.decodeFunctionResult("globalDividendPool", res[0].returnData)[0];
+                    poolEl.innerText = parseFloat(ethers.utils.formatUnits(rawPool, 18)).toFixed(2);
+                }
+                if (res[1] && res[1].success && claimValEl) {
+                    const rawClaim = shineIface.decodeFunctionResult("getClaimableGlobalDividend", res[1].returnData)[0];
+                    claimValEl.innerText = parseFloat(ethers.utils.formatUnits(rawClaim, 18)).toFixed(2);
+                }
+            } catch (e) {}
+        }
+
+        async function claimOnChainGlobalDividend() {
+            if (window.isViewingOtherProfile) {
+                alert("View mode: Connect your own wallet to claim dividends.");
+                return;
+            }
+            let activeProvider = getSafeRegistrationProvider();
+            if (!activeProvider || !userWallet) {
+                openWalletSelection();
+                return;
+            }
+            const btn = document.getElementById('btnClaimGlobalDiv');
+            try {
+                if (btn) { btn.disabled = true; btn.innerText = "Claiming..."; }
+                const shineIface = new ethers.utils.Interface(SHINE_ABI);
+                const callData = shineIface.encodeFunctionData("claimGlobalDividend", []);
+                const txHash = await sendDirectWalletTx(activeProvider, userWallet, SHINE_CONTRACT_ADDRESS, callData, 0, 250000);
+                await waitForTxReceiptPublic(txHash);
+                await syncGlobalDividendPoolUI(userWallet);
+                alert("Global Dividend claimed directly to your wallet!");
+            } catch (err) {
+                if (!(err && (err.code === 4001 || err.code === "ACTION_REJECTED"))) {
+                    alert(err.reason || err.message || "No claimable dividend available.");
+                }
+            } finally {
+                if (btn) { btn.disabled = false; btn.innerText = "Claim"; }
+            }
+        }
+
         function startDividendTimer() {
             setInterval(() => {
                 const now = new Date();
@@ -7230,12 +7236,18 @@ input:checked + .tw-slider:before {
             const pLink = document.querySelector('.personal-link');
             if(pLink) pLink.innerText = `Shine Crypto.io`;
 
-            if (!userWallet) {
+            const hasSavedWallet = Boolean(localStorage.getItem("shine_saved_wallet_addr"));
+            const hasRefInUrl = Boolean(new URLSearchParams(window.location.search).get('ref'));
+            if (!userWallet && !hasSavedWallet && !hasRefInUrl) {
                 applyUserBotMetricsToUI(ROOT_OWNER_ADDRESS.toLowerCase(), 1, latestBackendState);
                 loadUserNetworkStatsFromSupabase(ROOT_OWNER_ADDRESS.toLowerCase(), 1);
             }
             syncOnChainMembersToSupabase().then(() => {
-                if (!userWallet && !window.isViewingOtherProfile) {
+                if (window.isViewingOtherProfile && window.currentPreviewWallet) {
+                    loadUserNetworkStatsFromSupabase(window.currentPreviewWallet.toLowerCase(), Number(window.currentPreviewId || 1));
+                } else if (userWallet && window.currentLoggedInId) {
+                    loadUserNetworkStatsFromSupabase(userWallet.toLowerCase(), Number(window.currentLoggedInId));
+                } else if (!userWallet && !hasSavedWallet && !hasRefInUrl && !window.isViewingOtherProfile) {
                     loadUserNetworkStatsFromSupabase(ROOT_OWNER_ADDRESS.toLowerCase(), 1);
                 }
             });
@@ -7251,16 +7263,11 @@ input:checked + .tw-slider:before {
             'A7': { bg: '#FF4500', text: '#ffffff' },
             'C8': { bg: '#32CD32', text: '#000000' },
             'S9': { bg: '#FF1493', text: '#ffffff' },
-            'Q10': { bg: '#00FA9A', text: '#000000' },
-            'H11': { bg: '#9400D3', text: '#ffffff' },
-            'O12': { bg: '#FF8C00', text: '#ffffff' },
-            'N13': { bg: '#00FFFF', text: '#000000' },
-            'E14': { bg: '#DC143C', text: '#ffffff' },
-            'X15': { bg: '#FFFFFF', text: '#000000' }
+            'Q10': { bg: '#00FA9A', text: '#000000' }
         };
 
         function renderDashboardSlots() {
-            const programs = ['V1', 'Q2', 'T3', 'S4', 'G5', 'N6', 'A7', 'C8', 'S9', 'Q10', 'H11', 'O12', 'N13', 'E14', 'X15'];
+            const programs = progListAll;
             const headerTitle = document.getElementById('headerIdDisplay') ? document.getElementById('headerIdDisplay').innerText : "";
             const viewingOther = Boolean(window.isViewingOtherProfile && window.currentPreviewWallet);
             const activeTargetWallet = viewingOther ? window.currentPreviewWallet.toLowerCase() : (userWallet ? userWallet.toLowerCase() : ROOT_OWNER_ADDRESS.toLowerCase());
@@ -7303,6 +7310,18 @@ function initApp() {
     loadProfileData();
     connectBinanceLiveStream();
     syncDexProductsFromDatabase();
+    if (!window.shineLiveNetworkPoller) {
+        window.shineLiveNetworkPoller = setInterval(() => {
+            if (document.hidden) return;
+            syncOnChainMembersToSupabase().then(() => {
+                if (window.isViewingOtherProfile && window.currentPreviewWallet) {
+                    loadUserNetworkStatsFromSupabase(window.currentPreviewWallet.toLowerCase(), Number(window.currentPreviewId || 1));
+                } else if (userWallet && window.currentLoggedInId) {
+                    loadUserNetworkStatsFromSupabase(userWallet.toLowerCase(), Number(window.currentLoggedInId));
+                }
+            });
+        }, 25000);
+    }
 }
 
         function handleNav(action) {
@@ -7344,53 +7363,26 @@ function initApp() {
         }     
         const tierDescriptions = {
             'tier1': {
-                tag: 'TIER 1 · RETAIL & STARTER',
+                tag: 'CORE MATRICES · X3 · X4 · xXx · xGold · maxQore',
                 tagBg: 'rgba(92, 107, 192, 0.2)',
                 tagColor: '#5C6BC0',
                 split: '80% BOT / 20% NET',
-                title: 'Starter Quant Desk (V1 · Q2 · T3)',
-                desc: '80% capital PancakeSwap DEX bot vault mein trading karta hai. 10% Owner, 10% Upline (5% Up1, 3% Up2, 2% Up3). User trading profit share: 80%.'
+                title: 'Forsage Core Spillover Architecture (V1 · Q2 · T3 · S4 · G5)',
+                desc: 'Proven matrix structure with direct payouts, team spillover lines, automatic recycle, freeze protection, and 80% Trading Bot Pool allocation.'
             },
             'tier2': {
-                tag: 'TIER 2 · PRO CRYPTO',
-                tagBg: 'rgba(186, 104, 200, 0.2)',
-                tagColor: '#BA68C8',
-                split: '80% BOT / 20% NET',
-                title: 'Enhanced Liquidity Synergy (S4 · G5 · N6)',
-                desc: '80% capital PancakeSwap DEX bot vault mein trading karta hai. 10% Owner, 10% Upline (5% Up1, 3% Up2, 2% Up3). User trading profit share: 80%.'
-            },
-            'tier3': {
-                tag: 'TIER 3 · EXPERT QUANT',
-                tagBg: 'rgba(255, 112, 67, 0.2)',
-                tagColor: '#FF7043',
-                split: '80% BOT / 20% NET',
-                title: 'AI Genesis Quant Engine (A7 · C8 · S9)',
-                desc: '80% capital PancakeSwap DEX bot vault mein trading karta hai. 10% Owner, 10% Upline (5% Up1, 3% Up2, 2% Up3). User trading profit share: 80%.'
-            },
-            'tier4': {
-                tag: 'TIER 4 · SMART INVESTOR / SEMI-WHALE',
+                tag: 'SHINE EXCLUSIVE · NEXT-GEN DEFI MATRICES',
                 tagBg: 'rgba(0, 250, 154, 0.2)',
                 tagColor: '#00FA9A',
                 split: '80% BOT / 20% NET',
-                title: 'Institutional Core Matrix (Q10 · H11 · O12)',
-                desc: '80% capital PancakeSwap DEX bot vault mein trading karta hai. 10% Owner, 10% Upline (5% Up1, 3% Up2, 2% Up3). User trading profit share: 80%.'
-            },
-            'tier5': {
-                tag: 'TIER 5 · INSTITUTIONAL BIG WHALE',
-                tagBg: 'rgba(255, 215, 0, 0.25)',
-                tagColor: '#FFD700',
-                split: '80% BOT / 20% NET',
-                title: 'Apex Singularity Protocol (N13 · E14 · X15)',
-                desc: '80% capital PancakeSwap DEX bot vault mein trading karta hai. 10% Owner, 10% Upline (5% Up1, 3% Up2, 2% Up3). User trading profit share: 80%.'
+                title: 'SHINE Unique Protocol Systems (N6 · A7 · C8 · S9 · Q10)',
+                desc: 'Exclusive SHINE innovations: Auto-Bot Compound, Reverse New-User Magnet, Daily Global Dividend Pool, Auto-Upgrade Shield, and DEX Accelerator.'
             }
         };
 
         function getTierDataByProgram(p) {
-            if (['V1', 'Q2', 'T3'].includes(p)) return tierDescriptions.tier1;
-            if (['S4', 'G5', 'N6'].includes(p)) return tierDescriptions.tier2;
-            if (['A7', 'C8', 'S9'].includes(p)) return tierDescriptions.tier3;
-            if (['Q10', 'H11', 'O12'].includes(p)) return tierDescriptions.tier4;
-            return tierDescriptions.tier5;
+            if (['V1', 'Q2', 'T3', 'S4', 'G5'].includes(p)) return tierDescriptions.tier1;
+            return tierDescriptions.tier2;
         }
 
         function renderPreviewCardGrid(prog, prices, targetWallet, activeId, isIdOne, currentUserSlots, viewingOther, theme) {
@@ -7401,16 +7393,16 @@ function initApp() {
 
             prices.forEach((currentPrice, index) => {
                 const lvlNum = index + 1;
-                const slotMatrix = getSlotMatrixInfo(targetWallet, activeId, prog, lvlNum, currentPrice);
+                const slotMatrix = getSlotMatrixInfo(targetWallet, activeId, prog, lvlNum, currentPrice, currentUserSlots, isIdOne);
                 totalProgRev += slotMatrix.revenueUsdt;
 
                 const levelDiv = document.createElement('div');
                 const isActivated = isIdOne ? true : Boolean(currentUserSlots[prog + '_' + lvlNum]);
-                levelDiv.className = isActivated ? 'level-card active' : 'level-card';
+                levelDiv.className = isActivated ? 'level-card active' : 'level-card locked';
                 if (isActivated) {
-                    levelDiv.style.background = theme.bg;
-                    levelDiv.style.border = "none";
-                    levelDiv.style.color = theme.text;
+                    levelDiv.style.background = "#3A47A6";
+                    levelDiv.style.border = slotMatrix.isBlocked ? "2px solid #00e5ff" : "none";
+                    levelDiv.style.color = "#ffffff";
                     levelDiv.onclick = () => {
                         openLevelDetail(lvlNum, currentPrice, prog);
                     };
@@ -7425,11 +7417,16 @@ function initApp() {
                 }
 
                 const spotsHTML = renderPreviewMatrixSpots(prog, slotMatrix.spots);
-                const statsColor = isActivated ? theme.text : '#757575';
-                levelDiv.innerHTML = `<div class="level-top"><span style="font-size:18px;">${currentPrice}</span><div class="level-cost"><svg width="16" height="16" viewBox="0 0 100 100" style="border-radius: 50%;"><circle cx="50" cy="50" r="50" fill="#009393"/><path d="M50 42.5 C34 42.5 22 45.2 22 48.5 C22 51.8 34 54.5 50 54.5 C66 54.5 78 51.8 78 48.5 C78 45.2 66 42.5 50 42.5 Z M50 45.8 C62.5 45.8 71.5 47.7 71.5 48.5 C71.5 49.3 62.5 51.2 50 51.2 C37.5 51.2 28.5 49.3 28.5 48.5 C28.5 47.7 37.5 45.8 50 45.8 Z" fill="#FFFFFF"/><path d="M29 27 H71 V36 H56 V73 H44 V36 H29 Z" fill="#FFFFFF"/></svg> USDT</div></div>${spotsHTML}<div class="level-stats" style="color:${statsColor};"><div class="stat-item"><i class="material-icons" style="color:${statsColor};">groups</i> ${slotMatrix.partnersCount}</div><div class="stat-item"><i class="material-icons" style="color:${statsColor};">cached</i> ${slotMatrix.cyclesCount}</div></div>`;
+                const statsColor = isActivated ? '#ffffff' : '#757575';
+                let statusBanner = '';
+                if (isActivated && slotMatrix.isBlocked) {
+                    statusBanner = `<div style="position:absolute; top:48px; left:50%; transform:translateX(-50%); background:rgba(0,229,255,0.92); color:#000; padding:3px 10px; border-radius:10px; font-size:10px; font-weight:900; display:flex; align-items:center; gap:3px; z-index:6; white-space:nowrap;"><i class="material-icons" style="font-size:13px;">ac_unit</i> FROZEN · UPGRADE L${lvlNum + 1}</div>`;
+                } else if (!isActivated && slotMatrix.partnersCount > 0) {
+                    statusBanner = `<div style="position:absolute; top:48px; left:50%; transform:translateX(-50%); background:rgba(232,117,91,0.95); color:#fff; padding:3px 10px; border-radius:10px; font-size:10px; font-weight:900; display:flex; align-items:center; gap:3px; z-index:6; white-space:nowrap;"><i class="material-icons" style="font-size:13px;">error</i> MISSED PROFIT</div>`;
+                }
+                levelDiv.innerHTML = `<div class="level-top"><span style="font-size:18px;">${currentPrice}</span><div class="level-cost"><svg width="16" height="16" viewBox="0 0 100 100" style="border-radius: 50%;"><circle cx="50" cy="50" r="50" fill="#009393"/><path d="M50 42.5 C34 42.5 22 45.2 22 48.5 C22 51.8 34 54.5 50 54.5 C66 54.5 78 51.8 78 48.5 C78 45.2 66 42.5 50 42.5 Z M50 45.8 C62.5 45.8 71.5 47.7 71.5 48.5 C71.5 49.3 62.5 51.2 50 51.2 C37.5 51.2 28.5 49.3 28.5 48.5 C28.5 47.7 37.5 45.8 50 45.8 Z" fill="#FFFFFF"/><path d="M29 27 H71 V36 H56 V73 H44 V36 H29 Z" fill="#FFFFFF"/></svg> USDT</div></div>${statusBanner}${spotsHTML}<div class="level-stats" style="color:${statsColor};"><div class="stat-item"><i class="material-icons" style="color:${statsColor};">groups</i> ${slotMatrix.partnersCount}</div><div class="stat-item"><i class="material-icons" style="color:${statsColor};">cached</i> ${slotMatrix.cyclesCount}</div></div>`;
                 grid.appendChild(levelDiv);
             });
-
             const totProfEl = document.getElementById('previewTotalProfit');
             if (totProfEl) totProfEl.innerText = totalProgRev.toFixed(2);
         }
@@ -7439,11 +7436,10 @@ function initApp() {
             const prog = programName;
             const prices = progPrices[prog];
             const names = {
-                'V1': 'VELOCITY ENGINE (V1)', 'Q2': 'QUANTUM MATRIX (Q2)', 'T3': 'TRINITY FORCE (T3)',
-                'S4': 'DUAL SYNERGY (S4)', 'G5': 'GALAXY ORBIT (G5)', 'N6': 'INFINITE NEXUS (N6)',
-                'A7': 'AI GENESIS (A7)', 'C8': 'CYBER NODE (C8)', 'S9': 'SYNAPSE GRID (S9)',
-                'Q10': 'QUANTUM CORE (Q10)', 'H11': 'HOLO MATRIX (H11)', 'O12': 'OMNI CHAIN (O12)',
-                'N13': 'NEURAL LINK (N13)', 'E14': 'ETERNITY PROTOCOL (E14)', 'X15': 'APEX SINGULARITY (X15)'
+                'V1': 'VELOCITY X3 (V1)', 'Q2': 'QUANTUM X4 (Q2)', 'T3': 'TRINITY xXx (T3)',
+                'S4': 'SYNERGY xGold (S4)', 'G5': 'GALAXY maxQore (G5)', 'N6': 'AUTO-BOT VAULT (N6)',
+                'A7': 'REVERSE MAGNET (A7)', 'C8': 'GLOBAL DIVIDEND (C8)', 'S9': 'UPGRADE SHIELD (S9)',
+                'Q10': 'DEX ACCELERATOR (Q10)'
             };
             const viewingOther = Boolean(window.isViewingOtherProfile && window.currentPreviewWallet);
             const activeId = viewingOther ? (window.currentPreviewId || 1) : (window.currentLoggedInId || 1);
@@ -7486,13 +7482,7 @@ function initApp() {
 
             const legend = document.createElement('div');
             legend.className = 'preview-legend';
-            if (prog === 'V1') {
-                legend.innerHTML = `
-                    <div class="legend-row"><div class="legend-circle" style="background:#FFD700;"></div> Global Dividend</div>
-                    <div class="legend-row"><div class="legend-circle circle-white"></div> Direct Partner</div>
-                    <div class="legend-row"><i class="material-icons">bolt</i> Velocity Boost</div>
-                    <button class="marketing-legend-btn" onclick="toggleModal('legendModal')">2030 V1 Logic</button>`;
-            } else if (['S4', 'G5', 'N6', 'C8', 'S9', 'H11', 'O12', 'E14', 'X15'].includes(prog)) {
+            if (['Q2', 'T3', 'S4', 'G5', 'S9', 'Q10'].includes(prog)) {
                 legend.innerHTML = `
                     <div class="legend-row"><i class="material-icons">groups</i> Partners on level</div>
                     <div class="legend-row"><div class="legend-circle circle-white"></div> Direct partner</div>
@@ -7555,18 +7545,12 @@ async function openUpgrade(prog, lvl, price) {
     document.getElementById('totalUpgradePrice').innerText = exactSlotPrice;
     document.getElementById('serviceFeeDisplay').innerText = `0 USDT`;
 
-    let places = 3;
-    if (['S4', 'Q2', 'C8', 'H11'].includes(prog)) { places = 6; }
-    else if (['G5', 'S9', 'O12', 'E14'].includes(prog)) { places = 14; }
-    else if (['N6', 'X15'].includes(prog)) { places = 30; }
-    else if (prog === 'A7') { places = 4; }
-    else if (prog === 'Q10') { places = 5; }
-    else if (prog === 'N13') { places = 6; }
+    let places = getProgramMaxSpots(prog);
 
     document.getElementById('upgPlaces').innerText = places;
     document.getElementById('upgReward').innerText = (exactSlotPrice * 0.80).toFixed(2);
     document.getElementById('upgProfit').innerText = 80;
-    document.getElementById('upgBnb').innerText = (exactSlotPrice * 0.0015).toFixed(4);
+    document.getElementById('upgBnb').innerText = ((progFees[prog] || 1) * 0.001).toFixed(4);
 
     const netBox = document.getElementById('netCheckIconBox');
     const netIconL = document.getElementById('netCheckIconLeft');
@@ -7721,7 +7705,8 @@ async function openUpgrade(prog, lvl, price) {
         if (results[3].success) allowanceBal = erc20Iface.decodeFunctionResult("allowance", results[3].returnData)[0];
     } catch (e) {}
 
-    const reqBnb = ethers.utils.parseEther("0.001");
+    const exactFeeBnbStr = ((progFees[prog] || 1) * 0.001).toFixed(4);
+    const reqBnb = ethers.utils.parseEther(exactFeeBnbStr);
     if (bnbBal.lt(reqBnb)) {
         bnbBox.style.borderColor = "#E8755B";
         bnbIconL.style.color = "#E8755B";
@@ -7777,10 +7762,188 @@ async function openUpgrade(prog, lvl, price) {
     }
 }
 
+window.currentUserNotifications = [];
+window.currentNotifWalletKey = "";
+
+function formatNotifTimestamp(isoStr) {
+    if (!isoStr) return "Just now";
+    const d = new Date(isoStr);
+    if (isNaN(d.getTime())) return "Just now";
+    const diffMs = Date.now() - d.getTime();
+    const diffMins = Math.floor(diffMs / 60000);
+    if (diffMins < 1) return "Just now";
+    if (diffMins < 60) return diffMins + "m ago";
+    const today = new Date();
+    const isToday = d.toDateString() === today.toDateString();
+    const timePart = d.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+    if (isToday) return "Today, " + timePart;
+    return d.toLocaleDateString([], { day: '2-digit', month: 'short', year: 'numeric' }) + ", " + timePart;
+}
+
+function getSeenNotifIds(walletKey) {
+    if (!walletKey) return new Set();
+    try {
+        const raw = JSON.parse(localStorage.getItem("shine_notif_seen_" + walletKey) || "[]");
+        return new Set(Array.isArray(raw) ? raw : []);
+    } catch (e) {
+        return new Set();
+    }
+}
+
+function markAllNotifsAsRead(walletKey) {
+    if (!walletKey || !Array.isArray(window.currentUserNotifications)) return;
+    const seen = getSeenNotifIds(walletKey);
+    window.currentUserNotifications.forEach(n => {
+        if (n && n.id) seen.add(n.id);
+    });
+    const arr = Array.from(seen).slice(-300);
+    localStorage.setItem("shine_notif_seen_" + walletKey, JSON.stringify(arr));
+}
+
+function handleNotificationClick(type, targetId, progName) {
+    const overlay = document.getElementById('notificationOverlay');
+    if (overlay) overlay.classList.remove('active');
+    if (type === 'SLOT' && progName) {
+        openPreview(progName);
+    } else if ((type === 'PARTNER' || type === 'PROFIT') && targetId && Number(targetId) > 0) {
+        previewAccountById(Number(targetId));
+    }
+}
+
+function renderRealNotifications(walletKey) {
+    const listEl = document.getElementById('notifList');
+    const dotEl = document.getElementById('notifDot');
+    const overlay = document.getElementById('notificationOverlay');
+    const items = Array.isArray(window.currentUserNotifications) ? window.currentUserNotifications : [];
+    const seen = getSeenNotifIds(walletKey);
+    const isOpen = overlay && overlay.classList.contains('active');
+
+    let unreadCount = 0;
+    items.forEach(n => {
+        if (!seen.has(n.id)) unreadCount++;
+    });
+
+    if (dotEl) {
+        dotEl.style.display = (!isOpen && unreadCount > 0) ? 'block' : 'none';
+    }
+
+    if (!listEl) return;
+    if (items.length === 0) {
+        listEl.innerHTML = '<div style="padding: 36px 20px; text-align: center; color: #757575; font-size: 13px;">No notifications yet</div>';
+        return;
+    }
+
+    listEl.innerHTML = items.slice(0, 60).map(n => {
+        const isUnread = !seen.has(n.id);
+        let iconBg = 'rgba(76, 175, 80, 0.2)';
+        let iconColor = '#4CAF50';
+        let iconName = 'payments';
+        if (n.type === 'PARTNER' || n.type === 'REG') {
+            iconBg = 'rgba(58, 71, 166, 0.2)';
+            iconColor = '#5C6BC0';
+            iconName = 'person_add';
+        } else if (n.type === 'SLOT') {
+            iconBg = 'rgba(255, 215, 0, 0.2)';
+            iconColor = '#FFD700';
+            iconName = 'upgrade';
+        }
+        const rowBg = isUnread ? 'rgba(58, 71, 166, 0.14)' : 'transparent';
+        const unreadDot = isUnread ? '<span style="width:7px; height:7px; background:#ff3b30; border-radius:50%; display:inline-block; margin-left:6px;"></span>' : '';
+        const clickFn = `handleNotificationClick('${n.type}', ${Number(n.refId || 0)}, '${n.prog || ''}')`;
+
+        return `<div class="notif-item" onclick="${clickFn}" style="background:${rowBg}; cursor:pointer;">` +
+            `<div class="notif-icon" style="background:${iconBg}; color:${iconColor};"><i class="material-icons">${iconName}</i></div>` +
+            `<div class="notif-content" style="flex:1;">` +
+                `<div class="notif-title">${n.title}${unreadDot}</div>` +
+                `<div class="notif-desc">${n.desc}</div>` +
+                `<div class="notif-time">${formatNotifTimestamp(n.createdAt)}</div>` +
+            `</div>` +
+        `</div>`;
+    }).join('');
+}
+
+function updateRealNotificationsForUser(targetWalletLower, targetId, targetMember, directPartners, fullTeam, mySlots, myRewards) {
+    if (!targetWalletLower) return;
+    window.currentNotifWalletKey = targetWalletLower;
+    const directSet = new Set((directPartners || []).map(m => m.wallet_address));
+    const list = [];
+
+    if (targetMember && Number(targetMember.user_id) > 0) {
+        list.push({
+            id: 'REG_' + targetWalletLower + '_' + targetMember.user_id,
+            type: 'REG',
+            title: 'Account Registered',
+            desc: 'ID ' + targetMember.user_id + ' joined SHINE USDT Protocol.',
+            createdAt: targetMember.joined_at || '',
+            timeMs: targetMember.joined_at ? new Date(targetMember.joined_at).getTime() : 0,
+            refId: Number(targetMember.user_id)
+        });
+    }
+
+    (fullTeam || []).forEach(m => {
+        const isDirect = directSet.has(m.wallet_address);
+        list.push({
+            id: 'TEAM_' + targetWalletLower + '_' + m.wallet_address,
+            type: 'PARTNER',
+            title: isDirect ? 'New Direct Partner' : 'New Team Partner',
+            desc: isDirect
+                ? ('ID ' + m.user_id + ' joined directly under your link.')
+                : ('ID ' + m.user_id + ' joined in your downline team.'),
+            createdAt: m.joined_at || '',
+            timeMs: m.joined_at ? new Date(m.joined_at).getTime() : 0,
+            refId: Number(m.user_id || 0)
+        });
+    });
+
+    (mySlots || []).forEach(s => {
+        list.push({
+            id: 'SLOT_' + targetWalletLower + '_' + s.program + '_' + s.level,
+            type: 'SLOT',
+            title: 'Level Upgraded',
+            desc: 'Activated ' + s.program + ' Slot ' + s.level + ' (' + s.cost + ' USDT) & +' + s.cost + ' SHINE.',
+            createdAt: s.activated_at || '',
+            timeMs: s.activated_at ? new Date(s.activated_at).getTime() : 0,
+            prog: s.program
+        });
+    });
+
+    (myRewards || []).forEach(r => {
+        const tierPct = r.reward_tier === 1 ? '5%' : (r.reward_tier === 2 ? '3%' : '2%');
+        const k = r.reward_key || (r.buyer_wallet + '_' + r.program + '_' + r.level + '_' + r.reward_tier);
+        list.push({
+            id: 'REW_' + k,
+            type: 'PROFIT',
+            title: 'Profit Received',
+            desc: '+' + parseFloat(r.reward_amount || 0).toFixed(2) + ' USDT (' + tierPct + ') from ID ' + (r.buyer_id || '?') + ' in ' + r.program + ' Slot ' + r.level + '.',
+            createdAt: r.created_at || '',
+            timeMs: r.created_at ? new Date(r.created_at).getTime() : 0,
+            refId: Number(r.buyer_id || 0)
+        });
+    });
+
+    list.sort((a, b) => b.timeMs - a.timeMs);
+    window.currentUserNotifications = list;
+    renderRealNotifications(targetWalletLower);
+
+    const overlay = document.getElementById('notificationOverlay');
+    if (overlay && overlay.classList.contains('active')) {
+        markAllNotifsAsRead(targetWalletLower);
+    }
+}
+
 function toggleNotifications() {
     const overlay = document.getElementById('notificationOverlay');
+    if (!overlay) return;
+    const willOpen = !overlay.classList.contains('active');
     overlay.classList.toggle('active');
-    document.getElementById('notifDot').style.display = 'none';
+    const dotEl = document.getElementById('notifDot');
+    if (willOpen) {
+        renderRealNotifications(window.currentNotifWalletKey);
+        if (dotEl) dotEl.style.display = 'none';
+        markAllNotifsAsRead(window.currentNotifWalletKey);
+    } else {
+        renderRealNotifications(window.currentNotifWalletKey);
+    }
 }
 function toggleExpandedProfile() {
     const exp = document.getElementById('expandedProfile');
@@ -7898,8 +8061,8 @@ function uploadAvatar(event) {
         if (postAvatar) {
             postAvatar.style.backgroundImage = `url('${compressedData}')`;
         }
-        localStorage.setItem("shine_profile_avatar", compressedData);
         const effectiveWallet = (userWallet || localStorage.getItem("shine_saved_wallet_addr") || "0xDefaultUser").toLowerCase();
+        localStorage.setItem("shine_profile_avatar_" + effectiveWallet, compressedData);
         const curName = document.getElementById('displayNickname') ? document.getElementById('displayNickname').innerText : "User";
 
         if (window.supabase) {
@@ -7919,17 +8082,17 @@ function uploadAvatar(event) {
 async function saveProfile() {
     const newName = document.getElementById('inputNickname').value.trim();
     const effectiveWallet = (userWallet || localStorage.getItem("shine_saved_wallet_addr") || "0xDefaultUser").toLowerCase();
-    const finalAvatar = window.currentCompressedAvatar || localStorage.getItem("shine_profile_avatar") || "";
+    const finalAvatar = window.currentCompressedAvatar || localStorage.getItem("shine_profile_avatar_" + effectiveWallet) || "";
 
     if (newName) {
         document.getElementById('displayNickname').innerText = newName;
         const postName = document.getElementById('posterUserName');
         if (postName) postName.innerText = newName;
-        localStorage.setItem("shine_profile_nickname", newName);
+        localStorage.setItem("shine_profile_nickname_" + effectiveWallet, newName);
     }
 
     if (window.currentCompressedAvatar) {
-        localStorage.setItem("shine_profile_avatar", window.currentCompressedAvatar);
+        localStorage.setItem("shine_profile_avatar_" + effectiveWallet, window.currentCompressedAvatar);
     }
 
     if (window.supabase) {
@@ -7948,41 +8111,39 @@ async function saveProfile() {
 }
 
 async function loadSavedProfileFromDB() {
-    const savedName = localStorage.getItem("shine_profile_nickname");
-    const savedAvatar = localStorage.getItem("shine_profile_avatar");
-
-    if (savedName) {
-        document.getElementById('displayNickname').innerText = savedName;
-        const postName = document.getElementById('posterUserName');
-        if (postName) postName.innerText = savedName;
-        const inp = document.getElementById('inputNickname');
-        if (inp) inp.value = savedName;
-    }
-
-    if (savedAvatar) {
-        window.currentCompressedAvatar = savedAvatar;
-        document.querySelectorAll('.avatar, .edit-avatar').forEach(el => {
-            el.style.backgroundImage = `url('${savedAvatar}')`;
-        });
-        const postAvatar = document.getElementById('posterUserAvatar');
-        if (postAvatar) postAvatar.style.backgroundImage = `url('${savedAvatar}')`;
-    }
-
     const effectiveWallet = (userWallet || localStorage.getItem("shine_saved_wallet_addr") || "").toLowerCase();
+    const defaultAvatar = "https://i.imgur.com/O4u35tA.jpeg";
     if (!effectiveWallet) return;
+
+    const savedName = localStorage.getItem("shine_profile_nickname_" + effectiveWallet) || "User";
+    const savedAvatar = localStorage.getItem("shine_profile_avatar_" + effectiveWallet) || defaultAvatar;
+
+    document.getElementById('displayNickname').innerText = savedName;
+    const postNameInit = document.getElementById('posterUserName');
+    if (postNameInit) postNameInit.innerText = savedName;
+    const inpInit = document.getElementById('inputNickname');
+    if (inpInit) inpInit.value = savedName === "User" ? "" : savedName;
+
+    window.currentCompressedAvatar = savedAvatar;
+    document.querySelectorAll('.avatar, .edit-avatar').forEach(el => {
+        el.style.backgroundImage = `url('${savedAvatar}')`;
+    });
+    const postAvatarInit = document.getElementById('posterUserAvatar');
+    if (postAvatarInit) postAvatarInit.style.backgroundImage = `url('${savedAvatar}')`;
 
     if (window.supabase) {
         try {
             const client = window.supabase.createClient(MAIN_SUPABASE_URL, MAIN_SUPABASE_KEY);
             const { data, error } = await client.from('user_profiles').select('*').eq('wallet_address', effectiveWallet).single();
             if (!error && data) {
+                if ((userWallet || "").toLowerCase() !== effectiveWallet) return;
                 if (data.nickname) {
                     document.getElementById('displayNickname').innerText = data.nickname;
                     const postName = document.getElementById('posterUserName');
                     if (postName) postName.innerText = data.nickname;
                     const inp = document.getElementById('inputNickname');
                     if (inp) inp.value = data.nickname;
-                    localStorage.setItem("shine_profile_nickname", data.nickname);
+                    localStorage.setItem("shine_profile_nickname_" + effectiveWallet, data.nickname);
                 }
                 if (data.avatar_url) {
                     window.currentCompressedAvatar = data.avatar_url;
@@ -7991,7 +8152,7 @@ async function loadSavedProfileFromDB() {
                     });
                     const postAvatar = document.getElementById('posterUserAvatar');
                     if (postAvatar) postAvatar.style.backgroundImage = `url('${data.avatar_url}')`;
-                    localStorage.setItem("shine_profile_avatar", data.avatar_url);
+                    localStorage.setItem("shine_profile_avatar_" + effectiveWallet, data.avatar_url);
                 }
             }
         } catch (err) {}
@@ -8002,21 +8163,21 @@ async function loadSavedProfileFromDB() {
             let matrixHTML = '';
             let legendHTML = '';
 
-            if (['V1', 'T3', 'A7', 'Q10', 'N13'].includes(prog)) {
-                let spotsCount = prog === 'V1' ? 3 : prog === 'T3' ? 3 : prog === 'A7' ? 4 : prog === 'Q10' ? 5 : 6;
+            if (['V1', 'N6', 'A7', 'C8'].includes(prog)) {
+                let spotsCount = prog === 'V1' ? 3 : prog === 'N6' ? 4 : prog === 'A7' ? 5 : 6;
                 let spotsDivs = '';
                 for (let i = 0; i < spotsCount; i++) {
                     let icon = (i === spotsCount - 1) ? 'cached' : 'account_balance_wallet';
-                    spotsDivs += renderDetailSpotCircle(spots[i], 45, 13, icon, 18);
+                    spotsDivs += renderDetailSpotCircle(spots[i], spotsCount > 4 ? 38 : 45, 12, icon, 16);
                 }
                 matrixHTML = `
                     <div style="position:relative; width:100%; height:250px; display:flex; flex-direction:column; align-items:center; justify-content:center;">
-                        <div class="spot filled" style="width:60px; height:60px; background:white !important; border:none; margin-bottom:50px; color:black; font-weight:bold; z-index:5; display:flex; align-items:center; justify-content:center;">ID ${viewId}</div>
-                        <div style="display:flex; gap:20px; z-index:5; flex-wrap:wrap; justify-content:center;">
+                        <div class="spot filled" style="width:60px; height:60px; background:white !important; border:none; margin-bottom:45px; color:black; font-weight:bold; z-index:5; display:flex; align-items:center; justify-content:center;">ID ${viewId}</div>
+                        <div style="display:flex; gap:14px; z-index:5; flex-wrap:wrap; justify-content:center;">
                             ${spotsDivs}
                         </div>
                     </div>`;
-            } else if (['Q2', 'S4', 'C8', 'H11'].includes(prog)) {
+            } else if (prog === 'Q2') {
                 let r1 = renderDetailSpotCircle(spots[0], 40, 12, 'north', 16) + renderDetailSpotCircle(spots[1], 40, 12, 'north', 16);
                 let r2 = renderDetailSpotCircle(spots[2], 35, 11, 'account_balance_wallet', 14) + renderDetailSpotCircle(spots[3], 35, 11, 'account_balance_wallet', 14) + renderDetailSpotCircle(spots[4], 35, 11, 'account_balance_wallet', 14) + renderDetailSpotCircle(spots[5], 35, 11, 'cached', 14);
                 matrixHTML = `
@@ -8025,29 +8186,58 @@ async function loadSavedProfileFromDB() {
                         <div style="display:flex; gap:65px; margin-bottom:40px; z-index:5;">${r1}</div>
                         <div style="display:flex; gap:15px; z-index:5;">${r2}</div>
                     </div>`;
-            } else if (['G5', 'S9', 'O12', 'E14'].includes(prog)) {
+            } else if (prog === 'T3') {
                 let r1 = renderDetailSpotCircle(spots[0], 35, 11, 'north', 14) + renderDetailSpotCircle(spots[1], 35, 11, 'north', 14);
-                let r2 = [2, 3, 4, 5].map(idx => renderDetailSpotCircle(spots[idx], 25, 10, 'account_balance_wallet', 12)).join('');
-                let r3 = [6, 7, 8, 9, 10, 11, 12, 13].map((idx, pos) => renderDetailSpotCircle(spots[idx], 20, 9, pos === 7 ? 'cached' : 'account_balance_wallet', 10)).join('');
+                let r2 = [2, 3, 4, 5].map(idx => renderDetailSpotCircle(spots[idx], 26, 10, 'account_balance_wallet', 12)).join('');
+                let r3 = [6, 7, 8, 9, 10, 11, 12, 13].map((idx, pos) => renderDetailSpotCircle(spots[idx], 22, 9, pos === 7 ? 'cached' : 'account_balance_wallet', 10)).join('');
                 matrixHTML = `
                     <div style="position:relative; width:100%; height:380px; display:flex; flex-direction:column; align-items:center; justify-content:center;">
                         <div class="spot filled" style="width:50px; height:50px; background:white !important; border:none; margin-bottom:40px; color:black; font-weight:bold; z-index:5; display:flex; align-items:center; justify-content:center;">ID ${viewId}</div>
                         <div style="display:flex; gap:90px; margin-bottom:40px; z-index:5;">${r1}</div>
-                        <div style="display:flex; gap:35px; margin-bottom:30px; z-index:5;">${r2}</div>
-                        <div style="display:flex; gap:12px; z-index:5;">${r3}</div>
+                        <div style="display:flex; gap:30px; margin-bottom:30px; z-index:5;">${r2}</div>
+                        <div style="display:flex; gap:10px; z-index:5;">${r3}</div>
                     </div>`;
-            } else if (['N6', 'X15'].includes(prog)) {
-                let r1 = renderDetailSpotCircle(spots[0], 30, 10, 'north', 12) + renderDetailSpotCircle(spots[1], 30, 10, 'north', 12);
-                let r2 = [2, 3, 4, 5].map(idx => renderDetailSpotCircle(spots[idx], 22, 9, 'account_balance_wallet', 10)).join('');
-                let r3 = [6, 7, 8, 9, 10, 11, 12, 13].map(idx => renderDetailSpotCircle(spots[idx], 16, 8, 'account_balance_wallet', 8)).join('');
-                let r4 = Array.from({ length: 16 }, (_, pos) => renderDetailSpotCircle(spots[14 + pos], 12, 7, pos === 15 ? 'cached' : 'account_balance_wallet', 6)).join('');
+            } else if (prog === 'S4') {
+                let r1 = renderDetailSpotCircle(spots[0], 32, 10, 'north', 12) + renderDetailSpotCircle(spots[1], 32, 10, 'north', 12);
+                let r2 = [2, 3, 4, 5].map(idx => renderDetailSpotCircle(spots[idx], 24, 9, 'account_balance_wallet', 10)).join('');
+                let r3 = [6, 7, 8, 9, 10, 11, 12, 13].map(idx => renderDetailSpotCircle(spots[idx], 18, 8, 'account_balance_wallet', 8)).join('');
+                let r4 = Array.from({ length: 16 }, (_, pos) => renderDetailSpotCircle(spots[14 + pos], 14, 7, pos === 15 ? 'cached' : 'account_balance_wallet', 7)).join('');
                 matrixHTML = `
-                    <div style="position:relative; width:100%; height:450px; display:flex; flex-direction:column; align-items:center; justify-content:center; transform:scale(0.9);">
-                        <div class="spot filled" style="width:45px; height:45px; background:white !important; border:none; margin-bottom:40px; color:black; font-weight:bold; z-index:5; display:flex; align-items:center; justify-content:center;">ID ${viewId}</div>
-                        <div style="display:flex; gap:110px; margin-bottom:35px; z-index:5;">${r1}</div>
-                        <div style="display:flex; gap:45px; margin-bottom:35px; z-index:5;">${r2}</div>
-                        <div style="display:flex; gap:18px; margin-bottom:30px; z-index:5;">${r3}</div>
-                        <div style="display:flex; gap:8px; z-index:5;">${r4}</div>
+                    <div style="position:relative; width:100%; height:440px; display:flex; flex-direction:column; align-items:center; justify-content:center; transform:scale(0.92);">
+                        <div class="spot filled" style="width:45px; height:45px; background:white !important; border:none; margin-bottom:35px; color:black; font-weight:bold; z-index:5; display:flex; align-items:center; justify-content:center;">ID ${viewId}</div>
+                        <div style="display:flex; gap:100px; margin-bottom:32px; z-index:5;">${r1}</div>
+                        <div style="display:flex; gap:40px; margin-bottom:32px; z-index:5;">${r2}</div>
+                        <div style="display:flex; gap:14px; margin-bottom:28px; z-index:5;">${r3}</div>
+                        <div style="display:flex; gap:5px; z-index:5;">${r4}</div>
+                    </div>`;
+            } else if (prog === 'G5') {
+                let r1 = [0, 1, 2].map(idx => renderDetailSpotCircle(spots[idx], 34, 10, 'north', 12)).join('');
+                let r2 = Array.from({ length: 9 }, (_, pos) => renderDetailSpotCircle(spots[3 + pos], 22, 9, 'account_balance_wallet', 10)).join('');
+                let r3 = Array.from({ length: 27 }, (_, pos) => renderDetailSpotCircle(spots[12 + pos], 10, 6, pos === 26 ? 'cached' : 'account_balance_wallet', 6)).join('');
+                matrixHTML = `
+                    <div style="position:relative; width:100%; height:390px; display:flex; flex-direction:column; align-items:center; justify-content:center;">
+                        <div class="spot filled" style="width:48px; height:48px; background:white !important; border:none; margin-bottom:35px; color:black; font-weight:bold; z-index:5; display:flex; align-items:center; justify-content:center;">ID ${viewId}</div>
+                        <div style="display:flex; gap:65px; margin-bottom:35px; z-index:5;">${r1}</div>
+                        <div style="display:flex; gap:10px; margin-bottom:32px; z-index:5;">${r2}</div>
+                        <div style="display:flex; gap:3px; z-index:5; flex-wrap:nowrap; justify-content:center;">${r3}</div>
+                    </div>`;
+            } else if (prog === 'S9') {
+                let r1 = [0, 1, 2, 3].map(idx => renderDetailSpotCircle(spots[idx], 34, 11, 'north', 14)).join('');
+                let r2 = [4, 5, 6, 7].map((idx, pos) => renderDetailSpotCircle(spots[idx], 34, 11, pos >= 2 ? 'cached' : 'account_balance_wallet', 14)).join('');
+                matrixHTML = `
+                    <div style="position:relative; width:100%; height:310px; display:flex; flex-direction:column; align-items:center; justify-content:center;">
+                        <div class="spot filled" style="width:52px; height:52px; background:white !important; border:none; margin-bottom:40px; color:black; font-weight:bold; z-index:5; display:flex; align-items:center; justify-content:center;">ID ${viewId}</div>
+                        <div style="display:flex; gap:24px; margin-bottom:32px; z-index:5;">${r1}</div>
+                        <div style="display:flex; gap:24px; z-index:5;">${r2}</div>
+                    </div>`;
+            } else if (prog === 'Q10') {
+                let r1 = [0, 1, 2, 3, 4].map(idx => renderDetailSpotCircle(spots[idx], 32, 10, 'north', 12)).join('');
+                let r2 = [5, 6, 7, 8, 9].map((idx, pos) => renderDetailSpotCircle(spots[idx], 32, 10, pos === 4 ? 'cached' : 'account_balance_wallet', 12)).join('');
+                matrixHTML = `
+                    <div style="position:relative; width:100%; height:310px; display:flex; flex-direction:column; align-items:center; justify-content:center;">
+                        <div class="spot filled" style="width:52px; height:52px; background:white !important; border:none; margin-bottom:40px; color:black; font-weight:bold; z-index:5; display:flex; align-items:center; justify-content:center;">ID ${viewId}</div>
+                        <div style="display:flex; gap:14px; margin-bottom:32px; z-index:5;">${r1}</div>
+                        <div style="display:flex; gap:14px; z-index:5;">${r2}</div>
                     </div>`;
             }
 
@@ -8075,6 +8265,17 @@ async function loadSavedProfileFromDB() {
                 ? '<div class="upline-id" style="background:#333; color:white; cursor:pointer;" onclick="document.getElementById(\'levelDetailOverlay\').remove(); closePreview(); previewAccountById(' + viewUpId + ');">ID ' + viewUpId + '</div>'
                 : '<div class="upline-id" style="background:#333; color:white;">ID 0</div>';
 
+            const nextSlotCost = (progPrices[prog] && progPrices[prog][lvl]) ? progPrices[prog][lvl] : 0;
+            const freezeBannerHtml = (slotMatrix.isBlocked && lvl < 12 && nextSlotCost > 0)
+                ? '<div style="background:rgba(0,229,255,0.12); border:1px solid #00e5ff; border-radius:16px; padding:14px 16px; margin-bottom:20px; display:flex; justify-content:space-between; align-items:center; gap:10px;">' +
+                      '<div style="display:flex; align-items:center; gap:10px;">' +
+                          '<i class="material-icons" style="color:#00e5ff; font-size:24px;">ac_unit</i>' +
+                          '<div><div style="color:#00e5ff; font-weight:900; font-size:13px;">LEVEL FROZEN</div><div style="color:#a0aec0; font-size:11px;">Cycle completed. Upgrade Level ' + (lvl + 1) + ' to unfreeze profits.</div></div>' +
+                      '</div>' +
+                      '<button onclick="document.getElementById(\'levelDetailOverlay\').remove(); openUpgrade(\'' + prog + '\', ' + (lvl + 1) + ', ' + nextSlotCost + ');" style="background:#00e5ff; color:#000; border:none; border-radius:10px; padding:8px 12px; font-weight:900; font-size:11px; cursor:pointer; flex-shrink:0;">UNFREEZE</button>' +
+                  '</div>'
+                : '';
+
             return '<div class="preview-header">' +
                     '<div class="header-left">' +
                         '<i class="material-icons" onclick="document.getElementById(\'levelDetailOverlay\').remove()" style="cursor:pointer">arrow_back</i>' +
@@ -8087,6 +8288,7 @@ async function loadSavedProfileFromDB() {
                         '<span style="color:#757575;">Upline</span>' +
                         upBadgeHtml +
                     '</div>' +
+                    freezeBannerHtml +
                     '<div class="level-card active detail-card-large" style="background:var(--primary-bg); border:1px solid rgba(255,255,255,0.05); box-shadow: 0 10px 30px rgba(0,0,0,0.5);">' +
                         '<div class="detail-id-header">' +
                             '<div style="font-size:14px; opacity:0.8;">Lvl ' + lvl + '</div>' +
@@ -8122,15 +8324,22 @@ async function loadSavedProfileFromDB() {
             const viewWallet = window.isViewingOtherProfile && window.currentPreviewWallet
                 ? window.currentPreviewWallet.toLowerCase()
                 : (userWallet ? userWallet.toLowerCase() : ROOT_OWNER_ADDRESS.toLowerCase());
+            const isIdOneDetail = Number(viewId) === 1 || viewWallet === ROOT_OWNER_ADDRESS.toLowerCase();
+            let detailSlotsMap = {};
+            if (window.isViewingOtherProfile) {
+                detailSlotsMap = window.previewActiveLevels || {};
+            } else if (userWallet) {
+                try { detailSlotsMap = JSON.parse(localStorage.getItem("shine_active_slots_" + viewWallet) || "{}"); } catch (e) {}
+            }
 
-            const slotMatrix = getSlotMatrixInfo(viewWallet, viewId, prog, lvl, cost);
+            const slotMatrix = getSlotMatrixInfo(viewWallet, viewId, prog, lvl, cost, detailSlotsMap, isIdOneDetail);
             detailOverlay.innerHTML = buildLevelDetailMarkup(lvl, cost, prog, viewId, viewUpId, slotMatrix);
             document.body.appendChild(detailOverlay);
 
             fetchProgramMatrixStates(viewWallet, prog).then((hasUpdate) => {
                 const activeEl = document.getElementById('levelDetailOverlay');
                 if (hasUpdate && activeEl) {
-                    const updatedMatrix = getSlotMatrixInfo(viewWallet, viewId, prog, lvl, cost);
+                    const updatedMatrix = getSlotMatrixInfo(viewWallet, viewId, prog, lvl, cost, detailSlotsMap, isIdOneDetail);
                     activeEl.innerHTML = buildLevelDetailMarkup(lvl, cost, prog, viewId, viewUpId, updatedMatrix);
                 }
             });
@@ -8298,17 +8507,22 @@ window.addEventListener('DOMContentLoaded', () => {
     }
 
     let activeProvider = getSafeRegistrationProvider();
-    if (activeProvider && activeProvider.on) {
-        activeProvider.on('chainChanged', () => {
+    const bindProviderListeners = (prov) => {
+        if (!prov || !prov.on || prov._shineBound) return;
+        prov._shineBound = true;
+        prov.on('chainChanged', () => {
             if (!isSwitchingNetworkProgrammatically && document.getElementById('forsageChecksModal').classList.contains('active')) {
                 verifyRegistrationChecksStatus();
             }
         });
-        activeProvider.on('accountsChanged', (accounts) => {
+        prov.on('accountsChanged', (accounts) => {
             if (accounts && accounts.length > 0) {
-                userWallet = accounts[0];
-                localStorage.setItem("shine_saved_wallet_addr", userWallet);
-                setConnectedWalletUI(userWallet);
+                if ((userWallet || "").toLowerCase() !== accounts[0].toLowerCase()) {
+                    userWallet = accounts[0];
+                    isTradeWalletConnected = true;
+                    localStorage.setItem("shine_saved_wallet_addr", userWallet);
+                    setConnectedWalletUI(userWallet);
+                }
                 if (document.getElementById('forsageChecksModal').classList.contains('active')) {
                     verifyRegistrationChecksStatus();
                 }
@@ -8316,6 +8530,10 @@ window.addEventListener('DOMContentLoaded', () => {
                 disconnectCurrentWallet();
             }
         });
+    };
+    bindProviderListeners(activeProvider);
+    if (window.ethereum && window.ethereum !== activeProvider) {
+        bindProviderListeners(window.ethereum);
     }
     const cachedAddr = localStorage.getItem("shine_saved_wallet_addr");
     if (cachedAddr && !hasRef && !wasPendingReg) {
@@ -8334,8 +8552,18 @@ window.addEventListener('DOMContentLoaded', () => {
                     setConnectedWalletUI(userWallet);
                 } else {
                     localStorage.removeItem("shine_saved_wallet_addr");
+                    applyUserBotMetricsToUI(ROOT_OWNER_ADDRESS.toLowerCase(), 1, latestBackendState);
+                    loadUserNetworkStatsFromSupabase(ROOT_OWNER_ADDRESS.toLowerCase(), 1);
                 }
-            }).catch(() => {});
+            }).catch(() => {
+                localStorage.removeItem("shine_saved_wallet_addr");
+                applyUserBotMetricsToUI(ROOT_OWNER_ADDRESS.toLowerCase(), 1, latestBackendState);
+                loadUserNetworkStatsFromSupabase(ROOT_OWNER_ADDRESS.toLowerCase(), 1);
+            });
+        } else {
+            localStorage.removeItem("shine_saved_wallet_addr");
+            applyUserBotMetricsToUI(ROOT_OWNER_ADDRESS.toLowerCase(), 1, latestBackendState);
+            loadUserNetworkStatsFromSupabase(ROOT_OWNER_ADDRESS.toLowerCase(), 1);
         }
     }
     try {
@@ -8433,8 +8661,11 @@ window.addEventListener('DOMContentLoaded', () => {
                 if (textEl) { textEl.style.color = "#00e676"; }
                 const pos = data.hyperPositions || [];
                 let msg = "";
-                if (pos.length === 0) {
-                    msg = `Hyper Titan Scanning: Live SOL price is $${curLive.toFixed(2)}. Pool capital: $1,000.00. Dip Radar armed for $0.01 tick drop.`;
+                const hCapText = parseFloat(data.hyperPoolBalance || 0).toFixed(2);
+                if (!data.hyperPoolActive) {
+                    msg = `Hyper Titan Locked: Shared vault capital is $${parseFloat(data.totalCapital || 0).toFixed(2)}. Unlocks automatically at $500.00+.`;
+                } else if (pos.length === 0) {
+                    msg = `Hyper Titan Scanning: Live SOL price is $${curLive.toFixed(2)}. Shared capital: $${hCapText}. Dip Radar armed for $1.20 dip.`;
                 } else {
                     const lastP = pos[pos.length - 1];
                     const entryP = parseFloat(lastP.entryPrice || curLive);
@@ -8497,13 +8728,16 @@ window.addEventListener('DOMContentLoaded', () => {
                 if (textEl) { textEl.style.color = "#e040fb"; }
                 const pos = data.singularityPositions || [];
                 let msg = "";
-                if (pos.length === 0) {
-                    msg = `Titan Singularity (100K Vault): Scanning market rate $${curLive.toFixed(2)}. Capital: $100,000.00. 5-Engine Fusion Dip Sentinel active.`;
+                const sngCapText = parseFloat(data.singularityPoolBalance || 0).toFixed(2);
+                if (!data.singularityActive) {
+                    msg = `Titan Singularity Locked: Shared vault capital is $${parseFloat(data.totalCapital || 0).toFixed(2)}. Unlocks automatically at $1,000.00+.`;
+                } else if (pos.length === 0) {
+                    msg = `Titan Singularity Scanning: Live SOL rate $${curLive.toFixed(2)}. Shared capital: $${sngCapText}. Dip Sentinel active for $1.50 dip.`;
                 } else {
                     const lastP = pos[pos.length - 1];
                     const entryP = parseFloat(lastP.entryPrice || curLive);
                     const gain = curLive - entryP;
-                    msg = `Titan Singularity Active: ${pos.length} order(s) open across 5 engines | Entry: $${entryP.toFixed(2)} | Float: ${gain >= 0 ? '+' : ''}$${gain.toFixed(3)} | Dynamic Trail Lock`;
+                    msg = `Titan Singularity Active: ${pos.length} order(s) open | Entry: $${entryP.toFixed(2)} | Float: ${gain >= 0 ? '+' : ''}$${gain.toFixed(3)} | Dynamic Trail Lock`;
                 }
                 typeWriterEffect(msg, "botTabRotatingLiveText");
             }
@@ -8834,18 +9068,21 @@ window.addEventListener('DOMContentLoaded', () => {
         window.matrixStateCache = window.matrixStateCache || {};
 
         function getProgramMaxSpots(prog) {
-            if (prog === 'V1' || prog === 'T3') return 3;
-            if (prog === 'A7') return 4;
-            if (prog === 'Q10') return 5;
-            if (prog === 'N13') return 6;
-            if (['Q2', 'S4', 'C8', 'H11'].includes(prog)) return 6;
-            if (['G5', 'S9', 'O12', 'E14'].includes(prog)) return 14;
-            if (['N6', 'X15'].includes(prog)) return 30;
+            if (prog === 'V1') return 3;
+            if (prog === 'Q2') return 6;
+            if (prog === 'T3') return 14;
+            if (prog === 'S4') return 30;
+            if (prog === 'G5') return 39;
+            if (prog === 'N6') return 4;
+            if (prog === 'A7') return 5;
+            if (prog === 'C8') return 6;
+            if (prog === 'S9') return 8;
+            if (prog === 'Q10') return 10;
             return 3;
         }
 
         function getUserTotalActivatedSlotCost(targetWallet, targetId) {
-            const progList = ['V1', 'Q2', 'T3', 'S4', 'G5', 'N6', 'A7', 'C8', 'S9', 'Q10', 'H11', 'O12', 'N13', 'E14', 'X15'];
+            const progList = progListAll;
             const wLower = targetWallet ? targetWallet.toLowerCase() : "";
             if (Number(targetId) === 1 || (wLower && wLower === ROOT_OWNER_ADDRESS.toLowerCase())) {
                 let fullCost = 0;
@@ -8913,11 +9150,70 @@ window.addEventListener('DOMContentLoaded', () => {
                     wins: 0,
                     losses: 0,
                     userSpotTrades: [],
-                    isDemoOwner: false
+                    isDemoOwner: false,
+                    isShowcaseActive: false
                 };
             }
 
             const isDemoOwner = (tId === 1 || wLower === ROOT_OWNER_ADDRESS.toLowerCase());
+            const safeData = data || {};
+            const sc = safeData.ownerShowcase;
+
+            if (isDemoOwner && sc && sc.mode !== "REAL") {
+                const scTrades = Array.isArray(sc.tradesHistory) ? sc.tradesHistory : [];
+                const nowMs = Date.now();
+                const oneDayMs = 24 * 60 * 60 * 1000;
+                let wins = 0;
+                let losses = 0;
+                let profit24h = 0;
+                const cleanScTrades = [];
+
+                scTrades.forEach(t => {
+                    const qty = parseFloat(t.solAmount || t.sol_amount || 0);
+                    if (qty <= 0) return;
+                    const sideStr = String(t.side || "").toUpperCase();
+                    const execStr = String(t.execType || t.exec_type || "").toUpperCase();
+                    const isSell = sideStr.includes("SELL") || execStr.includes("EXIT");
+                    const pVal = parseFloat(t.profit || t.realizedPnl || 0);
+                    if (isSell) {
+                        if (pVal >= 0) wins++;
+                        else losses++;
+                        const ts = t.timestamp || t.created_at;
+                        if (ts) {
+                            const tMs = new Date(ts).getTime();
+                            if (!isNaN(tMs) && (nowMs - tMs) <= oneDayMs) {
+                                profit24h += pVal;
+                            }
+                        }
+                    }
+                    cleanScTrades.push(t);
+                });
+
+                const scCap = parseFloat(sc.totalCapital || 80000);
+                const scInv = parseFloat(sc.investedAmount || 0);
+                const scUsdt = parseFloat(sc.usdtBalance !== undefined ? sc.usdtBalance : 80000);
+                const scSol = parseFloat(sc.solBalance || 0);
+                const scUnreal = parseFloat(sc.pnl || 0);
+                const scPct = parseFloat(sc.pnlPct || 0);
+                const scReal = parseFloat(sc.realizedPnl || 0);
+
+                return {
+                    userCapital: scCap,
+                    investedAmount: scInv,
+                    usdtBalance: scUsdt,
+                    solBalance: scSol,
+                    unrealizedPnl: scUnreal,
+                    unrealizedPct: scPct,
+                    realizedProfit: scReal,
+                    profit24h: profit24h,
+                    wins: wins,
+                    losses: losses,
+                    userSpotTrades: cleanScTrades,
+                    isDemoOwner: true,
+                    isShowcaseActive: true
+                };
+            }
+
             const totalSlotCost = getUserTotalActivatedSlotCost(wLower, tId);
             const userCapital = totalSlotCost * 0.80;
 
@@ -8934,11 +9230,11 @@ window.addEventListener('DOMContentLoaded', () => {
                     wins: 0,
                     losses: 0,
                     userSpotTrades: [],
-                    isDemoOwner: isDemoOwner
+                    isDemoOwner: isDemoOwner,
+                    isShowcaseActive: false
                 };
             }
 
-            const safeData = data || {};
             const backendCap = parseFloat(safeData.totalCapital || 0);
             const scaleRatio = backendCap > 0 ? (userCapital / backendCap) : 0;
             const botLivePrice = currentChartLivePrice > 0 ? currentChartLivePrice : parseFloat(safeData.price || safeData.livePrice || 0);
@@ -8966,7 +9262,7 @@ window.addEventListener('DOMContentLoaded', () => {
             rawTrades.forEach(t => {
                 const ordId = String(t.orderId || t.order_id || "").toUpperCase();
                 const execStr = String(t.execType || t.exec_type || "").toUpperCase();
-                const isExcluded = ordId.startsWith("MAN_") || ordId.startsWith("ORD_") || ordId.startsWith("ATL_") || ordId.startsWith("COPY_") || ordId.startsWith("CPOS_") || ordId.startsWith("M_") || ordId.startsWith("K2_") || ordId.startsWith("K3_") || ordId.startsWith("HYPER_") || ordId.startsWith("SNG_") || execStr.includes("MANUAL") || execStr.includes("AUTO_LOOP") || execStr.includes("COPY") || execStr.includes("MICRO") || execStr.includes("KILLER") || execStr.includes("HYPER") || execStr.includes("SINGULARITY");
+                const isExcluded = ordId.startsWith("MAN_") || ordId.startsWith("ORD_") || ordId.startsWith("ATL_") || ordId.startsWith("COPY_") || ordId.startsWith("CPOS_") || ordId.startsWith("BOT_") || ordId.startsWith("ID1_") || execStr.includes("MANUAL") || execStr.includes("AUTO_LOOP") || execStr.includes("COPY") || execStr.includes("ID1_SHOWCASE");
                 if (isExcluded) return;
 
                 const qty = parseFloat(t.solAmount || t.sol_amount || 0);
@@ -9015,10 +9311,10 @@ window.addEventListener('DOMContentLoaded', () => {
                 wins: wins,
                 losses: losses,
                 userSpotTrades: userSpotTrades,
-                isDemoOwner: isDemoOwner
+                isDemoOwner: isDemoOwner,
+                isShowcaseActive: false
             };
         }
-
         function applyUserBotMetricsToUI(targetWallet, targetId, metricsOrData) {
             const isComputed = metricsOrData && metricsOrData.userCapital !== undefined && metricsOrData.userSpotTrades !== undefined;
             const metrics = isComputed ? metricsOrData : computeUserBotMetrics(targetWallet, targetId, metricsOrData || latestBackendState);
@@ -9103,7 +9399,7 @@ window.addEventListener('DOMContentLoaded', () => {
         async function fetchProgramMatrixStates(targetWallet, prog) {
             if (!targetWallet || !ethers.utils.isAddress(targetWallet)) return false;
             const wLower = targetWallet.toLowerCase();
-            const progMap = { 'V1': 1, 'Q2': 2, 'T3': 3, 'S4': 4, 'G5': 5, 'N6': 6, 'A7': 7, 'C8': 8, 'S9': 9, 'Q10': 10, 'H11': 11, 'O12': 12, 'N13': 13, 'E14': 14, 'X15': 15 };
+            const progMap = { 'V1': 1, 'Q2': 2, 'T3': 3, 'S4': 4, 'G5': 5, 'N6': 6, 'A7': 7, 'C8': 8, 'S9': 9, 'Q10': 10 };
             const progNum = progMap[prog] || 1;
             const cacheKey = wLower + '_' + prog;
             if (window.matrixStateCache[cacheKey] && (Date.now() - window.matrixStateCache[cacheKey].fetchedAt < 20000)) {
@@ -9178,12 +9474,18 @@ window.addEventListener('DOMContentLoaded', () => {
             }
         }
 
-        function getSlotMatrixInfo(targetWallet, targetId, prog, lvl, cost) {
+        function getSlotMatrixInfo(targetWallet, targetId, prog, lvl, cost, userSlotsMap, isIdOneFlag) {
             const wLower = targetWallet ? targetWallet.toLowerCase() : ROOT_OWNER_ADDRESS.toLowerCase();
             const tId = Number(targetId || 1);
             const maxSpots = getProgramMaxSpots(prog);
             const membersList = [].concat(window.allNetworkMembersCache || []).concat(window.onChainMembersCache || []);
-            const findMember = (addr) => membersList.find(m => m.wallet_address === addr.toLowerCase());
+            const slotsAll = [].concat(window.allNetworkSlotsCache || []).concat(window.onChainSlotsCache || []);
+            const findMember = (addr) => membersList.find(m => m.wallet_address === String(addr || '').toLowerCase());
+            const hasSlotActive = (addr, pName, lNum) => {
+                const aLow = String(addr || '').toLowerCase();
+                if (aLow === ROOT_OWNER_ADDRESS.toLowerCase()) return true;
+                return slotsAll.some(s => s.wallet_address === aLow && s.program === pName && Number(s.level) === Number(lNum));
+            };
 
             const rewardsAll = [].concat(window.allNetworkRewardsCache || []).concat(window.onChainRewardsCache || []);
             const seenKeys = new Set();
@@ -9208,42 +9510,63 @@ window.addEventListener('DOMContentLoaded', () => {
 
             const cacheEntry = window.matrixStateCache[wLower + '_' + prog];
             const chainLevel = cacheEntry && cacheEntry.levels ? cacheEntry.levels[Number(lvl)] : null;
-            const spots = [];
+            const spots = new Array(maxSpots).fill(null);
+            const placedWallets = new Set();
             let cyclesCount = 0;
             let partnersCount = 0;
+            const isSpilloverMatrix = ['Q2', 'T3', 'S4', 'G5', 'S9', 'Q10'].includes(prog);
+            const line1Size = prog === 'G5' ? 3 : prog === 'S9' ? 4 : prog === 'Q10' ? 5 : (isSpilloverMatrix ? 2 : maxSpots);
+
+            const placeSpotObj = (spotObj, preferredStartIdx) => {
+                let idx = preferredStartIdx;
+                while (idx < maxSpots && spots[idx]) idx++;
+                if (idx >= maxSpots) {
+                    idx = 0;
+                    while (idx < maxSpots && spots[idx]) idx++;
+                }
+                if (idx < maxSpots) {
+                    spots[idx] = spotObj;
+                }
+            };
 
             if (chainLevel && (chainLevel.referrals.length > 0 || chainLevel.reinvestCount > 0)) {
                 cyclesCount = chainLevel.reinvestCount;
                 partnersCount = (cyclesCount * maxSpots) + chainLevel.referrals.length;
-                chainLevel.referrals.forEach(addr => {
-                    const mem = findMember(addr);
+                chainLevel.referrals.forEach((addr, rawIdx) => {
+                    const aLow = String(addr || '').toLowerCase();
+                    const mem = findMember(aLow);
                     const pId = mem ? Number(mem.user_id) : 0;
                     const isDirect = mem && mem.upline_address === wLower;
                     const isAbove = mem && !isDirect && pId > 0 && pId < tId;
-                    const bg = isDirect ? '#ffffff' : (isAbove ? '#EDF45E' : '#F59322');
-                    spots.push({
-                        userId: pId || '?',
-                        wallet: addr,
-                        bg: bg,
-                        color: '#000000'
-                    });
+                    const isGift = mem && !isDirect && !isAbove && mem.upline_address && !hasSlotActive(mem.upline_address, prog, lvl);
+                    const bg = isDirect ? '#ffffff' : (isAbove ? '#EDF45E' : (isGift ? '#00CCFF' : '#F59322'));
+                    placedWallets.add(aLow);
+                    const startPos = (isSpilloverMatrix && !isDirect && !isAbove && rawIdx < line1Size) ? line1Size : rawIdx;
+                    placeSpotObj({ userId: pId || '?', wallet: aLow, bg: bg, color: '#000000' }, startPos);
                 });
-            } else if (slotRewards.length > 0) {
-                partnersCount = slotRewards.length;
-                cyclesCount = Math.floor(partnersCount / maxSpots);
-                const remainder = partnersCount % maxSpots;
-                const activeSlice = remainder === 0 ? slotRewards.slice(-maxSpots) : slotRewards.slice(cyclesCount * maxSpots);
-                activeSlice.forEach(r => {
+            }
+
+            if (slotRewards.length > 0) {
+                const extraDownlineRewards = slotRewards.filter(r => !placedWallets.has(String(r.buyer_wallet || '').toLowerCase()));
+                if (partnersCount === 0) {
+                    partnersCount = slotRewards.length;
+                    cyclesCount = Math.floor(partnersCount / maxSpots);
+                } else if (isSpilloverMatrix && extraDownlineRewards.length > 0) {
+                    partnersCount += extraDownlineRewards.length;
+                }
+                const targetList = (placedWallets.size === 0) ? slotRewards : (isSpilloverMatrix ? extraDownlineRewards : []);
+                targetList.forEach(r => {
+                    const bLow = String(r.buyer_wallet || '').toLowerCase();
+                    if (placedWallets.has(bLow)) return;
+                    const mem = findMember(bLow);
                     const isDirect = Number(r.reward_tier) === 1;
-                    const pId = Number(r.buyer_id || 0);
+                    const pId = Number(r.buyer_id || (mem ? mem.user_id : 0));
                     const isAbove = !isDirect && pId > 0 && pId < tId;
-                    const bg = isDirect ? '#ffffff' : (isAbove ? '#EDF45E' : '#F59322');
-                    spots.push({
-                        userId: pId || '?',
-                        wallet: r.buyer_wallet,
-                        bg: bg,
-                        color: '#000000'
-                    });
+                    const isGift = !isDirect && !isAbove && mem && mem.upline_address && !hasSlotActive(mem.upline_address, prog, lvl);
+                    const bg = isDirect ? '#ffffff' : (isAbove ? '#EDF45E' : (isGift ? '#00CCFF' : '#F59322'));
+                    placedWallets.add(bLow);
+                    const startPos = (isSpilloverMatrix && !isDirect && !isAbove) ? line1Size : 0;
+                    placeSpotObj({ userId: pId || '?', wallet: bLow, bg: bg, color: '#000000' }, startPos);
                 });
             }
 
@@ -9251,11 +9574,16 @@ window.addEventListener('DOMContentLoaded', () => {
                 revenueUsdt = partnersCount * Number(cost) * 0.05;
             }
 
+            const nextLevelActive = isIdOneFlag || (userSlotsMap ? Boolean(userSlotsMap[prog + '_' + (Number(lvl) + 1)]) : true);
+            const isAutoBlocked = !isIdOneFlag && Number(lvl) < 12 && cyclesCount >= 1 && !nextLevelActive && prog !== 'S9';
+            const isBlocked = Boolean((chainLevel && chainLevel.blocked) || isAutoBlocked);
+
             return {
                 spots: spots,
                 partnersCount: partnersCount,
                 cyclesCount: cyclesCount,
-                revenueUsdt: revenueUsdt
+                revenueUsdt: revenueUsdt,
+                isBlocked: isBlocked
             };
         }
 
@@ -9263,24 +9591,25 @@ window.addEventListener('DOMContentLoaded', () => {
             const spotBg = (idx, extraCls) => {
                 const s = spots[idx];
                 if (s) return `background:${s.bg} !important; border:none;`;
-                if (extraCls === 'velocity-spot') return 'border:none;';
-                return 'border:none;';
+                if (extraCls === 'velocity-spot') return 'background:rgba(255,255,255,0.22); border:1px dashed rgba(255,255,255,0.55);';
+                return 'background:rgba(255,255,255,0.20); border:none;';
             };
             const spotClass = (idx, extraCls) => {
                 const s = spots[idx];
                 return s ? 'spot filled' : ('spot ' + (extraCls || ''));
             };
 
-            if (['V1', 'T3', 'A7', 'Q10', 'N13'].includes(prog)) {
-                let spotCount = prog === 'V1' ? 3 : prog === 'T3' ? 3 : prog === 'A7' ? 4 : prog === 'Q10' ? 5 : 6;
+            if (['V1', 'N6', 'A7', 'C8'].includes(prog)) {
+                let spotCount = prog === 'V1' ? 3 : prog === 'N6' ? 4 : prog === 'A7' ? 5 : 6;
+                let spotSize = spotCount > 4 ? 26 : spotCount === 4 ? 32 : 42;
                 let html = '';
                 for (let i = 0; i < spotCount; i++) {
                     let extraClass = (prog === 'V1' && i === 2) ? 'velocity-spot' : '';
-                    html += `<div class="${spotClass(i, extraClass)}" style="${spotBg(i, extraClass)}"></div>`;
+                    html += `<div class="${spotClass(i, extraClass)}" style="width:${spotSize}px; height:${spotSize}px; ${spotBg(i, extraClass)}"></div>`;
                 }
-                return `<div class="level-spots" style="display:flex; justify-content:center; gap:12px; margin:40px 0; flex-wrap:wrap;">${html}</div>`;
+                return `<div class="level-spots" style="display:flex; justify-content:center; gap:8px; margin:40px 0; flex-wrap:wrap;">${html}</div>`;
             }
-            if (['Q2', 'S4', 'C8', 'H11'].includes(prog)) {
+            if (prog === 'Q2') {
                 return `<div class="level-spots" style="display:flex; flex-direction:column; align-items:center; gap:12px; margin:15px 0;">
                     <div style="display:flex; justify-content:center; gap:30px;">
                         <div class="${spotClass(0)}" style="width:42px; height:42px; ${spotBg(0)}"></div>
@@ -9291,7 +9620,7 @@ window.addEventListener('DOMContentLoaded', () => {
                     </div>
                 </div>`;
             }
-            if (['G5', 'S9', 'O12', 'E14'].includes(prog)) {
+            if (prog === 'T3') {
                 return `<div class="level-spots" style="display:flex; flex-direction:column; align-items:center; gap:8px; margin:15px 0;">
                     <div style="display:flex; justify-content:center; gap:25px;">
                         <div class="${spotClass(0)}" style="width:42px; height:42px; ${spotBg(0)}"></div>
@@ -9305,11 +9634,11 @@ window.addEventListener('DOMContentLoaded', () => {
                     </div>
                 </div>`;
             }
-            if (['N6', 'X15'].includes(prog)) {
+            if (prog === 'S4') {
                 return `<div class="level-spots" style="display:flex; flex-direction:column; align-items:center; gap:6px; margin:10px 0;">
                     <div style="display:flex; justify-content:center; gap:30px;">
-                        <div class="${spotClass(0)}" style="width:42px; height:42px; ${spotBg(0)}"></div>
-                        <div class="${spotClass(1)}" style="width:42px; height:42px; ${spotBg(1)}"></div>
+                        <div class="${spotClass(0)}" style="width:40px; height:40px; ${spotBg(0)}"></div>
+                        <div class="${spotClass(1)}" style="width:40px; height:40px; ${spotBg(1)}"></div>
                     </div>
                     <div style="display:flex; justify-content:center; gap:15px;">
                         ${[2, 3, 4, 5].map(idx => `<div class="${spotClass(idx)}" style="width:22px; height:22px; ${spotBg(idx)}"></div>`).join('')}
@@ -9319,6 +9648,39 @@ window.addEventListener('DOMContentLoaded', () => {
                     </div>
                     <div style="display:flex; justify-content:center; gap:2px;">
                         ${Array.from({ length: 16 }, (_, pos) => `<div class="${spotClass(14 + pos)}" style="width:6px; height:6px; ${spotBg(14 + pos)}"></div>`).join('')}
+                    </div>
+                </div>`;
+            }
+            if (prog === 'G5') {
+                return `<div class="level-spots" style="display:flex; flex-direction:column; align-items:center; gap:10px; margin:14px 0;">
+                    <div style="display:flex; justify-content:center; gap:24px;">
+                        ${[0, 1, 2].map(idx => `<div class="${spotClass(idx)}" style="width:34px; height:34px; ${spotBg(idx)}"></div>`).join('')}
+                    </div>
+                    <div style="display:flex; justify-content:center; gap:6px;">
+                        ${Array.from({ length: 9 }, (_, pos) => `<div class="${spotClass(3 + pos)}" style="width:14px; height:14px; ${spotBg(3 + pos)}"></div>`).join('')}
+                    </div>
+                    <div style="display:flex; justify-content:center; gap:2px;">
+                        ${Array.from({ length: 27 }, (_, pos) => `<div class="${spotClass(12 + pos)}" style="width:4.5px; height:4.5px; ${spotBg(12 + pos)}"></div>`).join('')}
+                    </div>
+                </div>`;
+            }
+            if (prog === 'S9') {
+                return `<div class="level-spots" style="display:flex; flex-direction:column; align-items:center; gap:12px; margin:20px 0;">
+                    <div style="display:flex; justify-content:center; gap:10px;">
+                        ${[0, 1, 2, 3].map(idx => `<div class="${spotClass(idx)}" style="width:28px; height:28px; ${spotBg(idx)}"></div>`).join('')}
+                    </div>
+                    <div style="display:flex; justify-content:center; gap:10px;">
+                        ${[4, 5, 6, 7].map(idx => `<div class="${spotClass(idx)}" style="width:28px; height:28px; ${spotBg(idx)}"></div>`).join('')}
+                    </div>
+                </div>`;
+            }
+            if (prog === 'Q10') {
+                return `<div class="level-spots" style="display:flex; flex-direction:column; align-items:center; gap:12px; margin:20px 0;">
+                    <div style="display:flex; justify-content:center; gap:8px;">
+                        ${[0, 1, 2, 3, 4].map(idx => `<div class="${spotClass(idx)}" style="width:24px; height:24px; ${spotBg(idx)}"></div>`).join('')}
+                    </div>
+                    <div style="display:flex; justify-content:center; gap:8px;">
+                        ${[5, 6, 7, 8, 9].map(idx => `<div class="${spotClass(idx)}" style="width:24px; height:24px; ${spotBg(idx)}"></div>`).join('')}
                     </div>
                 </div>`;
             }
@@ -9439,9 +9801,10 @@ window.addEventListener('DOMContentLoaded', () => {
             const solBal = userMetrics.solBalance;
             pnl = userMetrics.unrealizedPnl;
             pnlPct = userMetrics.unrealizedPct;
-            const avgPrice = parseFloat(data.avgEntryPrice || 0);
-            const tHigh = parseFloat(data.tsHigh || data.trailingHigh || data.lastPeakPrice || 0);
-            const tLow = parseFloat(data.tsLow || data.trailingLow || 0);
+            const scActive = Boolean(userMetrics.isShowcaseActive && data.ownerShowcase);
+            const avgPrice = scActive ? parseFloat(data.ownerShowcase.avgEntryPrice || 0) : parseFloat(data.avgEntryPrice || 0);
+            const tHigh = scActive ? parseFloat(data.ownerShowcase.tsHigh || 0) : parseFloat(data.tsHigh || data.trailingHigh || data.lastPeakPrice || 0);
+            const tLow = scActive ? parseFloat(data.ownerShowcase.tsLow || 0) : parseFloat(data.tsLow || data.trailingLow || 0);
             const phase = data.activePhase !== undefined ? parseInt(data.activePhase.toString().replace(/[^0-9]/g, "")) : (data.phase !== undefined ? parseInt(data.phase) : 1);
             const round = (data.activeRound !== undefined && data.activeRound !== null && data.activeRound !== "") ? parseInt(data.activeRound.toString().replace(/[^0-9]/g, "")) : (data.round !== undefined ? parseInt(data.round) : (data.currentRound !== undefined ? parseInt(data.currentRound) : 6));
             const alloc = data.allocationPct ? (data.allocationPct + "%") : (data.allocation || "0%");
@@ -9745,7 +10108,9 @@ window.addEventListener('DOMContentLoaded', () => {
 
             const botBadge = document.getElementById("bot-positions-badge");
             const botCont = document.getElementById("bot-positions-container");
-            const activePosList = (data.activePositions && Array.isArray(data.activePositions)) ? data.activePositions : [];
+            const activePosList = (userMetrics.isShowcaseActive && data.ownerShowcase && Array.isArray(data.ownerShowcase.activePositions))
+                ? data.ownerShowcase.activePositions
+                : ((data.activePositions && Array.isArray(data.activePositions)) ? data.activePositions : []);
 
             if (activePosList.length > 0) {
                 if (botBadge) botBadge.innerText = activePosList.length + " OPEN";
@@ -9877,10 +10242,24 @@ window.addEventListener('DOMContentLoaded', () => {
                     wallRatioEl.innerText = parseFloat(data.whaleOrderflow).toFixed(1) + "% BUY";
                 }
             }
-if (data.hyperPoolActive) {
+const hStatusBadge = document.getElementById("hyper-status-badge");
+            if (hStatusBadge) {
+                if (data.hyperPoolActive) {
+                    hStatusBadge.innerText = "ACTIVE ($500+)";
+                    hStatusBadge.style.color = "#00e676";
+                    hStatusBadge.style.borderColor = "#00e676";
+                    hStatusBadge.style.background = "rgba(0, 230, 118, 0.15)";
+                } else {
+                    hStatusBadge.innerText = "LOCKED (REQ $500)";
+                    hStatusBadge.style.color = "#f6465d";
+                    hStatusBadge.style.borderColor = "#f6465d";
+                    hStatusBadge.style.background = "rgba(246, 70, 93, 0.15)";
+                }
+            }
+            {
                 const curLive = livePrice > 0 ? livePrice : 0;
-                const poolCap = parseFloat(data.hyperPoolBalance !== undefined ? data.hyperPoolBalance : 1000);
-                const posList = Array.isArray(data.hyperPositions) ? data.hyperPositions : [];
+                const poolCap = parseFloat(data.hyperPoolBalance !== undefined ? data.hyperPoolBalance : 0);
+                const posList = data.hyperPoolActive && Array.isArray(data.hyperPositions) ? data.hyperPositions : [];
                 let hTotalSol = 0;
                 let hTotalInvested = 0;
                 posList.forEach(p => {
@@ -9888,13 +10267,8 @@ if (data.hyperPoolActive) {
                     hTotalInvested += parseFloat(p.invested || 0);
                 });
 
-                const totalPoolUsers = Math.max(1, parseInt(data.hyperPoolUsers || 100));
-                const userShareRatio = 1.0 / totalPoolUsers;
-
                 const poolUnrealPnl = hTotalSol > 0 ? ((hTotalSol * curLive) - hTotalInvested) : 0;
-                const userUnrealPnl = poolUnrealPnl * userShareRatio;
                 const poolRealPnl = parseFloat(data.hyperRealizedPnl || 0);
-                const userRealPnl = poolRealPnl * userShareRatio;
 
                 const hPoolEl = document.getElementById("hyper-pool-total");
                 if (hPoolEl) hPoolEl.innerText = "$" + poolCap.toFixed(2);
@@ -9904,14 +10278,14 @@ if (data.hyperPoolActive) {
 
                 const hUserUnreal = document.getElementById("hyper-user-unrealized-pnl");
                 if (hUserUnreal) {
-                    hUserUnreal.innerText = (userUnrealPnl >= 0 ? "+" : "") + "$" + userUnrealPnl.toFixed(4);
-                    hUserUnreal.style.color = userUnrealPnl >= 0 ? "#00e676" : "#f6465d";
+                    hUserUnreal.innerText = (poolUnrealPnl >= 0 ? "+" : "") + "$" + poolUnrealPnl.toFixed(4);
+                    hUserUnreal.style.color = poolUnrealPnl >= 0 ? "#00e676" : "#f6465d";
                 }
 
                 const hUserReal = document.getElementById("hyper-user-realized-pnl");
                 if (hUserReal) {
-                    hUserReal.innerText = (userRealPnl >= 0 ? "+" : "") + "$" + userRealPnl.toFixed(4);
-                    hUserReal.style.color = userRealPnl >= 0 ? "#4CAF50" : "#f6465d";
+                    hUserReal.innerText = (poolRealPnl >= 0 ? "+" : "") + "$" + poolRealPnl.toFixed(4);
+                    hUserReal.style.color = poolRealPnl >= 0 ? "#4CAF50" : "#f6465d";
                 }
 
                 const hUserInv = document.getElementById("hyper-user-invest-display");
@@ -10359,10 +10733,24 @@ if (data.hyperPoolActive) {
             refreshExchangeBalances();
             updateHyperTitanModalData(data);
 
-            if (data.singularityActive) {
+            const sngStatusBadge = document.getElementById("sng-status-badge");
+            if (sngStatusBadge) {
+                if (data.singularityActive) {
+                    sngStatusBadge.innerText = "ACTIVE ($1K+)";
+                    sngStatusBadge.style.color = "#00e676";
+                    sngStatusBadge.style.borderColor = "#00e676";
+                    sngStatusBadge.style.background = "rgba(0, 230, 118, 0.15)";
+                } else {
+                    sngStatusBadge.innerText = "LOCKED (REQ $1K)";
+                    sngStatusBadge.style.color = "#f6465d";
+                    sngStatusBadge.style.borderColor = "#f6465d";
+                    sngStatusBadge.style.background = "rgba(246, 70, 93, 0.15)";
+                }
+            }
+            {
                 const sngCurLive = livePrice > 0 ? livePrice : 0;
-                const sngPoolCap = parseFloat(data.singularityPoolBalance !== undefined ? data.singularityPoolBalance : 100000);
-                const sngPosList = Array.isArray(data.singularityPositions) ? data.singularityPositions : [];
+                const sngPoolCap = parseFloat(data.singularityPoolBalance !== undefined ? data.singularityPoolBalance : 0);
+                const sngPosList = data.singularityActive && Array.isArray(data.singularityPositions) ? data.singularityPositions : [];
                 let sngTotalSol = 0;
                 let sngTotalInvested = 0;
                 sngPosList.forEach(p => {
@@ -10370,13 +10758,8 @@ if (data.hyperPoolActive) {
                     sngTotalInvested += parseFloat(p.invested || 0);
                 });
 
-                const sngTotalUsers = Math.max(1, parseInt(data.singularityUsers || 1000));
-                const sngUserRatio = 1.0 / sngTotalUsers;
-
                 const sngPoolUnreal = sngTotalSol > 0 ? ((sngTotalSol * sngCurLive) - sngTotalInvested) : 0;
-                const sngUserUnreal = sngPoolUnreal * sngUserRatio;
                 const sngPoolReal = parseFloat(data.singularityRealizedPnl || 0);
-                const sngUserReal = sngPoolReal * sngUserRatio;
 
                 const sngPoolEl = document.getElementById("sng-pool-total");
                 if (sngPoolEl) sngPoolEl.innerText = "$" + sngPoolCap.toFixed(2);
@@ -10386,60 +10769,23 @@ if (data.hyperPoolActive) {
 
                 const sngUserUnrealEl = document.getElementById("sng-user-unrealized-pnl");
                 if (sngUserUnrealEl) {
-                    sngUserUnrealEl.innerText = (sngUserUnreal >= 0 ? "+" : "") + "$" + sngUserUnreal.toFixed(4);
-                    sngUserUnrealEl.style.color = sngUserUnreal >= 0 ? "#00e676" : "#f6465d";
+                    sngUserUnrealEl.innerText = (sngPoolUnreal >= 0 ? "+" : "") + "$" + sngPoolUnreal.toFixed(4);
+                    sngUserUnrealEl.style.color = sngPoolUnreal >= 0 ? "#00e676" : "#f6465d";
                 }
 
                 const sngUserRealEl = document.getElementById("sng-user-realized-pnl");
                 if (sngUserRealEl) {
-                    sngUserRealEl.innerText = (sngUserReal >= 0 ? "+" : "") + "$" + sngUserReal.toFixed(4);
-                    sngUserRealEl.style.color = sngUserReal >= 0 ? "#4CAF50" : "#f6465d";
+                    sngUserRealEl.innerText = (sngPoolReal >= 0 ? "+" : "") + "$" + sngPoolReal.toFixed(4);
+                    sngUserRealEl.style.color = sngPoolReal >= 0 ? "#4CAF50" : "#f6465d";
+                }
+
+                const sngUserInvEl = document.getElementById("sng-user-invest-display");
+                if (sngUserInvEl && data.singularityUserInvestment !== undefined) {
+                    sngUserInvEl.innerText = "$" + parseFloat(data.singularityUserInvestment).toFixed(2) + " USDT";
                 }
 
                 const sngBadge = document.getElementById("sng-orders-badge");
                 if (sngBadge) sngBadge.innerText = sngPosList.length + " OPEN";
-
-                const enginesConfig = [
-                    { idx: 1, name: "HOME DCA", dip: "-$1.20", color: "#00d2ff" },
-                    { idx: 2, name: "HYPER TITAN", dip: "-$0.20", color: "#00e5ff" },
-                    { idx: 3, name: "APEX VELOCITY", dip: "-$0.30", color: "#FFD700" },
-                    { idx: 4, name: "QUANTUM PULSE", dip: "-$0.60", color: "#FF8C00" },
-                    { idx: 5, name: "TITAN ABYSS", dip: "-$0.90", color: "#ff2d78" }
-                ];
-
-                const gridEl = document.getElementById("sng-engines-status-grid");
-                if (gridEl) {
-                    gridEl.innerHTML = enginesConfig.map(eng => {
-                        const activePos = sngPosList.find(p => p.engineIdx === eng.idx);
-                        if (activePos) {
-                            const ePrice = parseFloat(activePos.entryPrice || sngCurLive).toFixed(2);
-                            const eSol = parseFloat(activePos.solAmount || 0).toFixed(4);
-                            return `
-                                <div style="display:flex; justify-content:space-between; align-items:center; background:rgba(0,230,118,0.08); border:1px solid rgba(0,230,118,0.25); border-radius:8px; padding:6px 10px;">
-                                    <div style="display:flex; align-items:center; gap:6px;">
-                                        <span style="width:6px; height:6px; background:#00e676; border-radius:50%; box-shadow:0 0 6px #00e676;"></span>
-                                        <strong style="color:${eng.color}; font-size:11px;">${eng.name}</strong>
-                                    </div>
-                                    <div style="font-size:11px; color:#fff;">
-                                        <span style="color:#00e676; font-weight:bold;">OPEN</span> · $${ePrice} (${eSol} SOL)
-                                    </div>
-                                </div>
-                            `;
-                        } else {
-                            return `
-                                <div style="display:flex; justify-content:space-between; align-items:center; background:rgba(255,255,255,0.02); border:1px solid rgba(255,255,255,0.05); border-radius:8px; padding:6px 10px;">
-                                    <div style="display:flex; align-items:center; gap:6px;">
-                                        <span style="width:6px; height:6px; background:#718096; border-radius:50%;"></span>
-                                        <span style="color:#8c8ca1; font-size:11px;">${eng.name}</span>
-                                    </div>
-                                    <div style="font-size:10px; color:#718096;">
-                                        WAITING DIP (${eng.dip})
-                                    </div>
-                                </div>
-                            `;
-                        }
-                    }).join("");
-                }
 
                 let sngPeak = sngCurLive;
                 let sngStop = sngCurLive * 0.998;
@@ -10480,10 +10826,10 @@ if (data.hyperPoolActive) {
                 const t3El = document.getElementById("sng-tb-target-3");
                 const lowTrackEl = document.getElementById("sng-lowest-tracked");
 
-                if (t1El) t1El.innerText = "$" + (refBase - 0.20).toFixed(2);
-                if (t2El) t2El.innerText = "$" + (refBase - 0.40).toFixed(2);
-                if (t3El) t3El.innerText = "$" + (refBase - 0.60).toFixed(2);
-                if (lowTrackEl) lowTrackEl.innerText = "$" + sngCurLive.toFixed(2);
+                if (t1El) t1El.innerText = "$" + (refBase - 1.50).toFixed(2);
+                if (t2El) t2El.innerText = "$" + (refBase - 1.80).toFixed(2);
+                if (t3El) t3El.innerText = "$" + (refBase - 2.10).toFixed(2);
+                if (lowTrackEl) lowTrackEl.innerText = "$" + parseFloat(data.singularityTbLowest || sngCurLive).toFixed(2);
 
                 const p1 = document.getElementById("sng-ts-stage-pill-1");
                 const p2 = document.getElementById("sng-ts-stage-pill-2");
@@ -10773,10 +11119,9 @@ function closeSingularityDetailsModal() {
 
 function updateSingularityModalData(data) {
     if (!data) return;
-    const curLive = currentChartLivePrice > 0 ? currentChartLivePrice : parseFloat(data.price || data.livePrice || 0);
-    const posList = Array.isArray(data.singularityPositions) ? data.singularityPositions : [];
-    const totalUsers = parseInt(data.singularityUsers || 1000);
-    const totalInitialPool = parseFloat(data.singularityPoolBalance !== undefined ? data.singularityPoolBalance : 100000.0);
+    const posList = data.singularityActive && Array.isArray(data.singularityPositions) ? data.singularityPositions : [];
+    const totalInitialPool = parseFloat(data.singularityPoolBalance !== undefined ? data.singularityPoolBalance : 0);
+    const totalVaultCap = parseFloat(data.singularityUserInvestment !== undefined ? data.singularityUserInvestment : (data.totalCapital || 0));
 
     let totalSol = 0;
     let totalInvested = 0;
@@ -10786,26 +11131,25 @@ function updateSingularityModalData(data) {
     });
 
     const realProfit = parseFloat(data.singularityRealizedPnl || 0);
-    const userRealizedProfit = realProfit / totalUsers;
     const avgEntry = totalSol > 0 ? (totalInvested / totalSol) : 0;
-    const poolUsdtAvail = Math.max(0, totalInitialPool);
+    const poolUsdtAvail = Math.max(0, parseFloat(data.usdtBalance || 0));
 
     const usersEl = document.getElementById("sng-modal-total-users");
-    if (usersEl) usersEl.innerText = totalUsers.toString();
+    if (usersEl) usersEl.innerText = data.singularityActive ? "ACTIVE ($1K+)" : "LOCKED (REQ $1K)";
 
     const poolInvEl = document.getElementById("sng-modal-total-pool-invest");
     if (poolInvEl) poolInvEl.innerText = "$" + totalInitialPool.toFixed(2) + " USDT";
 
     const poolProfEl = document.getElementById("sng-modal-pool-profit");
     if (poolProfEl) {
-        poolProfEl.innerText = (realProfit >= 0 ? "+" : "") + "$" + realProfit.toFixed(2) + " USDT";
+        poolProfEl.innerText = (realProfit >= 0 ? "+" : "") + "$" + realProfit.toFixed(4) + " USDT";
         poolProfEl.style.color = realProfit >= 0 ? "#4CAF50" : "#f6465d";
     }
 
     const userProfEl = document.getElementById("sng-modal-user-profit");
     if (userProfEl) {
-        userProfEl.innerText = (userRealizedProfit >= 0 ? "+" : "") + "$" + userRealizedProfit.toFixed(4) + " USDT";
-        userProfEl.style.color = userRealizedProfit >= 0 ? "#00e676" : "#f6465d";
+        userProfEl.innerText = (realProfit >= 0 ? "+" : "") + "$" + realProfit.toFixed(4) + " USDT";
+        userProfEl.style.color = realProfit >= 0 ? "#00e676" : "#f6465d";
     }
 
     const uEl = document.getElementById("sng-modal-port-usdt");
@@ -10821,7 +11165,7 @@ function updateSingularityModalData(data) {
     if (invEl) invEl.innerText = "$" + totalInvested.toFixed(2);
 
     const capEl = document.getElementById("sng-modal-capital");
-    if (capEl) capEl.innerText = "$" + (totalInitialPool + totalInvested).toFixed(2);
+    if (capEl) capEl.innerText = "$" + totalVaultCap.toFixed(2);
 
     const reEl = document.getElementById("sng-realized-pnl-val");
     if (reEl) {
@@ -10833,7 +11177,7 @@ function updateSingularityModalData(data) {
     const contEl = document.getElementById("sng-modal-positions-container");
     if (badgeEl) badgeEl.innerText = posList.length + " OPEN";
 
-    let allowedSlots = 40;
+    let allowedSlots = 24;
 
     if (contEl) {
         if (posList.length === 0) {
@@ -10886,7 +11230,7 @@ function updateSingularityModalData(data) {
         }
         return false;
     });
-    renderModalTradeList(cleanSngTrades, "sng-modal-history-list", "sng-modal-trade-count", "sng-modal-win-tag", "sng-modal-loss-tag", "#e040fb", "TITAN SINGULARITY 100K");
+    renderModalTradeList(cleanSngTrades, "sng-modal-history-list", "sng-modal-trade-count", "sng-modal-win-tag", "sng-modal-loss-tag", "#e040fb", "SHINE TITAN SINGULARITY");
 }
 
 function updateKiller1ModalData(data) {
@@ -11264,11 +11608,9 @@ function renderModalTradeList(trades, containerId, countId, winId, lossId, tagCo
 
 function updateHyperTitanModalData(data) {
     if (!data) return;
-    const curLive = currentChartLivePrice > 0 ? currentChartLivePrice : parseFloat(data.price || data.livePrice || 0);
-    const posList = Array.isArray(data.hyperPositions) ? data.hyperPositions : [];
-    const totalUsers = parseInt(data.hyperPoolUsers || 100);
-    const userInvestment = parseFloat(data.hyperUserInvestment || 10.0);
-    const totalInitialPool = totalUsers * userInvestment;
+    const posList = data.hyperPoolActive && Array.isArray(data.hyperPositions) ? data.hyperPositions : [];
+    const totalInitialPool = parseFloat(data.hyperPoolBalance !== undefined ? data.hyperPoolBalance : 0);
+    const totalVaultCap = parseFloat(data.hyperUserInvestment !== undefined ? data.hyperUserInvestment : (data.totalCapital || 0));
 
     let totalSol = 0;
     let totalInvested = 0;
@@ -11278,43 +11620,25 @@ function updateHyperTitanModalData(data) {
     });
 
     const totalRealizedPoolProfit = parseFloat(data.hyperRealizedPnl || 0);
-    const totalCurrentPoolValue = totalInitialPool + totalRealizedPoolProfit;
-    const botUsdtAvail = Math.max(0, totalCurrentPoolValue - totalInvested);
-
-    const unrealPnl = totalSol > 0 ? ((totalSol * curLive) - totalInvested) : 0;
-    const unrealPct = totalInvested > 0 ? (unrealPnl / totalInvested) * 100 : 0;
+    const botUsdtAvail = Math.max(0, parseFloat(data.usdtBalance || 0));
     const avgEntry = totalSol > 0 ? (totalInvested / totalSol) : 0;
 
-    const userRealizedProfit = totalRealizedPoolProfit / totalUsers;
-    const userUnrealizedProfit = unrealPnl / totalUsers;
-
     const usersEl = document.getElementById("hyper-modal-total-users");
-    if (usersEl) usersEl.innerText = totalUsers.toString();
+    if (usersEl) usersEl.innerText = data.hyperPoolActive ? "ACTIVE ($500+)" : "LOCKED (REQ $500)";
 
     const poolInvEl = document.getElementById("hyper-modal-total-pool-invest");
     if (poolInvEl) poolInvEl.innerText = "$" + totalInitialPool.toFixed(2) + " USDT";
 
     const poolProfEl = document.getElementById("hyper-modal-pool-profit");
     if (poolProfEl) {
-        poolProfEl.innerText = (totalRealizedPoolProfit >= 0 ? "+" : "") + "$" + totalRealizedPoolProfit.toFixed(2) + " USDT";
+        poolProfEl.innerText = (totalRealizedPoolProfit >= 0 ? "+" : "") + "$" + totalRealizedPoolProfit.toFixed(4) + " USDT";
         poolProfEl.style.color = totalRealizedPoolProfit >= 0 ? "#4CAF50" : "#f6465d";
     }
 
     const userProfEl = document.getElementById("hyper-modal-user-profit");
     if (userProfEl) {
-        userProfEl.innerText = (userRealizedProfit >= 0 ? "+" : "") + "$" + userRealizedProfit.toFixed(4) + " USDT";
-        userProfEl.style.color = userRealizedProfit >= 0 ? "#00e676" : "#f6465d";
-    }
-
-    const unEl = document.getElementById("hyper-unrealized-pnl");
-    const unPctEl = document.getElementById("hyper-unrealized-pnl-pct");
-    if (unEl) {
-        unEl.innerText = (unrealPnl >= 0 ? "+" : "") + "$" + unrealPnl.toFixed(2);
-        unEl.style.color = unrealPnl >= 0 ? "#00e676" : "#f6465d";
-    }
-    if (unPctEl) {
-        unPctEl.innerText = (unrealPct >= 0 ? "+" : "") + unrealPct.toFixed(2) + "%";
-        unPctEl.style.color = unrealPnl >= 0 ? "#4CAF50" : "#f6465d";
+        userProfEl.innerText = (totalRealizedPoolProfit >= 0 ? "+" : "") + "$" + totalRealizedPoolProfit.toFixed(4) + " USDT";
+        userProfEl.style.color = totalRealizedPoolProfit >= 0 ? "#00e676" : "#f6465d";
     }
 
     const uEl = document.getElementById("hyper-modal-port-usdt");
@@ -11330,7 +11654,7 @@ function updateHyperTitanModalData(data) {
     if (invEl) invEl.innerText = "$" + totalInvested.toFixed(2);
 
     const capEl = document.getElementById("hyper-modal-capital");
-    if (capEl) capEl.innerText = "$" + totalCurrentPoolValue.toFixed(2);
+    if (capEl) capEl.innerText = "$" + totalVaultCap.toFixed(2);
 
     const badgeEl = document.getElementById("hyper-modal-positions-badge");
     const contEl = document.getElementById("hyper-modal-positions-container");
@@ -11898,8 +12222,13 @@ function updateHyperTitanModalData(data) {
             if (chkM) chkM.classList.remove('active');
             const sucM = document.getElementById('forsageSuccessModal');
             if (sucM) sucM.classList.remove('active');
-            syncOnChainUserData();
-            syncOnChainActiveLevels();
+            if (userWallet) {
+                if (window.lastSyncedWallet !== userWallet.toLowerCase() || !window.currentLoggedInId) {
+                    syncOnChainUserData();
+                }
+            } else if (!window.isViewingOtherProfile) {
+                previewAccountById(1);
+            }
         }
 
         async function openLoginModal() {
@@ -14118,7 +14447,8 @@ function renderWalletTabView() {
     let trxFiat = trxVal * trxPrice;
 
     const homeShineEl = document.getElementById("homeProfitShine");
-    const shineVal = homeShineEl ? parseFloat(homeShineEl.innerText) || 100.0 : 100.0;
+    const parsedShine = homeShineEl ? parseFloat(homeShineEl.innerText) : 0.0;
+    const shineVal = !isNaN(parsedShine) ? parsedShine : 0.0;
     const shineFiat = shineVal * 0.01;
 
     const totalWorth = effectiveUsdt + bnbFiat + solFiat + shineFiat + trxFiat;
@@ -14211,7 +14541,11 @@ const AVAILABLE_SEND_TOKENS = [
         name: "SHINE Token",
         network: "BSC",
         rate: 0.01,
-        getBal: () => parseFloat(document.getElementById("homeProfitShine") ? document.getElementById("homeProfitShine").innerText : "100") || 100.0,
+        getBal: () => {
+            const el = document.getElementById("homeProfitShine");
+            const val = el ? parseFloat(el.innerText) : 0.0;
+            return !isNaN(val) ? val : 0.0;
+        },
         addressType: "Paste BEP-20 (0x) address",
         iconSvg: `<div style="width:36px; height:36px; border-radius:50%; background:linear-gradient(135deg, #ff4f9e, #840540); display:flex; align-items:center; justify-content:center; color:#fff; font-weight:bold; font-size:11px;">SHINE</div>`
     }
@@ -15243,26 +15577,26 @@ startCosmeticMarketTicker();
         </div>
 <div class="bot-card" style="margin-bottom: 0; background: rgba(0, 229, 255, 0.04); border: 1px solid rgba(0, 229, 255, 0.2);">
             <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid rgba(255,255,255,0.06); padding-bottom: 8px; margin-bottom: 10px;">
-                <span style="color: #00e5ff; font-weight: 900; font-size: 12px; letter-spacing: 0.5px;">POOL PARTICIPATION OVERVIEW</span>
-                <span style="background: rgba(0, 229, 255, 0.15); color: #00e5ff; padding: 2px 8px; border-radius: 6px; font-size: 10px; font-weight: 900; font-family: monospace;"><span id="hyper-modal-total-users">100</span> USERS ACTIVE</span>
+                <span style="color: #00e5ff; font-weight: 900; font-size: 12px; letter-spacing: 0.5px;">SHARED VAULT ENGINE</span>
+                <span id="hyper-modal-total-users" style="background: rgba(0, 229, 255, 0.15); color: #00e5ff; padding: 2px 8px; border-radius: 6px; font-size: 10px; font-weight: 900; font-family: monospace;">UNLOCK AT $500+</span>
             </div>
             <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px; font-family: monospace;">
                 <div style="background: rgba(0,0,0,0.3); padding: 8px; border-radius: 8px; border: 1px solid rgba(255,255,255,0.04);">
-                    <div style="color: #8c8ca1; font-size: 9px; font-weight: bold;">TOTAL POOL CAPITAL</div>
-                    <div id="hyper-modal-total-pool-invest" style="color: #ffffff; font-size: 15px; font-weight: 900; margin-top: 2px;">$9,999.00 USDT</div>
+                    <div style="color: #8c8ca1; font-size: 9px; font-weight: bold;">SHARED POOL CAPITAL</div>
+                    <div id="hyper-modal-total-pool-invest" style="color: #ffffff; font-size: 15px; font-weight: 900; margin-top: 2px;">$0.00 USDT</div>
                 </div>
                 <div style="background: rgba(0,0,0,0.3); padding: 8px; border-radius: 8px; border: 1px solid rgba(255,255,255,0.04);">
-                    <div style="color: #8c8ca1; font-size: 9px; font-weight: bold;">TOTAL POOL PROFIT (ALL)</div>
+                    <div style="color: #8c8ca1; font-size: 9px; font-weight: bold;">HYPER REALIZED PROFIT</div>
                     <div id="hyper-modal-pool-profit" style="color: #4CAF50; font-size: 15px; font-weight: 900; margin-top: 2px;">+$0.00 USDT</div>
                 </div>
                 <div style="background: rgba(0,0,0,0.3); padding: 8px; border-radius: 8px; border: 1px solid rgba(255,255,255,0.04); grid-column: span 2; display: flex; justify-content: space-between; align-items: center;">
                     <div>
-                        <div style="color: #8c8ca1; font-size: 9px; font-weight: bold;">YOUR PROFIT SHARE (PER USER)</div>
+                        <div style="color: #8c8ca1; font-size: 9px; font-weight: bold;">HYPER NET PROFIT</div>
                         <div id="hyper-modal-user-profit" style="color: #00e676; font-size: 16px; font-weight: 900; margin-top: 2px;">+$0.0000 USDT</div>
                     </div>
                     <div style="text-align: right;">
-                        <div style="color: #8c8ca1; font-size: 9px; font-weight: bold;">YOUR SHARE</div>
-                        <div style="color: #00e5ff; font-size: 12px; font-weight: 900;">$99.99 (1.00%)</div>
+                        <div style="color: #8c8ca1; font-size: 9px; font-weight: bold;">THRESHOLD</div>
+                        <div style="color: #00e5ff; font-size: 12px; font-weight: 900;">$500.00 MIN</div>
                     </div>
                 </div>
             </div>
@@ -15273,7 +15607,7 @@ startCosmeticMarketTicker();
                 <div style="color: #00d2ff; font-size: 11px; font-weight: bold; margin-bottom: 6px;">BOT TRADING ASSETS</div>
                 <div class="portfolio-row">
                     <div class="port-coin">BOT USDT</div>
-                    <div class="port-amt" id="hyper-modal-port-usdt">$1,000.00</div>
+                    <div class="port-amt" id="hyper-modal-port-usdt">$0.00</div>
                 </div>
                 <div class="portfolio-row">
                     <div class="port-coin">BOT SOL</div>
@@ -15285,7 +15619,7 @@ startCosmeticMarketTicker();
         <div class="bot-card" style="margin-bottom: 0;">
             <div class="card-label">BOT AVG ENTRY PRICE <i class="material-icons" style="font-size:16px;">track_changes</i></div>
             <div class="avg-main-val" id="hyper-modal-avg-price">$0.00</div>
-            <div class="invested-row">BOT INVESTED: <span class="invested-white" id="hyper-modal-invested">$0.00</span> / <span id="hyper-modal-capital">$1,000.00</span></div>
+            <div class="invested-row">BOT INVESTED: <span class="invested-white" id="hyper-modal-invested">$0.00</span> / <span id="hyper-modal-capital">$0.00</span></div>
         </div>
 
         <div class="trade-status-card bot-card" style="margin: 0;">
@@ -15551,33 +15885,33 @@ startCosmeticMarketTicker();
         <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid #1a202c; padding-bottom: 14px;">
             <div style="display: flex; align-items: center; gap: 8px;">
                 <div style="width: 10px; height: 10px; background: #e040fb; border-radius: 50%; box-shadow: 0 0 12px #e040fb;"></div>
-                <span style="color: #ffffff; font-size: 16px; font-weight: 900; letter-spacing: 0.5px; text-transform: uppercase;">TITAN SINGULARITY 100K POOL</span>
+                <span style="color: #ffffff; font-size: 16px; font-weight: 900; letter-spacing: 0.5px; text-transform: uppercase;">SHINE TITAN SINGULARITY</span>
             </div>
             <button onclick="closeSingularityDetailsModal()" style="background: #1a202c; border: none; border-radius: 50%; width: 32px; height: 32px; color: #e2e8f0; cursor: pointer; display: flex; align-items: center; justify-content: center;">✕</button>
         </div>
 
         <div class="bot-card" style="margin-bottom: 0; background: rgba(224, 64, 251, 0.04); border: 1px solid rgba(224, 64, 251, 0.2);">
             <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid rgba(255,255,255,0.06); padding-bottom: 8px; margin-bottom: 10px;">
-                <span style="color: #e040fb; font-weight: 900; font-size: 12px; letter-spacing: 0.5px;">POOL PARTICIPATION OVERVIEW</span>
-                <span style="background: rgba(224, 64, 251, 0.15); color: #e040fb; padding: 2px 8px; border-radius: 6px; font-size: 10px; font-weight: 900; font-family: monospace;"><span id="sng-modal-total-users">1000</span> USERS ACTIVE</span>
+                <span style="color: #e040fb; font-weight: 900; font-size: 12px; letter-spacing: 0.5px;">SHARED VAULT ENGINE</span>
+                <span id="sng-modal-total-users" style="background: rgba(224, 64, 251, 0.15); color: #e040fb; padding: 2px 8px; border-radius: 6px; font-size: 10px; font-weight: 900; font-family: monospace;">UNLOCK AT $1,000+</span>
             </div>
             <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px; font-family: monospace;">
                 <div style="background: rgba(0,0,0,0.3); padding: 8px; border-radius: 8px; border: 1px solid rgba(255,255,255,0.04);">
-                    <div style="color: #8c8ca1; font-size: 9px; font-weight: bold;">TOTAL POOL CAPITAL</div>
-                    <div id="sng-modal-total-pool-invest" style="color: #ffffff; font-size: 15px; font-weight: 900; margin-top: 2px;">$100,000.00 USDT</div>
+                    <div style="color: #8c8ca1; font-size: 9px; font-weight: bold;">SHARED POOL CAPITAL</div>
+                    <div id="sng-modal-total-pool-invest" style="color: #ffffff; font-size: 15px; font-weight: 900; margin-top: 2px;">$0.00 USDT</div>
                 </div>
                 <div style="background: rgba(0,0,0,0.3); padding: 8px; border-radius: 8px; border: 1px solid rgba(255,255,255,0.04);">
-                    <div style="color: #8c8ca1; font-size: 9px; font-weight: bold;">TOTAL POOL PROFIT</div>
+                    <div style="color: #8c8ca1; font-size: 9px; font-weight: bold;">SINGULARITY PROFIT</div>
                     <div id="sng-modal-pool-profit" style="color: #4CAF50; font-size: 15px; font-weight: 900; margin-top: 2px;">+$0.00 USDT</div>
                 </div>
                 <div style="background: rgba(0,0,0,0.3); padding: 8px; border-radius: 8px; border: 1px solid rgba(255,255,255,0.04); grid-column: span 2; display: flex; justify-content: space-between; align-items: center;">
                     <div>
-                        <div style="color: #8c8ca1; font-size: 9px; font-weight: bold;">YOUR PROFIT SHARE (PER USER)</div>
+                        <div style="color: #8c8ca1; font-size: 9px; font-weight: bold;">SINGULARITY NET PROFIT</div>
                         <div id="sng-modal-user-profit" style="color: #00e676; font-size: 16px; font-weight: 900; margin-top: 2px;">+$0.0000 USDT</div>
                     </div>
                     <div style="text-align: right;">
-                        <div style="color: #8c8ca1; font-size: 9px; font-weight: bold;">YOUR SHARE</div>
-                        <div style="color: #e040fb; font-size: 12px; font-weight: 900;">$100.00 (0.10%)</div>
+                        <div style="color: #8c8ca1; font-size: 9px; font-weight: bold;">THRESHOLD</div>
+                        <div style="color: #e040fb; font-size: 12px; font-weight: 900;">$1,000.00 MIN</div>
                     </div>
                 </div>
             </div>
@@ -15589,7 +15923,7 @@ startCosmeticMarketTicker();
                 <div style="color: #e040fb; font-size: 11px; font-weight: bold; margin-bottom: 6px;">POOL TRADING ASSETS</div>
                 <div class="portfolio-row">
                     <div class="port-coin">POOL USDT</div>
-                    <div class="port-amt" id="sng-modal-port-usdt">$100,000.00</div>
+                    <div class="port-amt" id="sng-modal-port-usdt">$0.00</div>
                 </div>
                 <div class="portfolio-row">
                     <div class="port-coin">POOL SOL</div>
@@ -15599,9 +15933,9 @@ startCosmeticMarketTicker();
         </div>
 
         <div class="bot-card" style="margin-bottom: 0;">
-            <div class="card-label">POOL AVG ENTRY PRICE <i class="material-icons" style="font-size:16px;">track_changes</i></div>
+            <div class="card-label">BOT AVG ENTRY PRICE <i class="material-icons" style="font-size:16px;">track_changes</i></div>
             <div class="avg-main-val" id="sng-modal-avg-price">$0.00</div>
-            <div class="invested-row">POOL INVESTED: <span class="invested-white" id="sng-modal-invested">$0.00</span> / <span id="sng-modal-capital">$100,000.00</span></div>
+            <div class="invested-row">POOL INVESTED: <span class="invested-white" id="sng-modal-invested">$0.00</span> / <span id="sng-modal-capital">$0.00</span></div>
         </div>
 
         <div class="trade-status-card bot-card" style="margin: 0;">
@@ -15614,7 +15948,7 @@ startCosmeticMarketTicker();
 
         <div class="bot-card" style="margin-bottom: 0;">
             <div style="display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 6px; margin-bottom: 16px; text-align: center;">
-                <h3 style="margin: 0; font-size: 14px; font-weight: 900; color: #fff; letter-spacing: 0.5px;">SINGULARITY 100K AUDIT LOG</h3>
+                <h3 style="margin: 0; font-size: 14px; font-weight: 900; color: #fff; letter-spacing: 0.5px;">SINGULARITY AUDIT LOG</h3>
                 <div style="display: flex; align-items: center; justify-content: center; gap: 20px; font-size: 12px; font-family: monospace; font-weight: 800;">
                     <span style="color: #8c8ca1;">Exits <span id="sng-modal-trade-count" style="color: #fff; margin-left: 4px;">0</span></span>
                     <span style="color: #4CAF50;">Profit <span id="sng-modal-win-tag" style="margin-left: 4px;">0</span></span>
@@ -16203,7 +16537,7 @@ async function previewAccountById(idOrAddr) {
 
     const instantSlots = {};
     if (targetId === 1 || targetWallet === ROOT_OWNER_ADDRESS.toLowerCase()) {
-        ['V1', 'Q2', 'T3', 'S4', 'G5', 'N6', 'A7', 'C8', 'S9', 'Q10', 'H11', 'O12', 'N13', 'E14', 'X15'].forEach(pName => {
+        progListAll.forEach(pName => {
             for (let l = 1; l <= 12; l++) instantSlots[pName + '_' + l] = true;
         });
     } else {
@@ -16217,6 +16551,8 @@ async function previewAccountById(idOrAddr) {
     }
 
     window.previewActiveLevels = instantSlots;
+    const pShineReset = document.getElementById("homeProfitShine");
+    if (pShineReset) pShineReset.innerText = "0.00";
     renderDashboardSlots();
     applyUserBotMetricsToUI(targetWallet, targetId, latestBackendState);
     window.scrollTo({ top: 0, behavior: 'smooth' });
@@ -16272,6 +16608,27 @@ async function previewAccountById(idOrAddr) {
     }
 
     loadUserNetworkStatsFromSupabase(targetWallet, targetId);
+    if (ethers.utils.isAddress(targetWallet) && activeShineTokenAddress && activeShineTokenAddress !== ethers.constants.AddressZero) {
+        (async () => {
+            try {
+                const erc20 = new ethers.utils.Interface(ERC20_ABI);
+                const mcRes = await executeSingleMulticall([
+                    { target: activeShineTokenAddress, allowFailure: true, callData: erc20.encodeFunctionData("balanceOf", [targetWallet]) },
+                    { target: activeShineTokenAddress, allowFailure: true, callData: erc20.encodeFunctionData("decimals", []) }
+                ]);
+                let dec = 18;
+                if (mcRes[1] && mcRes[1].success) {
+                    dec = Number(erc20.decodeFunctionResult("decimals", mcRes[1].returnData)[0]);
+                }
+                if (mcRes[0] && mcRes[0].success && window.currentPreviewWallet === targetWallet) {
+                    const rawB = erc20.decodeFunctionResult("balanceOf", mcRes[0].returnData)[0];
+                    const shineStr = parseFloat(ethers.utils.formatUnits(rawB, dec)).toFixed(2);
+                    const s1 = document.getElementById("homeProfitShine");
+                    if (s1) s1.innerText = shineStr;
+                }
+            } catch (e) {}
+        })();
+    }
     if (targetId !== 1 && targetWallet !== ROOT_OWNER_ADDRESS.toLowerCase()) {
         fetchActiveLevelsForWallet(targetWallet).then(freshSlots => {
             if (window.currentPreviewWallet === targetWallet && Object.keys(freshSlots).length > 0) {
@@ -16299,15 +16656,27 @@ async function recordRegistrationToSupabase(walletAddr, uplineAddr, txHash) {
         ]);
         let myId = 0;
         let upId = 1;
+        let resolvedChainUpline = uLower;
         let joinIso = new Date().toISOString();
         if (mcRes[0] && mcRes[0].success) {
             const uData = shineIface.decodeFunctionResult("users", mcRes[0].returnData);
             if (uData.isRegistered) {
                 myId = Number(uData.id);
                 if (Number(uData.joinDate) > 0) joinIso = new Date(Number(uData.joinDate) * 1000).toISOString();
+                if (uData.upline && uData.upline !== ethers.constants.AddressZero) {
+                    resolvedChainUpline = uData.upline.toLowerCase();
+                }
             }
         }
-        if (mcRes[1] && mcRes[1].success) {
+        if (resolvedChainUpline !== uLower) {
+            try {
+                const upHex = await publicBscRpcCall("eth_call", [{ to: SHINE_CONTRACT_ADDRESS, data: shineIface.encodeFunctionData("users", [resolvedChainUpline]) }, "latest"]);
+                if (upHex && upHex !== "0x") {
+                    const upData = shineIface.decodeFunctionResult("users", upHex);
+                    if (upData.isRegistered && Number(upData.id) > 0) upId = Number(upData.id);
+                }
+            } catch (e) {}
+        } else if (mcRes[1] && mcRes[1].success) {
             const upData = shineIface.decodeFunctionResult("users", mcRes[1].returnData);
             if (upData.isRegistered && Number(upData.id) > 0) upId = Number(upData.id);
         }
@@ -16315,7 +16684,7 @@ async function recordRegistrationToSupabase(walletAddr, uplineAddr, txHash) {
             await client.from('shine_members').upsert({
                 wallet_address: wLower,
                 user_id: myId,
-                upline_address: myId === 1 ? null : uLower,
+                upline_address: myId === 1 ? null : resolvedChainUpline,
                 upline_id: myId === 1 ? null : upId,
                 join_tx_hash: txHash || "",
                 joined_at: joinIso
@@ -16359,43 +16728,58 @@ async function recordSlotAndReferralProfitsToSupabase(buyerWallet, prog, lvl, co
             }
         }
 
-        const progMap = { 'V1': 1, 'Q2': 2, 'T3': 3, 'S4': 4, 'G5': 5, 'N6': 6, 'A7': 7, 'C8': 8, 'S9': 9, 'Q10': 10, 'H11': 11, 'O12': 12, 'N13': 13, 'E14': 14, 'X15': 15 };
+        const progMap = { 'V1': 1, 'Q2': 2, 'T3': 3, 'S4': 4, 'G5': 5, 'N6': 6, 'A7': 7, 'C8': 8, 'S9': 9, 'Q10': 10 };
         const progNum = progMap[prog] || 1;
         const contractLvl = Number(lvl) - 1;
 
         for (const t of tiers) {
             if (!t.addr || t.addr === ethers.constants.AddressZero) continue;
-            const rLower = t.addr.toLowerCase();
-            const rCalls = [
-                { target: SHINE_CONTRACT_ADDRESS, allowFailure: true, callData: shineIface.encodeFunctionData("users", [rLower]) },
-                { target: SHINE_CONTRACT_ADDRESS, allowFailure: true, callData: shineIface.encodeFunctionData("isUserLevelActive", [rLower, progNum, contractLvl]) }
-            ];
-            const rRes = await executeSingleMulticall(rCalls);
-            let recId = 1;
-            let levelActive = false;
-            if (rRes[0] && rRes[0].success) {
-                recId = Number(shineIface.decodeFunctionResult("users", rRes[0].returnData).id);
+            let cursorAddr = t.addr.toLowerCase();
+            let finalRecAddr = ROOT_OWNER_ADDRESS.toLowerCase();
+            let finalRecId = 1;
+
+            for (let hop = 0; hop < 3 && cursorAddr && cursorAddr !== ethers.constants.AddressZero; hop++) {
+                const rCalls = [
+                    { target: SHINE_CONTRACT_ADDRESS, allowFailure: true, callData: shineIface.encodeFunctionData("users", [cursorAddr]) },
+                    { target: SHINE_CONTRACT_ADDRESS, allowFailure: true, callData: shineIface.encodeFunctionData("isUserLevelActive", [cursorAddr, progNum, contractLvl]) },
+                    { target: SHINE_CONTRACT_ADDRESS, allowFailure: true, callData: shineIface.encodeFunctionData("getMatrixState", [cursorAddr, progNum, contractLvl]) }
+                ];
+                const rRes = await executeSingleMulticall(rCalls);
+                let uData = null;
+                let levelActive = false;
+                let isBlocked = false;
+                if (rRes[0] && rRes[0].success) {
+                    uData = shineIface.decodeFunctionResult("users", rRes[0].returnData);
+                }
+                if (rRes[1] && rRes[1].success) {
+                    levelActive = Boolean(shineIface.decodeFunctionResult("isUserLevelActive", rRes[1].returnData)[0]);
+                }
+                if (rRes[2] && rRes[2].success) {
+                    isBlocked = Boolean(shineIface.decodeFunctionResult("getMatrixState", rRes[2].returnData).blocked);
+                }
+                if ((levelActive && !isBlocked) || cursorAddr === ROOT_OWNER_ADDRESS.toLowerCase()) {
+                    finalRecAddr = cursorAddr;
+                    finalRecId = uData && Number(uData.id) > 0 ? Number(uData.id) : 1;
+                    break;
+                }
+                cursorAddr = (uData && uData.upline && uData.upline !== ethers.constants.AddressZero) ? uData.upline.toLowerCase() : "";
             }
-            if (rRes[1] && rRes[1].success) {
-                levelActive = Boolean(shineIface.decodeFunctionResult("isUserLevelActive", rRes[1].returnData)[0]);
-            }
-            if (levelActive || rLower === ROOT_OWNER_ADDRESS.toLowerCase()) {
-                const rewardAmt = Number((Number(cost) * t.pct).toFixed(4));
-                const rewardKey = `${bLower}_${prog}_${lvl}_T${t.tier}`;
-                await client.from('shine_referral_rewards').upsert({
-                    reward_key: rewardKey,
-                    buyer_wallet: bLower,
-                    buyer_id: buyerId,
-                    program: prog,
-                    level: Number(lvl),
-                    slot_cost: Number(cost),
-                    recipient_wallet: rLower,
-                    recipient_id: recId,
-                    reward_tier: t.tier,
-                    reward_amount: rewardAmt,
-                    tx_hash: txHash || ""
-                }, { onConflict: 'reward_key', ignoreDuplicates: true });
-            }
+
+            const rewardAmt = Number((Number(cost) * t.pct).toFixed(4));
+            const rewardKey = `${bLower}_${prog}_${lvl}_T${t.tier}`;
+            await client.from('shine_referral_rewards').upsert({
+                reward_key: rewardKey,
+                buyer_wallet: bLower,
+                buyer_id: buyerId,
+                program: prog,
+                level: Number(lvl),
+                slot_cost: Number(cost),
+                recipient_wallet: finalRecAddr,
+                recipient_id: finalRecId,
+                reward_tier: t.tier,
+                reward_amount: rewardAmt,
+                tx_hash: txHash || ""
+            }, { onConflict: 'reward_key', ignoreDuplicates: true });
         }
     } catch (e) {}
 }
@@ -16543,7 +16927,7 @@ function syncOnChainMembersToSupabase() {
             };
 
             if (nonRootWallets.length > 0) {
-                const progList = ['V1', 'Q2', 'T3', 'S4', 'G5', 'N6', 'A7', 'C8', 'S9', 'Q10', 'H11', 'O12', 'N13', 'E14', 'X15'];
+                const progList = progListAll;
                 const slotCalls = [];
                 const slotMeta = [];
                 nonRootWallets.forEach(w => {
@@ -16714,7 +17098,7 @@ async function loadUserNetworkStatsFromSupabase(targetWalletLower, targetId) {
             return !isNaN(t) && (nowMs - t) <= oneDayMs;
         };
 
-        const directPartners = allMembers.filter(m => m.upline_address === targetWalletLower && m.wallet_address !== targetWalletLower);
+        const directPartners = allMembers.filter(m => m.upline_address === targetWalletLower && m.wallet_address !== targetWalletLower && Number(m.user_id) !== Number(targetId));
         const direct24hCount = directPartners.filter(m => isWithin24h(m.joined_at)).length;
 
         const teamQueue = [...directPartners];
@@ -16782,6 +17166,10 @@ async function loadUserNetworkStatsFromSupabase(targetWalletLower, targetId) {
         if (refBannerEl) {
             refBannerEl.innerText = "+" + totalRefProfit.toFixed(2) + " USDT";
         }
+        const ref24BannerEl = document.getElementById("homeReferralProfit24h");
+        if (ref24BannerEl) {
+            ref24BannerEl.innerText = refProfit24h > 0 ? "(+" + refProfit24h.toFixed(2) + " 24h)" : "";
+        }
 
         const homeUsdt24hEl = document.getElementById("homeProfitUsdt24h");
         if (homeUsdt24hEl) {
@@ -16803,25 +17191,11 @@ async function loadUserNetworkStatsFromSupabase(targetWalletLower, targetId) {
             homeBnb24hEl.innerText = myBnb24h > 0 ? "+" + myBnb24h.toFixed(4) : "";
         }
 
-        if (window.isViewingOtherProfile) {
-            const homeProfitUsdtEl = document.getElementById("homeProfitUsdt");
-            const homeProfitShineEl = document.getElementById("homeProfitShine");
-            const homePassiveEl = document.getElementById("homePassiveIncomeVal");
-            const homeClaimEl = document.getElementById("homeClaimValueDisplay");
-            if (homeProfitUsdtEl) homeProfitUsdtEl.innerText = totalRefProfit.toFixed(2);
-            if (homePassiveEl) homePassiveEl.innerText = totalRefProfit.toFixed(2);
-            if (homeClaimEl) homeClaimEl.innerText = totalRefProfit.toFixed(2);
-            if (homeProfitShineEl) homeProfitShineEl.innerText = myInvestSum.toFixed(2);
-        } else {
-            const homeProfitUsdtEl = document.getElementById("homeProfitUsdt");
-            if (homeProfitUsdtEl) {
-                const curVal = parseFloat(homeProfitUsdtEl.innerText || "0") || 0;
-                if (curVal < totalRefProfit) homeProfitUsdtEl.innerText = totalRefProfit.toFixed(2);
-            }
-            const homeProfitShineEl = document.getElementById("homeProfitShine");
-            if (homeProfitShineEl) {
-                const curShine = parseFloat(homeProfitShineEl.innerText || "0") || 0;
-                if (curShine < myInvestSum) homeProfitShineEl.innerText = myInvestSum.toFixed(2);
+        const homeProfitShineEl = document.getElementById("homeProfitShine");
+        if (homeProfitShineEl) {
+            const curShine = parseFloat(homeProfitShineEl.innerText || "0") || 0;
+            if (curShine <= 0 && myInvestSum > 0) {
+                homeProfitShineEl.innerText = myInvestSum.toFixed(2);
             }
         }
 
@@ -16966,7 +17340,9 @@ async function loadUserNetworkStatsFromSupabase(targetWalletLower, targetId) {
                 }).join("");
             }
         }
-
+  const targetMemberObj = allMembers.find(m => m.wallet_address === targetWalletLower);
+        updateRealNotificationsForUser(targetWalletLower, targetId, targetMemberObj, directPartners, fullTeam, mySlots, myRewards);
+        syncGlobalDividendPoolUI(targetWalletLower);
         applyUserBotMetricsToUI(targetWalletLower, targetId, latestBackendState);
     } catch (e) {}
 }
