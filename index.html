@@ -273,6 +273,81 @@
             font-size: 12px;
             margin-top: 8px;
         }
+        .stat-24h-pill {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            background: rgba(255, 255, 255, 0.07);
+            border-radius: 20px;
+            padding: 5px 6px 5px 12px;
+            margin-top: 10px;
+        }
+        .stat-24h-pill.active {
+            background: linear-gradient(90deg, rgba(0, 168, 70, 0.22) 0%, rgba(0, 120, 48, 0.35) 100%);
+        }
+        .stat-24h-count {
+            color: rgba(255, 255, 255, 0.85);
+            font-size: 13px;
+            font-weight: 800;
+            white-space: nowrap;
+        }
+        .stat-24h-pill.active .stat-24h-count {
+            color: #00e676;
+        }
+        .stat-green-radar {
+            position: relative;
+            width: 24px;
+            height: 24px;
+            border-radius: 50%;
+            background: radial-gradient(circle, rgba(255, 255, 255, 0.25) 0%, rgba(255, 255, 255, 0.08) 100%);
+            overflow: hidden;
+            flex-shrink: 0;
+        }
+        .stat-green-radar::after {
+            content: "";
+            position: absolute;
+            inset: 0;
+            border-radius: 50%;
+            display: none;
+        }
+        .stat-24h-pill.active .stat-green-radar {
+            background: radial-gradient(circle, rgba(0, 230, 118, 0.35) 0%, rgba(0, 90, 35, 0.9) 100%);
+            box-shadow: 0 0 8px rgba(0, 230, 118, 0.35);
+        }
+        .stat-24h-pill.active .stat-green-radar::after {
+            display: block;
+            background: conic-gradient(from 0deg, transparent 55%, rgba(0, 255, 128, 0.95) 100%);
+            animation: radarSweep 2.4s linear infinite;
+        }
+        .attached-stats-card {
+            grid-column: span 2;
+            background-color: var(--secondary-bg);
+            border-radius: 16px;
+            padding: 16px;
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+        }
+        .attached-half-left {
+            padding-right: 24px;
+            border-right: 1px solid rgba(255, 255, 255, 0.08);
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            min-width: 0;
+            cursor: pointer;
+        }
+        .attached-half-right {
+            padding-left: 24px;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            min-width: 0;
+            cursor: pointer;
+        }
+        @keyframes bcRingPulse {
+            0%, 100% { box-shadow: 0 0 0 0 rgba(255, 255, 255, 0.22); }
+            50% { box-shadow: 0 0 0 12px rgba(255, 255, 255, 0); }
+        }
 .card-section {
             margin: 16px 16px 0;
             background-color: var(--secondary-bg);
@@ -2313,48 +2388,95 @@ input:checked + .tw-slider:before {
     left: 0;
     width: 100%;
     height: 100%;
-    background: rgba(10, 12, 18, 0.88);
-    backdrop-filter: blur(8px);
+    background: #1d1e21;
     z-index: 99999;
     display: none;
+    flex-direction: column;
+    justify-content: space-between;
+    align-items: center;
+    padding: 18px 16px 24px;
+    box-sizing: border-box;
+}
+.bc-top-bar {
+    width: 100%;
+    display: flex;
+    justify-content: flex-end;
+}
+.bc-close-circle {
+    width: 38px;
+    height: 38px;
+    border-radius: 50%;
+    background: rgba(255, 255, 255, 0.08);
+    border: none;
+    color: #d1d5db;
+    display: flex;
     align-items: center;
     justify-content: center;
-    padding: 20px;
-    box-sizing: border-box;
+    cursor: pointer;
 }
 .blockchain-loader-card {
     background: transparent;
     border: none;
     padding: 0;
-    width: auto;
+    width: 100%;
     text-align: center;
     box-shadow: none;
     display: flex;
     flex-direction: column;
     align-items: center;
-    gap: 18px;
+    gap: 16px;
 }
 .bc-spinner {
-    width: 58px;
-    height: 58px;
-    border: 3.5px solid rgba(0, 229, 255, 0.15);
-    border-top: 3.5px solid #00e5ff;
+    width: 66px;
+    height: 66px;
+    border: 3.5px solid rgba(255, 255, 255, 0.14);
+    border-top: 3.5px solid #e5e7eb;
     border-radius: 50%;
-    animation: orbitRotate 0.75s linear infinite;
-    filter: drop-shadow(0 0 14px rgba(0, 229, 255, 0.5));
+    animation: orbitRotate 0.9s linear infinite, bcRingPulse 1.8s ease-in-out infinite;
 }
 .bc-success-icon {
-    width: 64px;
-    height: 64px;
-    background: rgba(0, 230, 118, 0.15);
-    border: 2px solid #00e676;
+    width: 66px;
+    height: 66px;
+    background: transparent;
+    border: 3.5px solid #22c55e;
     border-radius: 50%;
     display: flex;
     align-items: center;
     justify-content: center;
-    color: #00e676;
-    font-size: 34px;
-    box-shadow: 0 0 25px rgba(0, 230, 118, 0.4);
+    color: #22c55e;
+    box-shadow: 0 0 18px rgba(34, 197, 94, 0.25);
+}
+.bc-bottom-bar {
+    width: 100%;
+    max-width: 440px;
+}
+.bc-tx-btn {
+    width: 100%;
+    background: #2b2c30;
+    color: #ffffff;
+    border: none;
+    border-radius: 12px;
+    padding: 16px;
+    font-size: 14px;
+    font-weight: 700;
+    text-decoration: none;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    box-sizing: border-box;
+}
+.bc-okay-btn {
+    width: 100%;
+    background: #2563eb;
+    color: #ffffff;
+    border: none;
+    border-radius: 12px;
+    padding: 16px;
+    font-size: 15px;
+    font-weight: 700;
+    cursor: pointer;
+    box-sizing: border-box;
 }
 </style>
 </head>
@@ -2775,16 +2897,24 @@ input:checked + .tw-slider:before {
         </div>
     </div>
 </div>
-
 <div id="blockchainLoaderOverlay" class="blockchain-loader-overlay">
+    <div class="bc-top-bar">
+        <button class="bc-close-circle" onclick="closeBcLoaderModal()"><i class="material-icons" style="font-size: 20px;">close</i></button>
+    </div>
     <div class="blockchain-loader-card">
         <div id="bcLoaderSpinner" class="bc-spinner"></div>
-        <div id="bcSuccessIcon" class="bc-success-icon" style="display: none;">✓</div>
-        <h3 id="bcLoaderTitle" style="color: #ffffff; font-size: 18px; margin: 0; font-weight: 700; letter-spacing: 0.4px;">Activating...</h3>
-        <div id="bcLoaderSubText" style="color: #718096; font-size: 12px;">Your transaction is in progress.</div>
+        <div id="bcSuccessIcon" class="bc-success-icon" style="display: none;"><i class="material-icons" style="font-size: 38px; color: #22c55e;">check</i></div>
+        <h3 id="bcLoaderTitle" style="color: #ffffff; font-size: 24px; margin: 0; font-weight: 800; letter-spacing: 0.2px;">Activating</h3>
+        <div id="bcLoaderSubText" style="color: #9ca3af; font-size: 14px; line-height: 1.4;">Your transaction is in progress.</div>
+    </div>
+    <div class="bc-bottom-bar">
+        <a id="bcTxLinkBtn" href="#" target="_blank" class="bc-tx-btn" style="display: none;">
+            <span>Transaction in blockchain</span>
+            <i class="material-icons" style="font-size: 18px;">open_in_new</i>
+        </a>
+        <button id="bcOkayBtn" onclick="closeBcLoaderModal()" class="bc-okay-btn" style="display: none;">Okay</button>
     </div>
 </div>
-
 <div id="pwaInstallBanner" style="display: none; background: #161c28; border-bottom: 1px solid rgba(0, 229, 255, 0.2); padding: 8px 16px; justify-content: space-between; align-items: center; z-index: 10000; box-sizing: border-box;">
     <div style="display: flex; align-items: center; gap: 8px;">
         <svg width="22" height="22" viewBox="0 0 24 24" fill="#00e5ff"><path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"/></svg>
@@ -2955,55 +3085,72 @@ input:checked + .tw-slider:before {
                 </button>
             </section>
             <section class="stats-grid">
-                <div class="stat-card" onclick="openTeamDetailsModal()" style="cursor: pointer;">
+                <div class="stat-card" onclick="openTeamDetailsModal('PARTNERS')" style="cursor: pointer;">
                     <div class="stat-header">
-                        <div class="stat-title">
-                            <span>Partners</span>
-                            <div class="question-mark">?</div>
-                        </div>
-                        <i class="material-icons">people_outline</i>
+                        <div class="stat-title"><span>Partners</span></div>
+                        <i class="material-icons" style="font-size: 22px;">people_outline</i>
                     </div>
-                    <div style="display:flex; align-items:baseline; gap:8px; margin-top:8px;">
-                        <div class="stat-value" id="statPartnersVal" style="margin-top:0;">0</div>
-                        <span id="statPartners24h" style="color:#4CAF50; font-size:14px; font-weight:800;"></span>
+                    <div class="stat-value" id="statPartnersVal">0</div>
+                    <div class="stat-24h-pill" id="statPartners24hPill">
+                        <span class="stat-24h-count" id="statPartners24h">↑ 0</span>
+                        <div class="stat-green-radar"></div>
                     </div>
                 </div>
-                <div class="stat-card" onclick="openTeamDetailsModal()" style="cursor: pointer;">
+                <div class="stat-card" onclick="openTeamDetailsModal('TEAM')" style="cursor: pointer;">
                     <div class="stat-header">
-                        <div class="stat-title">
-                            <span>Team</span>
-                            <div class="question-mark">?</div>
-                        </div>
-                        <i class="material-icons">groups</i>
+                        <div class="stat-title"><span>Team</span></div>
+                        <i class="material-icons" style="font-size: 22px;">groups</i>
                     </div>
-                    <div style="display:flex; align-items:baseline; gap:8px; margin-top:8px;">
-                        <div class="stat-value" id="statTeamVal" style="margin-top:0;">0</div>
-                        <span id="statTeam24h" style="color:#4CAF50; font-size:14px; font-weight:800;"></span>
+                    <div class="stat-value" id="statTeamVal">0</div>
+                    <div class="stat-24h-pill" id="statTeam24hPill">
+                        <span class="stat-24h-count" id="statTeam24h">↑ 0</span>
+                        <div class="stat-green-radar"></div>
                     </div>
                 </div>
-                
-                <div class="stat-card" style="grid-column: span 2;">
-                    <div style="display: flex; justify-content: space-between; margin-bottom: 15px;">
-                        <div style="flex: 1;">
-                            <div class="stat-header">
-                                <div class="stat-title"><span>Trading Profits</span></div>
-                            </div>
-                            <div class="stat-value" id="realProfitValue" style="color: #4CAF50; font-size: 32px;">$0.00</div>
+                <div class="stat-card" onclick="openTeamDetailsModal('REWARDS')" style="cursor: pointer;">
+                    <div class="stat-header">
+                        <div class="stat-title" style="white-space: nowrap;"><span>Team profit</span></div>
+                        <i class="material-icons" style="font-size: 22px;">trending_up</i>
+                    </div>
+                    <div class="stat-value" id="statTeamProfitVal" style="font-size: 24px;">$0.00</div>
+                    <div class="stat-24h-pill" id="statTeamProfit24hPill">
+                        <span class="stat-24h-count" id="statTeamProfit24h">↑ $0.00</span>
+                        <div class="stat-green-radar"></div>
+                    </div>
+                </div>
+                <div class="stat-card" onclick="openTeamDetailsModal('REWARDS')" style="cursor: pointer;">
+                    <div class="stat-header">
+                        <div class="stat-title" style="font-size: 12px; white-space: nowrap; letter-spacing: -0.2px;"><span>Unconditional profit</span></div>
+                        <i class="material-icons" style="font-size: 20px;">payments</i>
+                    </div>
+                    <div class="stat-value" id="statUnconditionalVal" style="font-size: 24px;">$0.00</div>
+                    <div class="stat-24h-pill" id="statUnconditional24hPill">
+                        <span class="stat-24h-count" id="statUnconditional24h">↑ $0.00</span>
+                        <div class="stat-green-radar"></div>
+                    </div>
+                </div>
+                <div class="attached-stats-card">
+                    <div class="attached-half-left" onclick="toggleTrading()">
+                        <div class="stat-header">
+                            <div class="stat-title" style="font-size: 13px; white-space: nowrap;"><span>Trading Profits</span></div>
+                            <i class="material-icons" style="font-size: 21px;">account_balance_wallet</i>
                         </div>
-                        <div style="flex: 1; border-left: 1px solid rgba(255,255,255,0.1); padding-left: 15px;">
-                            <div class="stat-header">
-                                <div class="stat-title"><span>Success Trades</span></div>
-                            </div>
-                            <div class="stat-value" id="successTradeCount" style="color: #4CAF50; font-size: 32px;">0</div>
+                        <div class="stat-value" id="realProfitValue" style="font-size: 24px;">$0.00</div>
+                        <div class="stat-24h-pill" id="statTradingProfit24hPill">
+                            <span class="stat-24h-count" id="statTradingProfit24h">↑ $0.00</span>
+                            <div class="stat-green-radar"></div>
                         </div>
                     </div>
-                    <div style="display: flex; gap: 12px;">
-                        <button class="see-now-btn" onclick="toggleTrading()" style="flex: 1; height: 40px; background: #4CAF50; margin-top: 0; border-radius: 12px; font-weight: bold;">
-                            PROFIT
-                        </button>
-                        <button class="see-now-btn" onclick="toggleTrading()" style="flex: 1; height: 40px; background: #4CAF50; margin-top: 0; border-radius: 12px; font-weight: bold;">
-                            SUCCESS TRADES
-                        </button>
+                    <div class="attached-half-right" onclick="toggleTrading()">
+                        <div class="stat-header">
+                            <div class="stat-title" style="font-size: 13px; white-space: nowrap;"><span>Success Trades</span></div>
+                            <i class="material-icons" style="font-size: 21px;">candlestick_chart</i>
+                        </div>
+                        <div class="stat-value" id="successTradeCount" style="font-size: 24px;">0</div>
+                        <div class="stat-24h-pill" id="statSuccessTrades24hPill">
+                            <span class="stat-24h-count" id="statSuccessTrades24h">↑ 0</span>
+                            <div class="stat-green-radar"></div>
+                        </div>
                     </div>
                 </div>
             </section>
@@ -5424,7 +5571,7 @@ input:checked + .tw-slider:before {
     </div>
     <div class="edit-content">
         <div class="edit-avatar-wrapper">
-            <div class="edit-avatar"></div>
+            <div class="edit-avatar" onclick="document.getElementById('avatarInput').click()" style="cursor:pointer;"></div>
             <button class="close-edit-btn" onclick="toggleProfileEdit()"><i class="material-icons" style="font-size:18px;">close</i></button>
         </div>
         <span style="color:#757575; margin-bottom:30px;">Chose your photo</span>     
@@ -6164,24 +6311,37 @@ input:checked + .tw-slider:before {
             refreshExchangeBalances();
             renderWalletTabView();
         }
-
-        function showBcLoader(title, showSuccess = false) {
+function showBcLoader(title, showSuccess = false, subText = "Your transaction is in progress.", txHash = "") {
             const overlay = document.getElementById("blockchainLoaderOverlay");
             const spinner = document.getElementById("bcLoaderSpinner");
             const icon = document.getElementById("bcSuccessIcon");
             const tEl = document.getElementById("bcLoaderTitle");
+            const subEl = document.getElementById("bcLoaderSubText");
+            const txBtn = document.getElementById("bcTxLinkBtn");
+            const okBtn = document.getElementById("bcOkayBtn");
             if (!overlay) return;
             overlay.style.display = "flex";
             if (showSuccess) {
                 if (spinner) spinner.style.display = "none";
                 if (icon) icon.style.display = "flex";
+                if (txBtn) txBtn.style.display = "none";
+                if (okBtn) okBtn.style.display = "block";
             } else {
                 if (spinner) spinner.style.display = "block";
                 if (icon) icon.style.display = "none";
+                if (okBtn) okBtn.style.display = "none";
+                if (txBtn) {
+                    if (txHash) {
+                        txBtn.href = BSCSCAN_BASE_URL + "/tx/" + txHash;
+                        txBtn.style.display = "flex";
+                    } else {
+                        txBtn.style.display = "none";
+                    }
+                }
             }
             if (tEl) tEl.innerText = title;
+            if (subEl) subEl.innerHTML = subText || "";
         }
-
         function closeBcLoaderModal() {
             const overlay = document.getElementById("blockchainLoaderOverlay");
             if (overlay) overlay.style.display = "none";
@@ -6295,11 +6455,16 @@ input:checked + .tw-slider:before {
                     }
                 } catch (e) {}
 
+                let activatedProgLabel = prog;
+                let activatedLvlLabel = lvl;
+
                 if (!bundle.isRegistered) {
                     if (confirmBtn) confirmBtn.innerHTML = `<span>CONFIRM REGISTRATION IN WALLET...</span>`;
                     const regData = shineIface.encodeFunctionData("register", [bundle.uplineAddr]);
                     const regHash = await sendDirectWalletTx(activeProvider, userWallet, SHINE_CONTRACT_ADDRESS, regData, bnbFeeValue, 650000);
-                    if (confirmBtn) confirmBtn.innerHTML = `<span>ACTIVATING...</span>`;
+                    activatedProgLabel = 'V1';
+                    activatedLvlLabel = 1;
+                    showBcLoader("Activating", false, "Your transaction is in progress.", regHash);
                     await waitForTxReceiptPublic(regHash);
                     await recordRegistrationToSupabase(userWallet, bundle.uplineAddr, regHash);
                     await markSlotAsActivated('V1', 1, 10, regHash);
@@ -6307,7 +6472,7 @@ input:checked + .tw-slider:before {
                     if (confirmBtn) confirmBtn.innerHTML = `<span>CONFIRM UPGRADE IN WALLET...</span>`;
                     const buyData = shineIface.encodeFunctionData("buyLevel", [progNum, contractLvl]);
                     const buyHash = await sendDirectWalletTx(activeProvider, userWallet, SHINE_CONTRACT_ADDRESS, buyData, bnbFeeValue, 650000);
-                    if (confirmBtn) confirmBtn.innerHTML = `<span>ACTIVATING...</span>`;
+                    showBcLoader("Activating", false, "Your transaction is in progress.", buyHash);
                     await waitForTxReceiptPublic(buyHash);
                     await markSlotAsActivated(prog, lvl, exactSlotCost, buyHash);
                 }
@@ -6346,6 +6511,11 @@ input:checked + .tw-slider:before {
                 await syncOnChainActiveLevels();
 
                 closeUpgrade();
+                const prevOverlay = document.getElementById('programPreview');
+                if (prevOverlay && prevOverlay.classList.contains('active')) {
+                    openPreview(activatedProgLabel);
+                }
+                showBcLoader("Upgraded", true, `Congratulations! <span style="color:#e2e8f0;font-weight:600;">Program ${activatedProgLabel} Level ${activatedLvlLabel}</span> activated`);
                 isUpgradingInProgress = false;
                 if (confirmBtn) {
                     confirmBtn.disabled = false;
@@ -6353,6 +6523,7 @@ input:checked + .tw-slider:before {
                     confirmBtn.innerText = "CONFIRM & ACTIVATE LEVEL";
                 }
             } catch (err) {
+                closeBcLoaderModal();
                 isUpgradingInProgress = false;
                 if (confirmBtn) {
                     confirmBtn.disabled = false;
@@ -6544,8 +6715,10 @@ input:checked + .tw-slider:before {
             }
             const pStat = document.getElementById("statPartnersVal");
             const p24 = document.getElementById("statPartners24h");
+            const p24Pill = document.getElementById("statPartners24hPill");
             const tStat = document.getElementById("statTeamVal");
             const t24 = document.getElementById("statTeam24h");
+            const t24Pill = document.getElementById("statTeam24hPill");
             const refDisp = document.getElementById("homeReferralProfitDisplay");
             const ref24 = document.getElementById("homeReferralProfit24h");
             const hUsdt24 = document.getElementById("homeProfitUsdt24h");
@@ -6554,9 +6727,35 @@ input:checked + .tw-slider:before {
             const hBnb = document.getElementById("homeProfitBnb");
             const hBnb24 = document.getElementById("homeProfitBnb24h");
             if (pStat) pStat.innerText = "0";
-            if (p24) p24.innerText = "";
+            if (p24) p24.innerText = "↑ 0";
+            if (p24Pill) p24Pill.classList.remove("active");
             if (tStat) tStat.innerText = "0";
-            if (t24) t24.innerText = "";
+            if (t24) t24.innerText = "↑ 0";
+            if (t24Pill) t24Pill.classList.remove("active");
+            const tpVal = document.getElementById("statTeamProfitVal");
+            const tp24 = document.getElementById("statTeamProfit24h");
+            const tpPill = document.getElementById("statTeamProfit24hPill");
+            const uncVal = document.getElementById("statUnconditionalVal");
+            const unc24 = document.getElementById("statUnconditional24h");
+            const uncPill = document.getElementById("statUnconditional24hPill");
+            const tr24 = document.getElementById("statTradingProfit24h");
+            const trPill = document.getElementById("statTradingProfit24hPill");
+            const st24 = document.getElementById("statSuccessTrades24h");
+            const stPill = document.getElementById("statSuccessTrades24hPill");
+            const realProfEl = document.getElementById("realProfitValue");
+            const succTradeEl = document.getElementById("successTradeCount");
+            if (tpVal) tpVal.innerText = "$0.00";
+            if (tp24) tp24.innerText = "↑ $0.00";
+            if (tpPill) tpPill.classList.remove("active");
+            if (uncVal) uncVal.innerText = "$0.00";
+            if (unc24) unc24.innerText = "↑ $0.00";
+            if (uncPill) uncPill.classList.remove("active");
+            if (realProfEl) realProfEl.innerText = "$0.00";
+            if (tr24) tr24.innerText = "↑ $0.00";
+            if (trPill) trPill.classList.remove("active");
+            if (succTradeEl) succTradeEl.innerText = "0";
+            if (st24) st24.innerText = "↑ 0";
+            if (stPill) stPill.classList.remove("active");
             if (refDisp) refDisp.innerText = "+0.00 USDT";
             if (ref24) ref24.innerText = "";
             if (hUsdt24) hUsdt24.innerText = "";
@@ -6809,7 +7008,8 @@ input:checked + .tw-slider:before {
             window.currentPreviewId = null;
             window.isViewingOtherProfile = false;
 
-            if (window.lastSyncedWallet !== wLower) {
+            const isNewWallet = window.lastSyncedWallet !== wLower;
+            if (isNewWallet) {
                 window.lastSyncedWallet = wLower;
                 resetDashboardAccountUI("LOADING", shortW);
             }
@@ -6818,6 +7018,7 @@ input:checked + .tw-slider:before {
                 sessionStorage.removeItem("shine_pending_registration");
                 window.currentLoggedInId = 1;
                 window.currentLoggedInUplineId = 0;
+                localStorage.setItem("shine_instant_uid_" + wLower, "1");
                 document.getElementById('headerIdDisplay').innerText = "ID 1";
                 const sideTitle = document.getElementById('sideMenuTitle');
                 if (sideTitle) sideTitle.innerText = "ID 1";
@@ -6847,17 +7048,11 @@ input:checked + .tw-slider:before {
                 localStorage.setItem("shine_active_slots_" + wLower, JSON.stringify(activeUserLevels));
                 renderDashboardSlots();
                 enterDashboardViewOnly();
-                applyUserBotMetricsToUI(wLower, 1, latestBackendState);
-                await loadSavedProfileFromDB();
-                if (mySyncSeq !== window.walletSyncSeq) return;
-                await loadUserNetworkStatsFromSupabase(wLower, 1);
-                if (mySyncSeq !== window.walletSyncSeq) return;
-                syncOnChainMembersToSupabase().then(() => {
-                    if (mySyncSeq === window.walletSyncSeq && !window.isViewingOtherProfile && userWallet && userWallet.toLowerCase() === wLower) {
-                        loadUserNetworkStatsFromSupabase(wLower, 1);
-                    }
-                });
-                await updateOnChainShineBalance(true);
+                await Promise.all([
+                    loadSavedProfileFromDB(),
+                    loadUserNetworkStatsFromSupabase(wLower, 1),
+                    updateOnChainShineBalance(true)
+                ]);
                 return;
             }
 
@@ -6865,8 +7060,45 @@ input:checked + .tw-slider:before {
             const hasRef = urlParams.get('ref');
             const wasPendingReg = sessionStorage.getItem("shine_pending_registration");
 
+            const cachedInstantId = Number(localStorage.getItem("shine_instant_uid_" + wLower) || 0);
+            const memHit = (window.allNetworkMembersCache || []).find(m => m.wallet_address === wLower);
+            const fastKnownId = cachedInstantId || (memHit ? Number(memHit.user_id) : 0);
+
+            const profilePromise = loadSavedProfileFromDB();
+            let fastStatsPromise = null;
+            if (fastKnownId > 0) {
+                window.currentLoggedInId = fastKnownId;
+                document.getElementById('headerIdDisplay').innerText = 'ID ' + fastKnownId;
+                const profIdEl = document.querySelector('.profile-id');
+                if (profIdEl) {
+                    profIdEl.innerHTML = 'ID ' + fastKnownId + ' <span id="userRank" style="margin-left:8px; background:linear-gradient(90deg, #FFD700, #FFA500); color:#000; padding:2px 8px; border-radius:10px; font-size:10px; font-weight:900;">GOLD STAR</span>';
+                }
+                const savedLocalSlots = localStorage.getItem("shine_active_slots_" + wLower);
+                if (savedLocalSlots) {
+                    try {
+                        activeUserLevels = JSON.parse(savedLocalSlots);
+                        renderDashboardSlots();
+                    } catch (e) {}
+                }
+                fastStatsPromise = loadUserNetworkStatsFromSupabase(wLower, fastKnownId);
+            } else {
+                fastStatsPromise = prefetchNetworkTablesFromSupabase().then(tables => {
+                    if (mySyncSeq !== window.walletSyncSeq) return;
+                    const found = (tables && tables.dbMembers || []).find(m => m.wallet_address && m.wallet_address.toLowerCase() === wLower);
+                    if (found && Number(found.user_id) > 0) {
+                        window.currentLoggedInId = Number(found.user_id);
+                        localStorage.setItem("shine_instant_uid_" + wLower, String(found.user_id));
+                        return loadUserNetworkStatsFromSupabase(wLower, Number(found.user_id));
+                    }
+                });
+            }
+
             try {
-                const bundle = await fetchForsageUnifiedBundle(userWallet, hasRef || "1");
+                const [bundle] = await Promise.all([
+                    fetchForsageUnifiedBundle(userWallet, hasRef || "1"),
+                    profilePromise,
+                    fastStatsPromise
+                ]);
                 if (mySyncSeq !== window.walletSyncSeq) return;
                 const userStruct = bundle.userStruct;
 
@@ -6879,8 +7111,14 @@ input:checked + .tw-slider:before {
                     const dateStr = joinTimestamp > 0 ? new Date(joinTimestamp).toLocaleDateString() : "Active";
 
                     window.currentLoggedInId = Number(uId);
+                    localStorage.setItem("shine_instant_uid_" + wLower, uId);
+
                     let resolvedUpId = 1;
-                    if (uplineAddr && uplineAddr !== ethers.constants.AddressZero) {
+                    const memList = window.allNetworkMembersCache || [];
+                    const upFound = uplineAddr ? memList.find(m => m.wallet_address === uplineAddr.toLowerCase()) : null;
+                    if (upFound && Number(upFound.user_id) > 0) {
+                        resolvedUpId = Number(upFound.user_id);
+                    } else if (uplineAddr && uplineAddr !== ethers.constants.AddressZero) {
                         try {
                             const shineIface = new ethers.utils.Interface(SHINE_ABI);
                             const upHex = await publicBscRpcCall("eth_call", [{ to: SHINE_CONTRACT_ADDRESS, data: shineIface.encodeFunctionData("users", [uplineAddr]) }, "latest"]);
@@ -6910,7 +7148,7 @@ input:checked + .tw-slider:before {
                     }
 
                     const pValEl = document.getElementById('statPartnersVal');
-                    if (pValEl) pValEl.innerText = partnersCount;
+                    if (pValEl && Number(partnersCount) > Number(pValEl.innerText || 0)) pValEl.innerText = partnersCount;
 
                     const expProf = document.getElementById('expandedProfile');
                     if (expProf) {
@@ -6926,20 +7164,12 @@ input:checked + .tw-slider:before {
                     }
 
                     enterDashboardViewOnly();
-                    await loadSavedProfileFromDB();
-                    if (mySyncSeq !== window.walletSyncSeq) return;
-                    await recordRegistrationToSupabase(userWallet, uplineAddr, "");
-                    await syncOnChainActiveLevels();
-                    if (mySyncSeq !== window.walletSyncSeq) return;
-                    applyUserBotMetricsToUI(wLower, Number(uId), latestBackendState);
-                    await loadUserNetworkStatsFromSupabase(wLower, Number(uId));
-                    if (mySyncSeq !== window.walletSyncSeq) return;
-                    syncOnChainMembersToSupabase().then(() => {
-                        if (mySyncSeq === window.walletSyncSeq && !window.isViewingOtherProfile && userWallet && userWallet.toLowerCase() === wLower) {
-                            loadUserNetworkStatsFromSupabase(wLower, Number(uId));
-                        }
-                    });
-                    await updateOnChainShineBalance(true);
+                    await Promise.all([
+                        loadUserNetworkStatsFromSupabase(wLower, Number(uId)),
+                        syncOnChainActiveLevels(),
+                        updateOnChainShineBalance(true),
+                        recordRegistrationToSupabase(userWallet, uplineAddr, "")
+                    ]);
                 } else {
                     activeUserLevels = {};
                     const shortAddr = userWallet.substring(0, 6) + '...' + userWallet.substring(userWallet.length - 4);
@@ -7193,15 +7423,17 @@ input:checked + .tw-slider:before {
                 applyUserBotMetricsToUI(ROOT_OWNER_ADDRESS.toLowerCase(), 1, latestBackendState);
                 loadUserNetworkStatsFromSupabase(ROOT_OWNER_ADDRESS.toLowerCase(), 1);
             }
-            syncOnChainMembersToSupabase().then(() => {
-                if (window.isViewingOtherProfile && window.currentPreviewWallet) {
-                    loadUserNetworkStatsFromSupabase(window.currentPreviewWallet.toLowerCase(), Number(window.currentPreviewId || 1));
-                } else if (userWallet && window.currentLoggedInId) {
-                    loadUserNetworkStatsFromSupabase(userWallet.toLowerCase(), Number(window.currentLoggedInId));
-                } else if (!userWallet && !hasSavedWallet && !hasRefInUrl && !window.isViewingOtherProfile) {
-                    loadUserNetworkStatsFromSupabase(ROOT_OWNER_ADDRESS.toLowerCase(), 1);
-                }
-            });
+            setTimeout(() => {
+                syncOnChainMembersToSupabase().then(() => {
+                    if (window.isViewingOtherProfile && window.currentPreviewWallet) {
+                        loadUserNetworkStatsFromSupabase(window.currentPreviewWallet.toLowerCase(), Number(window.currentPreviewId || 1));
+                    } else if (userWallet && window.currentLoggedInId) {
+                        loadUserNetworkStatsFromSupabase(userWallet.toLowerCase(), Number(window.currentLoggedInId));
+                    } else if (!userWallet && !hasSavedWallet && !hasRefInUrl && !window.isViewingOtherProfile) {
+                        loadUserNetworkStatsFromSupabase(ROOT_OWNER_ADDRESS.toLowerCase(), 1);
+                    }
+                });
+            }, 8000);
         }
 
         const progThemeColors = {
@@ -8015,6 +8247,37 @@ function compressImage(file, callback) {
     };
 }
 
+async function persistProfileToSupabase(effectiveWallet, nicknameVal, avatarVal) {
+    const client = getSupabaseClient();
+    if (!client || !effectiveWallet || effectiveWallet === "0xdefaultuser") return;
+    try {
+        const payload = {
+            wallet_address: effectiveWallet,
+            nickname: nicknameVal || "User",
+            avatar_url: avatarVal || "",
+            updated_at: new Date().toISOString()
+        };
+        const { error } = await client.from('user_profiles').upsert(payload, { onConflict: 'wallet_address' });
+        if (error) {
+            const { data: existing } = await client.from('user_profiles').select('wallet_address').ilike('wallet_address', effectiveWallet).limit(1).maybeSingle();
+            if (existing) {
+                await client.from('user_profiles').update({
+                    nickname: payload.nickname,
+                    avatar_url: payload.avatar_url,
+                    updated_at: payload.updated_at
+                }).eq('wallet_address', existing.wallet_address);
+            } else {
+                await client.from('user_profiles').insert(payload);
+            }
+        }
+        window.previewProfileCache = window.previewProfileCache || {};
+        window.previewProfileCache[effectiveWallet] = {
+            nickname: payload.nickname,
+            avatar_url: payload.avatar_url
+        };
+    } catch (err) {}
+}
+
 function uploadAvatar(event) {
     const file = event.target.files[0];
     if (!file) return;
@@ -8030,54 +8293,36 @@ function uploadAvatar(event) {
         }
         const effectiveWallet = (userWallet || localStorage.getItem("shine_saved_wallet_addr") || "0xDefaultUser").toLowerCase();
         localStorage.setItem("shine_profile_avatar_" + effectiveWallet, compressedData);
-        const curName = document.getElementById('displayNickname') ? document.getElementById('displayNickname').innerText : "User";
+        const inpVal = document.getElementById('inputNickname') ? document.getElementById('inputNickname').value.trim() : "";
+        const curName = inpVal || (document.getElementById('displayNickname') ? document.getElementById('displayNickname').innerText.trim() : "User");
 
-        if (window.supabase) {
-            try {
-                const client = window.supabase.createClient(MAIN_SUPABASE_URL, MAIN_SUPABASE_KEY);
-                await client.from('user_profiles').upsert({
-                    wallet_address: effectiveWallet,
-                    nickname: curName,
-                    avatar_url: compressedData,
-                    updated_at: new Date().toISOString()
-                });
-            } catch (err) {}
-        }
+        await persistProfileToSupabase(effectiveWallet, curName, compressedData);
     });
 }
 
 async function saveProfile() {
-    const newName = document.getElementById('inputNickname').value.trim();
+    const inpVal = document.getElementById('inputNickname') ? document.getElementById('inputNickname').value.trim() : "";
     const effectiveWallet = (userWallet || localStorage.getItem("shine_saved_wallet_addr") || "0xDefaultUser").toLowerCase();
+    const curShownName = document.getElementById('displayNickname') ? document.getElementById('displayNickname').innerText.trim() : "User";
+    const finalName = inpVal || localStorage.getItem("shine_profile_nickname_" + effectiveWallet) || curShownName || "User";
     const finalAvatar = window.currentCompressedAvatar || localStorage.getItem("shine_profile_avatar_" + effectiveWallet) || "";
 
-    if (newName) {
-        document.getElementById('displayNickname').innerText = newName;
-        const postName = document.getElementById('posterUserName');
-        if (postName) postName.innerText = newName;
-        localStorage.setItem("shine_profile_nickname_" + effectiveWallet, newName);
+    document.getElementById('displayNickname').innerText = finalName;
+    const postName = document.getElementById('posterUserName');
+    if (postName) postName.innerText = finalName;
+    localStorage.setItem("shine_profile_nickname_" + effectiveWallet, finalName);
+
+    if (finalAvatar) {
+        localStorage.setItem("shine_profile_avatar_" + effectiveWallet, finalAvatar);
     }
 
-    if (window.currentCompressedAvatar) {
-        localStorage.setItem("shine_profile_avatar_" + effectiveWallet, window.currentCompressedAvatar);
-    }
-
-    if (window.supabase) {
-        try {
-            const client = window.supabase.createClient(MAIN_SUPABASE_URL, MAIN_SUPABASE_KEY);
-            await client.from('user_profiles').upsert({
-                wallet_address: effectiveWallet,
-                nickname: newName || (document.getElementById('displayNickname') ? document.getElementById('displayNickname').innerText : "User"),
-                avatar_url: finalAvatar,
-                updated_at: new Date().toISOString()
-            });
-        } catch (err) {}
-    }
+    await persistProfileToSupabase(effectiveWallet, finalName, finalAvatar);
 
     toggleProfileEdit();
 }
 
 async function loadSavedProfileFromDB() {
+    if (window.isViewingOtherProfile) return;
     const effectiveWallet = (userWallet || localStorage.getItem("shine_saved_wallet_addr") || "").toLowerCase();
     const defaultAvatar = "https://i.imgur.com/O4u35tA.jpeg";
     if (!effectiveWallet) return;
@@ -8098,18 +8343,20 @@ async function loadSavedProfileFromDB() {
     const postAvatarInit = document.getElementById('posterUserAvatar');
     if (postAvatarInit) postAvatarInit.style.backgroundImage = `url('${savedAvatar}')`;
 
-    if (window.supabase) {
+    const client = getSupabaseClient();
+    if (client) {
         try {
-            const client = window.supabase.createClient(MAIN_SUPABASE_URL, MAIN_SUPABASE_KEY);
-            const { data, error } = await client.from('user_profiles').select('*').eq('wallet_address', effectiveWallet).single();
+            const { data, error } = await client.from('user_profiles').select('*').ilike('wallet_address', effectiveWallet).limit(1).maybeSingle();
             if (!error && data) {
-                if ((userWallet || "").toLowerCase() !== effectiveWallet) return;
+                if (window.isViewingOtherProfile) return;
+                const currentActive = (userWallet || localStorage.getItem("shine_saved_wallet_addr") || "").toLowerCase();
+                if (currentActive && currentActive !== effectiveWallet) return;
                 if (data.nickname) {
                     document.getElementById('displayNickname').innerText = data.nickname;
                     const postName = document.getElementById('posterUserName');
                     if (postName) postName.innerText = data.nickname;
                     const inp = document.getElementById('inputNickname');
-                    if (inp) inp.value = data.nickname;
+                    if (inp) inp.value = data.nickname === "User" ? "" : data.nickname;
                     localStorage.setItem("shine_profile_nickname_" + effectiveWallet, data.nickname);
                 }
                 if (data.avatar_url) {
@@ -8121,6 +8368,11 @@ async function loadSavedProfileFromDB() {
                     if (postAvatar) postAvatar.style.backgroundImage = `url('${data.avatar_url}')`;
                     localStorage.setItem("shine_profile_avatar_" + effectiveWallet, data.avatar_url);
                 }
+                window.previewProfileCache = window.previewProfileCache || {};
+                window.previewProfileCache[effectiveWallet] = {
+                    nickname: data.nickname || savedName,
+                    avatar_url: data.avatar_url || savedAvatar
+                };
             }
         } catch (err) {}
     }
@@ -8448,6 +8700,7 @@ document.addEventListener('keydown', function(e) {
     }
 });
 window.addEventListener('DOMContentLoaded', () => {
+    prefetchNetworkTablesFromSupabase();
     const urlParams = new URLSearchParams(window.location.search);
     const hasRef = urlParams.get('ref');
     const wasPendingReg = sessionStorage.getItem("shine_pending_registration");
@@ -8461,6 +8714,7 @@ window.addEventListener('DOMContentLoaded', () => {
                     userWallet = accounts[0];
                     isTradeWalletConnected = true;
                     connectedWalletType = (window.trustwallet || (window.ethereum && window.ethereum.isTrust)) ? "TRUST" : "METAMASK";
+                    localStorage.setItem("shine_saved_wallet_addr", userWallet);
                     await setConnectedWalletUI(userWallet);
                 } else {
                     openWalletSelection();
@@ -8502,36 +8756,43 @@ window.addEventListener('DOMContentLoaded', () => {
     if (window.ethereum && window.ethereum !== activeProvider) {
         bindProviderListeners(window.ethereum);
     }
-    const cachedAddr = localStorage.getItem("shine_saved_wallet_addr");
-    if (cachedAddr && !hasRef && !wasPendingReg) {
+
+    const attemptCachedWalletReconnect = async (retryLeft) => {
+        const cachedAddr = localStorage.getItem("shine_saved_wallet_addr");
+        if (!cachedAddr || hasRef || wasPendingReg) return;
         if (localStorage.getItem("shine_saved_wallet_type") === "PHANTOM") {
             userWallet = cachedAddr;
             isTradeWalletConnected = true;
             connectedWalletType = "PHANTOM";
             setConnectedWalletUI(userWallet);
-        } else if (activeProvider && activeProvider.request) {
-            activeProvider.request({ method: 'eth_accounts' }).then(accs => {
+            return;
+        }
+        const prov = getSafeRegistrationProvider();
+        if (prov && prov.request) {
+            bindProviderListeners(prov);
+            try {
+                const accs = await prov.request({ method: 'eth_accounts' });
                 if (accs && accs.length > 0) {
                     userWallet = accs[0];
                     isTradeWalletConnected = true;
-                    connectedWalletType = localStorage.getItem("shine_saved_wallet_type") || "TRUST";
+                    connectedWalletType = localStorage.getItem("shine_saved_wallet_type") || ((prov.isTrust || prov.isTrustWallet) ? "TRUST" : "METAMASK");
                     localStorage.setItem("shine_saved_wallet_addr", userWallet);
                     setConnectedWalletUI(userWallet);
-                } else {
-                    localStorage.removeItem("shine_saved_wallet_addr");
-                    applyUserBotMetricsToUI(ROOT_OWNER_ADDRESS.toLowerCase(), 1, latestBackendState);
-                    loadUserNetworkStatsFromSupabase(ROOT_OWNER_ADDRESS.toLowerCase(), 1);
+                    return;
                 }
-            }).catch(() => {
-                localStorage.removeItem("shine_saved_wallet_addr");
-                applyUserBotMetricsToUI(ROOT_OWNER_ADDRESS.toLowerCase(), 1, latestBackendState);
-                loadUserNetworkStatsFromSupabase(ROOT_OWNER_ADDRESS.toLowerCase(), 1);
-            });
+            } catch (e) {}
+        }
+        if (retryLeft > 0) {
+            setTimeout(() => attemptCachedWalletReconnect(retryLeft - 1), 600);
         } else {
-            localStorage.removeItem("shine_saved_wallet_addr");
             applyUserBotMetricsToUI(ROOT_OWNER_ADDRESS.toLowerCase(), 1, latestBackendState);
             loadUserNetworkStatsFromSupabase(ROOT_OWNER_ADDRESS.toLowerCase(), 1);
         }
+    };
+
+    const cachedAddr = localStorage.getItem("shine_saved_wallet_addr");
+    if (cachedAddr && !hasRef && !wasPendingReg) {
+        attemptCachedWalletReconnect(2);
     }
     try {
         latestBackendState = null;
@@ -8800,31 +9061,61 @@ window.addEventListener('DOMContentLoaded', () => {
                 { http: "https://shine-crypto-bot.onrender.com", ws: "wss://shine-crypto-bot.onrender.com/ws" }
             ],
             currentIndex: 0,
+            primaryFailures: 0,
+            backupFailures: 0,
             getActiveHttp() {
                 return this.servers[this.currentIndex].http;
             },
             getActiveWs() {
                 return this.servers[this.currentIndex].ws;
             },
-            rotate() {
-                this.currentIndex = (this.currentIndex + 1) % this.servers.length;
+            switchToBackup() {
+                if (this.currentIndex === 1) return false;
+                this.currentIndex = 1;
+                this.backupFailures = 0;
+                if (botSocket) {
+                    botSocket._manualClose = true;
+                    try { botSocket.close(); } catch (e) {}
+                    botSocket = null;
+                }
+                return true;
             }
         };
 
         async function fetchWithFallback(endpoint, options = {}) {
-            let attempts = 0;
-            while (attempts < BACKEND_CONFIG.servers.length) {
-                const targetUrl = BACKEND_CONFIG.getActiveHttp() + endpoint;
+            const trySingleServer = async (idx, timeoutMs) => {
+                const targetUrl = BACKEND_CONFIG.servers[idx].http + endpoint;
+                const controller = new AbortController();
+                const timer = setTimeout(() => controller.abort(), timeoutMs);
                 try {
-                    const controller = new AbortController();
-                    const timer = setTimeout(() => controller.abort(), 6000);
                     const res = await fetch(targetUrl, { ...options, signal: controller.signal });
                     clearTimeout(timer);
-                    if (res && res.ok) return res;
+                    return res;
                 } catch (e) {
-                    BACKEND_CONFIG.rotate();
+                    clearTimeout(timer);
+                    return null;
                 }
-                attempts++;
+            };
+
+            const activeIdx = BACKEND_CONFIG.currentIndex;
+            const res = await trySingleServer(activeIdx, 10000);
+            if (res && res.ok) {
+                if (activeIdx === 0) BACKEND_CONFIG.primaryFailures = 0;
+                else BACKEND_CONFIG.backupFailures = 0;
+                return res;
+            }
+
+            if (activeIdx === 0) {
+                const isQuotaOrDown = res && (res.status === 402 || res.status === 429 || res.status === 502 || res.status === 503 || res.status === 504);
+                BACKEND_CONFIG.primaryFailures += isQuotaOrDown ? 3 : 1;
+                if (BACKEND_CONFIG.primaryFailures >= 3) {
+                    BACKEND_CONFIG.switchToBackup();
+                    const backupRes = await trySingleServer(1, 10000);
+                    if (backupRes && backupRes.ok) {
+                        connectBotWebSocket();
+                        return backupRes;
+                    }
+                }
             }
             return null;
         }
@@ -8836,13 +9127,17 @@ window.addEventListener('DOMContentLoaded', () => {
             if (window.priceTicker) clearInterval(window.priceTicker);
             if (!window.renderWakeupInterval) {
                 window.renderWakeupInterval = setInterval(() => {
-                    fetchWithFallback("/status");
+                    if (!botSocket || botSocket.readyState !== WebSocket.OPEN) {
+                        verifyActualServerHealth();
+                    }
                 }, 120000);
             }
         }
 
         function initBotConnection() {
-            fetchInitialStatus();
+            if (!latestBackendState) {
+                fetchInitialStatus();
+            }
             connectBotWebSocket();
         }
 
@@ -8851,7 +9146,9 @@ window.addEventListener('DOMContentLoaded', () => {
                 const res = await fetchWithFallback("/status");
                 if (res) {
                     const data = await res.json();
-                    handleBotData(data);
+                    if (!latestBackendState) {
+                        handleBotData(data);
+                    }
                 }
             } catch (e) {}
         }
@@ -8897,13 +9194,18 @@ window.addEventListener('DOMContentLoaded', () => {
         function connectBotWebSocket() {
             if (botSocket && (botSocket.readyState === WebSocket.OPEN || botSocket.readyState === WebSocket.CONNECTING)) return;
             const targetWsUrl = BACKEND_CONFIG.getActiveWs();
-            botSocket = new WebSocket(targetWsUrl);
+            const ws = new WebSocket(targetWsUrl);
+            let receivedAnyMessage = false;
+            botSocket = ws;
 
-            botSocket.onopen = () => {
+            ws.onopen = () => {
+                if (BACKEND_CONFIG.currentIndex === 0) BACKEND_CONFIG.primaryFailures = 0;
+                else BACKEND_CONFIG.backupFailures = 0;
                 setBackendStatusUI(true);
             };
 
-            botSocket.onmessage = (event) => {
+            ws.onmessage = (event) => {
+                receivedAnyMessage = true;
                 setBackendStatusUI(true);
                 try {
                     const data = JSON.parse(event.data);
@@ -8911,15 +9213,29 @@ window.addEventListener('DOMContentLoaded', () => {
                 } catch (e) {}
             };
 
-            botSocket.onclose = () => {
-                verifyActualServerHealth();
-                BACKEND_CONFIG.rotate();
-                setTimeout(connectBotWebSocket, 1500);
+            ws.onclose = () => {
+                if (ws._manualClose) return;
+                if (botSocket === ws) botSocket = null;
+                if (!receivedAnyMessage && BACKEND_CONFIG.currentIndex === 0) {
+                    BACKEND_CONFIG.primaryFailures++;
+                }
+                setTimeout(async () => {
+                    const ok = await verifyActualServerHealth();
+                    if (ok && (!botSocket || botSocket.readyState === WebSocket.CLOSED)) {
+                        const res = await fetchWithFallback("/status");
+                        if (res) {
+                            try {
+                                const d = await res.json();
+                                handleBotData(d);
+                            } catch (e) {}
+                        }
+                    }
+                    connectBotWebSocket();
+                }, 2500);
             };
 
-            botSocket.onerror = () => {
-                verifyActualServerHealth();
-                try { botSocket.close(); } catch(e){}
+            ws.onerror = () => {
+                try { ws.close(); } catch (e) {}
             };
         }
 
@@ -9105,7 +9421,13 @@ window.addEventListener('DOMContentLoaded', () => {
             });
             let totalCost = 0;
             Object.values(uniqueWalletSlot).forEach(v => { totalCost += Number(v || 0); });
-            return totalCost * 0.80;
+            const computedPool = totalCost * 0.80;
+            if (Array.isArray(window.allNetworkSlotsCache) && window.allNetworkSlotsCache.length > 0 && computedPool > 0) {
+                localStorage.setItem("shine_cached_pool_cap", computedPool.toString());
+                return computedPool;
+            }
+            const cachedPool = parseFloat(localStorage.getItem("shine_cached_pool_cap") || "0") || 0;
+            return Math.max(computedPool, cachedPool);
         }
 
         function computeUserBotMetrics(targetWallet, targetId, data) {
@@ -9128,6 +9450,7 @@ window.addEventListener('DOMContentLoaded', () => {
                     airdropTradingShare: 0,
                     profit24h: 0,
                     wins: 0,
+                    wins24h: 0,
                     losses: 0,
                     userSpotTrades: [],
                     isDemoOwner: false,
@@ -9146,13 +9469,14 @@ window.addEventListener('DOMContentLoaded', () => {
                 const scUnreal = parseFloat(sc.pnl || 0);
                 const scPct = parseFloat(sc.pnlPct || 0);
                 const scGross = parseFloat(sc.realizedPnl || 0);
-                const scReal = scGross;
                 const nowMsSc = Date.now();
                 const oneDayMsSc = 24 * 60 * 60 * 1000;
                 let scWins = 0;
+                let scWins24h = 0;
                 let scLosses = 0;
                 let sc24h = 0;
                 const scTrades = [];
+                const scExitEntries = [];
                 (Array.isArray(sc.tradesHistory) ? sc.tradesHistory : []).forEach(t => {
                     const qty = parseFloat(t.solAmount || 0);
                     if (qty <= 0) return;
@@ -9164,14 +9488,66 @@ window.addEventListener('DOMContentLoaded', () => {
                         if (pScaled >= 0) scWins++;
                         else scLosses++;
                         const ts = t.timestamp || t.created_at;
-                        if (ts) {
-                            const tMs = new Date(ts).getTime();
-                            if (!isNaN(tMs) && (nowMsSc - tMs) <= oneDayMsSc) sc24h += pScaled;
+                        const tMs = ts ? new Date(ts).getTime() : 0;
+                        if (tMs && !isNaN(tMs) && (nowMsSc - tMs) <= oneDayMsSc) {
+                            sc24h += pScaled;
+                            if (pScaled >= 0) scWins24h++;
                         }
+                        const scOrdId = String(t.orderId || t.order_id || "");
+                        const scUid = scOrdId || (String(ts || "") + "_" + String(t.price || "") + "_" + qty.toFixed(4));
+                        scExitEntries.push({ id: scUid, profit: pScaled, isWin: pScaled >= 0 });
                     }
                     scTrades.push(Object.assign({}, t, { profit: pScaled, realizedPnl: pScaled }));
                 });
-                scWins = Math.max(scWins, parseInt(sc.totalTrades || 0));
+                const scBaseWins = Math.max(scWins, parseInt(sc.totalTrades || 0));
+                const scLedgerKey = "shine_bot_ledger_owner_" + wLower;
+                let scLedger = { totalWins: 0, totalLosses: 0, totalProfit: 0, seenIds: [], lastBackendReal: 0, initialized: false };
+                try {
+                    const rawScL = localStorage.getItem(scLedgerKey);
+                    if (rawScL) scLedger = JSON.parse(rawScL) || scLedger;
+                } catch (e) {}
+                let scChanged = false;
+                if (!Array.isArray(scLedger.seenIds)) scLedger.seenIds = [];
+                const scSeen = new Set(scLedger.seenIds);
+                if (!scLedger.initialized) {
+                    scLedger.initialized = true;
+                    scLedger.totalWins = scBaseWins;
+                    scLedger.totalLosses = scLosses;
+                    scLedger.totalProfit = Math.max(0, scGross);
+                    scLedger.lastBackendReal = scGross;
+                    scExitEntries.forEach(x => { if (x.id) scSeen.add(x.id); });
+                    scChanged = true;
+                } else {
+                    let addedSc = 0;
+                    scExitEntries.forEach(x => {
+                        if (x.id && !scSeen.has(x.id)) {
+                            scSeen.add(x.id);
+                            if (x.isWin) scLedger.totalWins = Number(scLedger.totalWins || 0) + 1;
+                            else scLedger.totalLosses = Number(scLedger.totalLosses || 0) + 1;
+                            scLedger.totalProfit = Number(scLedger.totalProfit || 0) + x.profit;
+                            addedSc += x.profit;
+                            scChanged = true;
+                        }
+                    });
+                    if (scGross > Number(scLedger.lastBackendReal || 0)) {
+                        const dSc = scGross - Number(scLedger.lastBackendReal || 0);
+                        if (dSc > addedSc + 0.0001) {
+                            scLedger.totalProfit = Number(scLedger.totalProfit || 0) + (dSc - addedSc);
+                            scChanged = true;
+                        }
+                    }
+                    if (scGross !== Number(scLedger.lastBackendReal || 0)) {
+                        scLedger.lastBackendReal = scGross;
+                        scChanged = true;
+                    }
+                }
+                if (scChanged) {
+                    scLedger.seenIds = Array.from(scSeen).slice(-500);
+                    try { localStorage.setItem(scLedgerKey, JSON.stringify(scLedger)); } catch (e) {}
+                }
+                const finalScWins = Math.max(scBaseWins, Number(scLedger.totalWins || 0));
+                const finalScLosses = Math.max(scLosses, Number(scLedger.totalLosses || 0));
+                const finalScReal = Math.max(scGross, Number(scLedger.totalProfit || 0));
                 return {
                     userCapital: scCap,
                     investedAmount: scInv,
@@ -9179,16 +9555,17 @@ window.addEventListener('DOMContentLoaded', () => {
                     solBalance: scSol,
                     unrealizedPnl: scUnreal,
                     unrealizedPct: scPct,
-                    grossTradingProfit: scGross,
-                    realizedProfit: scReal,
+                    grossTradingProfit: finalScReal,
+                    realizedProfit: finalScReal,
                     teamTradingProfit: 0,
                     teamTradingProfit24h: 0,
                     ownerTradingShare: 0,
-                    charityTradingShare: scGross * 0.05,
-                    airdropTradingShare: scGross * 0.05,
+                    charityTradingShare: finalScReal * 0.05,
+                    airdropTradingShare: finalScReal * 0.05,
                     profit24h: sc24h,
-                    wins: scWins,
-                    losses: scLosses,
+                    wins: finalScWins,
+                    wins24h: scWins24h,
+                    losses: finalScLosses,
                     userSpotTrades: scTrades,
                     isDemoOwner: true,
                     isShowcaseActive: true
@@ -9218,13 +9595,15 @@ window.addEventListener('DOMContentLoaded', () => {
             const rawTrades = Array.isArray(safeData.tradesHistory) ? safeData.tradesHistory : [];
             const nowMs = Date.now();
             const oneDayMs = 24 * 60 * 60 * 1000;
-            let wins = 0;
-            let losses = 0;
+            let wins24h = 0;
+            let totalHistoryWins = 0;
+            let totalHistoryLosses = 0;
             let summedRealized = 0;
             let profit24h = 0;
             let rawPool24h = 0;
 
             const userSpotTrades = [];
+            const newExitEntries = [];
             if (userCapital > 0) {
                 rawTrades.forEach(t => {
                     const ordId = String(t.orderId || t.order_id || "").toUpperCase();
@@ -9242,17 +9621,18 @@ window.addEventListener('DOMContentLoaded', () => {
                     const scaledQty = scaleRatio > 0 ? (qty * scaleRatio) : qty;
 
                     if (isSell) {
-                        if (scaledUserP >= 0) wins++;
-                        else losses++;
+                        if (scaledUserP >= 0) totalHistoryWins++;
+                        else totalHistoryLosses++;
                         summedRealized += scaledUserP;
                         const ts = t.timestamp || t.created_at;
-                        if (ts) {
-                            const tMs = new Date(ts).getTime();
-                            if (!isNaN(tMs) && (nowMs - tMs) <= oneDayMs) {
-                                profit24h += scaledUserP;
-                                rawPool24h += rawP;
-                            }
+                        const tMs = ts ? new Date(ts).getTime() : 0;
+                        if (tMs && !isNaN(tMs) && (nowMs - tMs) <= oneDayMs) {
+                            profit24h += scaledUserP;
+                            rawPool24h += rawP;
+                            if (scaledUserP >= 0) wins24h++;
                         }
+                        const uniqueExitId = ordId || (String(ts || "") + "_" + String(t.price || "") + "_" + qty.toFixed(4));
+                        newExitEntries.push({ id: uniqueExitId, profit: scaledUserP, isWin: scaledUserP >= 0 });
                     }
 
                     userSpotTrades.push(Object.assign({}, t, {
@@ -9264,10 +9644,77 @@ window.addEventListener('DOMContentLoaded', () => {
             }
 
             const backendRealized = parseFloat(safeData.realizedPnl || 0);
-            const grossTradingProfit = scaleRatio > 0
-                ? (backendRealized !== 0 ? (backendRealized * scaleRatio) : (summedRealized / 0.80))
-                : 0;
-            const realizedProfit = grossTradingProfit * 0.80;
+            const scaledBackendRealized = (scaleRatio > 0 && backendRealized !== 0) ? (backendRealized * scaleRatio) : 0;
+            const currentNetFromBackend = scaledBackendRealized !== 0 ? (scaledBackendRealized * 0.80) : summedRealized;
+
+            let persistentWins = totalHistoryWins;
+            let persistentLosses = totalHistoryLosses;
+            let persistentNetProfit = currentNetFromBackend;
+
+            if (wLower && userCapital > 0) {
+                const ledgerKey = "shine_bot_ledger_v1_" + wLower;
+                let ledger = { totalWins: 0, totalLosses: 0, totalProfit: 0, seenIds: [], lastBackendNet: 0, initialized: false };
+                try {
+                    const savedRaw = localStorage.getItem(ledgerKey);
+                    if (savedRaw) {
+                        const parsed = JSON.parse(savedRaw);
+                        if (parsed && typeof parsed === "object") ledger = parsed;
+                    }
+                } catch (e) {}
+
+                let changed = false;
+                if (!Array.isArray(ledger.seenIds)) ledger.seenIds = [];
+                const seenSet = new Set(ledger.seenIds);
+
+                if (!ledger.initialized) {
+                    ledger.initialized = true;
+                    ledger.totalWins = totalHistoryWins;
+                    ledger.totalLosses = totalHistoryLosses;
+                    ledger.totalProfit = Math.max(0, currentNetFromBackend);
+                    ledger.lastBackendNet = currentNetFromBackend;
+                    newExitEntries.forEach(item => {
+                        if (item.id) seenSet.add(item.id);
+                    });
+                    changed = true;
+                } else {
+                    let addedFromTrades = 0;
+                    newExitEntries.forEach(item => {
+                        if (item.id && !seenSet.has(item.id)) {
+                            seenSet.add(item.id);
+                            if (item.isWin) ledger.totalWins = Number(ledger.totalWins || 0) + 1;
+                            else ledger.totalLosses = Number(ledger.totalLosses || 0) + 1;
+                            ledger.totalProfit = Number(ledger.totalProfit || 0) + item.profit;
+                            addedFromTrades += item.profit;
+                            changed = true;
+                        }
+                    });
+                    if (currentNetFromBackend > Number(ledger.lastBackendNet || 0)) {
+                        const backendDelta = currentNetFromBackend - Number(ledger.lastBackendNet || 0);
+                        if (backendDelta > addedFromTrades + 0.0001) {
+                            ledger.totalProfit = Number(ledger.totalProfit || 0) + (backendDelta - addedFromTrades);
+                            changed = true;
+                        }
+                    }
+                    if (currentNetFromBackend !== Number(ledger.lastBackendNet || 0)) {
+                        ledger.lastBackendNet = currentNetFromBackend;
+                        changed = true;
+                    }
+                }
+
+                if (changed) {
+                    ledger.seenIds = Array.from(seenSet).slice(-500);
+                    try { localStorage.setItem(ledgerKey, JSON.stringify(ledger)); } catch (e) {}
+                }
+
+                persistentWins = Math.max(totalHistoryWins, Number(ledger.totalWins || 0));
+                persistentLosses = Math.max(totalHistoryLosses, Number(ledger.totalLosses || 0));
+                persistentNetProfit = Math.max(currentNetFromBackend, Number(ledger.totalProfit || 0));
+            }
+
+            const realizedProfit = persistentNetProfit;
+            const grossTradingProfit = realizedProfit / 0.80;
+            const wins = persistentWins;
+            const losses = persistentLosses;
 
             const allMembersList = [].concat(window.allNetworkMembersCache || []).concat(window.onChainMembersCache || []);
             const seenDirectWallets = new Set();
@@ -9318,6 +9765,7 @@ window.addEventListener('DOMContentLoaded', () => {
                 airdropTradingShare: airdropTradingShare,
                 profit24h: profit24h,
                 wins: wins,
+                wins24h: wins24h,
                 losses: losses,
                 userSpotTrades: userSpotTrades,
                 isDemoOwner: isDemoOwner,
@@ -9379,7 +9827,44 @@ window.addEventListener('DOMContentLoaded', () => {
             const trading24h = Number(metrics.profit24h || 0);
             const team24h = Number(metrics.teamTradingProfit24h || 0);
             const refProfit24h = Number(window.userReferralProfit24h || 0);
+            const wins24hCount = Number(metrics.wins24h || 0);
             const activeDiv24h = getActiveUsers24hProfit(wLower, activeDivBonus);
+
+            const statTeamProfEl = document.getElementById("statTeamProfitVal");
+            const statTeamProf24El = document.getElementById("statTeamProfit24h");
+            const statTeamProfPillEl = document.getElementById("statTeamProfit24hPill");
+            if (statTeamProfEl) statTeamProfEl.innerText = "$" + metrics.teamTradingProfit.toFixed(2);
+            if (statTeamProf24El) statTeamProf24El.innerText = team24h > 0 ? "↑ $" + team24h.toFixed(2) : "↑ $0.00";
+            if (statTeamProfPillEl) {
+                if (team24h > 0) statTeamProfPillEl.classList.add("active");
+                else statTeamProfPillEl.classList.remove("active");
+            }
+
+            const statUncEl = document.getElementById("statUnconditionalVal");
+            const statUnc24El = document.getElementById("statUnconditional24h");
+            const statUncPillEl = document.getElementById("statUnconditional24hPill");
+            if (statUncEl) statUncEl.innerText = "$" + refProfit.toFixed(2);
+            if (statUnc24El) statUnc24El.innerText = refProfit24h > 0 ? "↑ $" + refProfit24h.toFixed(2) : "↑ $0.00";
+            if (statUncPillEl) {
+                if (refProfit24h > 0) statUncPillEl.classList.add("active");
+                else statUncPillEl.classList.remove("active");
+            }
+
+            const statTr24El = document.getElementById("statTradingProfit24h");
+            const statTrPillEl = document.getElementById("statTradingProfit24hPill");
+            if (statTr24El) statTr24El.innerText = trading24h > 0 ? "↑ $" + trading24h.toFixed(2) : "↑ $0.00";
+            if (statTrPillEl) {
+                if (trading24h > 0) statTrPillEl.classList.add("active");
+                else statTrPillEl.classList.remove("active");
+            }
+
+            const statSucc24El = document.getElementById("statSuccessTrades24h");
+            const statSuccPillEl = document.getElementById("statSuccessTrades24hPill");
+            if (statSucc24El) statSucc24El.innerText = wins24hCount > 0 ? "↑ " + wins24hCount : "↑ 0";
+            if (statSuccPillEl) {
+                if (wins24hCount > 0) statSuccPillEl.classList.add("active");
+                else statSuccPillEl.classList.remove("active");
+            }
 
             const rTrade24El = document.getElementById("ruleTradingProfit24h");
             if (rTrade24El) rTrade24El.innerText = trading24h > 0 ? "+" + trading24h.toFixed(2) : "";
@@ -15035,6 +15520,47 @@ const COSMETICS_PRODUCTS = [
 const MAIN_SUPABASE_URL = "https://awlaziaxapoixbhiqcpq.supabase.co";
 const MAIN_SUPABASE_KEY = "sb_publishable_PgY6nJ0OeM4OIoJS3GVG8A_MZb--nVp";
 
+function getSupabaseClient() {
+    if (!window.supabase) return null;
+    if (!window.shineSupabaseClient) {
+        window.shineSupabaseClient = window.supabase.createClient(MAIN_SUPABASE_URL, MAIN_SUPABASE_KEY);
+    }
+    return window.shineSupabaseClient;
+}
+
+function prefetchNetworkTablesFromSupabase(forceRefresh = false) {
+    const client = getSupabaseClient();
+    if (!client) return Promise.resolve({ dbMembers: [], dbSlots: [], dbRewards: [] });
+    const now = Date.now();
+    if (!forceRefresh && window.prefetchedSupabasePromise && window.prefetchedSupabaseAt && (now - window.prefetchedSupabaseAt < 10000)) {
+        return window.prefetchedSupabasePromise;
+    }
+    window.prefetchedSupabaseAt = now;
+    window.prefetchedSupabasePromise = Promise.all([
+        client.from('shine_members').select('*').order('user_id', { ascending: true }),
+        client.from('user_activated_slots').select('*'),
+        client.from('shine_referral_rewards').select('*').order('created_at', { ascending: false }),
+        client.from('user_profiles').select('wallet_address, nickname, avatar_url')
+    ]).then(([membersRes, slotsRes, rewardsRes, profRes]) => {
+        const profMap = {};
+        const profRows = (profRes && profRes.data) ? profRes.data : [];
+        window.previewProfileCache = window.previewProfileCache || {};
+        profRows.forEach(p => {
+            if (p && p.wallet_address) {
+                const wL = p.wallet_address.toLowerCase();
+                profMap[wL] = { nickname: p.nickname || "User", avatar_url: p.avatar_url || "" };
+                window.previewProfileCache[wL] = profMap[wL];
+            }
+        });
+        window.allUserProfilesMap = profMap;
+        return {
+            dbMembers: (membersRes && membersRes.data) ? membersRes.data : [],
+            dbSlots: (slotsRes && slotsRes.data) ? slotsRes.data : [],
+            dbRewards: (rewardsRes && rewardsRes.data) ? rewardsRes.data : []
+        };
+    }).catch(() => ({ dbMembers: [], dbSlots: [], dbRewards: [] }));
+    return window.prefetchedSupabasePromise;
+}
 async function syncDexProductsFromDatabase() {
     if (!window.supabase) return;
     try {
@@ -16363,23 +16889,123 @@ if (installBtn) {
                 <div id="modalRefProfitSum" style="font-size: 18px; font-weight: 900; color: #00e676; margin-top: 6px; font-family: monospace;">$0.00</div>
             </div>
         </div>
-        <div style="font-size: 13px; font-weight: 800; color: #ffffff; margin-top: 6px;">Team Members & Upgraded Slots</div>
+        <div style="display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 8px; background: #11151e; padding: 5px; border-radius: 12px; border: 1px solid #1a202c;">
+            <button id="tabBtnModalPartners" onclick="switchTeamModalTab('PARTNERS')" style="background: #2563eb; color: #ffffff; border: none; border-radius: 8px; padding: 9px 4px; font-size: 12px; font-weight: 800; cursor: pointer;">Partners</button>
+            <button id="tabBtnModalTeam" onclick="switchTeamModalTab('TEAM')" style="background: transparent; color: #8c8ca1; border: none; border-radius: 8px; padding: 9px 4px; font-size: 12px; font-weight: 800; cursor: pointer;">All Team</button>
+            <button id="tabBtnModalRewards" onclick="switchTeamModalTab('REWARDS')" style="background: transparent; color: #8c8ca1; border: none; border-radius: 8px; padding: 9px 4px; font-size: 12px; font-weight: 800; cursor: pointer;">Profits</button>
+        </div>
+        <div id="modalMembersSectionHeader" style="font-size: 13px; font-weight: 800; color: #ffffff; margin-top: 2px;">Direct Partners</div>
         <div id="modalTeamMembersList" style="display: flex; flex-direction: column; gap: 10px;"></div>
-        <div style="font-size: 13px; font-weight: 800; color: #ffffff; margin-top: 10px;">5% Referral Rewards Log</div>
-        <div id="modalRewardsLogList" style="display: flex; flex-direction: column; gap: 8px;"></div>
+        <div id="modalRewardsSectionWrap" style="display: none; flex-direction: column; gap: 8px;">
+            <div style="font-size: 13px; font-weight: 800; color: #ffffff; margin-top: 4px;">Referral & Slot Rewards Log</div>
+            <div id="modalRewardsLogList" style="display: flex; flex-direction: column; gap: 8px;"></div>
+        </div>
     </div>
 </div>
 
 <script>
 window.userReferralProfitTotal = 0;
+window.cachedDirectPartnersList = [];
 window.cachedUserTeamList = [];
 window.cachedUserRewardsList = [];
+window.cachedAllSlotsList = [];
+window.cachedTeamTargetWallet = "";
+window.cachedTeamTargetId = 1;
+window.activeTeamModalTab = "PARTNERS";
 
-function openTeamDetailsModal() {
+function openTeamDetailsModal(tabMode = "PARTNERS") {
     const m = document.getElementById("teamDetailsModal");
     if (m) m.classList.add("active");
+    switchTeamModalTab(tabMode || "PARTNERS");
 }
 
+function switchTeamModalTab(tabMode) {
+    window.activeTeamModalTab = tabMode;
+    const btnP = document.getElementById("tabBtnModalPartners");
+    const btnT = document.getElementById("tabBtnModalTeam");
+    const btnR = document.getElementById("tabBtnModalRewards");
+    const secHead = document.getElementById("modalMembersSectionHeader");
+    const memListEl = document.getElementById("modalTeamMembersList");
+    const rewWrap = document.getElementById("modalRewardsSectionWrap");
+
+    [btnP, btnT, btnR].forEach(b => {
+        if (b) {
+            b.style.background = "transparent";
+            b.style.color = "#8c8ca1";
+        }
+    });
+
+    if (tabMode === "PARTNERS") {
+        if (btnP) { btnP.style.background = "#2563eb"; btnP.style.color = "#ffffff"; }
+        if (secHead) { secHead.style.display = "block"; secHead.innerText = "Direct Partners (" + window.cachedDirectPartnersList.length + ")"; }
+        if (memListEl) memListEl.style.display = "flex";
+        if (rewWrap) rewWrap.style.display = "none";
+        renderTeamMembersModalList(window.cachedDirectPartnersList, "No direct partners joined under ID " + window.cachedTeamTargetId + " yet.");
+    } else if (tabMode === "TEAM") {
+        if (btnT) { btnT.style.background = "#2563eb"; btnT.style.color = "#ffffff"; }
+        if (secHead) { secHead.style.display = "block"; secHead.innerText = "All Team Members (" + window.cachedUserTeamList.length + ")"; }
+        if (memListEl) memListEl.style.display = "flex";
+        if (rewWrap) rewWrap.style.display = "none";
+        renderTeamMembersModalList(window.cachedUserTeamList, "No team members joined under ID " + window.cachedTeamTargetId + " yet.");
+    } else {
+        if (btnR) { btnR.style.background = "#2563eb"; btnR.style.color = "#ffffff"; }
+        if (secHead) secHead.style.display = "none";
+        if (memListEl) memListEl.style.display = "none";
+        if (rewWrap) rewWrap.style.display = "flex";
+    }
+}
+
+function renderTeamMembersModalList(list, emptyMsg) {
+    const mList = document.getElementById("modalTeamMembersList");
+    if (!mList) return;
+    if (!Array.isArray(list) || list.length === 0) {
+        mList.innerHTML = '<div style="background:#11151e; border:1px solid #1a202c; border-radius:12px; padding:22px; text-align:center; color:#718096; font-size:13px;">' + emptyMsg + '</div>';
+        return;
+    }
+
+    const nowMs = Date.now();
+    const oneDayMs = 24 * 60 * 60 * 1000;
+    const profMap = window.allUserProfilesMap || window.previewProfileCache || {};
+    const slotsAll = window.cachedAllSlotsList || [];
+    const targetW = window.cachedTeamTargetWallet || "";
+
+    mList.innerHTML = list.map(m => {
+        const wL = m.wallet_address.toLowerCase();
+        const prof = profMap[wL] || {};
+        const nick = (prof.nickname && prof.nickname.trim() !== "") ? prof.nickname : "User";
+        const avatar = (prof.avatar_url && prof.avatar_url.trim() !== "") ? prof.avatar_url : "https://i.imgur.com/O4u35tA.jpeg";
+        const isDirect = m.upline_address === targetW;
+        const jTime = m.joined_at ? new Date(m.joined_at).getTime() : 0;
+        const isNew24h = jTime > 0 && (nowMs - jTime) <= oneDayMs;
+        const memberSlots = slotsAll.filter(s => s.wallet_address === wL);
+        const slotsBadges = memberSlots.length > 0
+            ? memberSlots.map(s => '<span style="background:rgba(0,229,255,0.12); color:#00e5ff; padding:2px 7px; border-radius:6px; font-size:10px; font-weight:800; font-family:monospace;">' + s.program + ' S' + s.level + ' ($' + s.cost + ')</span>').join(" ")
+            : '<span style="background:rgba(0,229,255,0.12); color:#00e5ff; padding:2px 7px; border-radius:6px; font-size:10px; font-weight:800; font-family:monospace;">V1 S1 ($10)</span>';
+        const shortW = wL.substring(0, 6) + "..." + wL.substring(wL.length - 4);
+        const newBadge = isNew24h ? '<span style="background:rgba(76,175,80,0.2); color:#4CAF50; padding:2px 6px; border-radius:6px; font-size:9px; font-weight:900;">NEW</span>' : "";
+
+        return '<div onclick="closeTeamDetailsModal(); previewAccountById(' + m.user_id + ');" style="background:linear-gradient(145deg, #131926 0%, #0d121c 100%); border:1px solid rgba(255,255,255,0.07); border-radius:16px; padding:12px 14px; display:flex; flex-direction:column; gap:10px; cursor:pointer; box-shadow:0 4px 14px rgba(0,0,0,0.35);">' +
+            '<div style="display:flex; justify-content:space-between; align-items:center; gap:10px;">' +
+                '<div style="display:flex; align-items:center; gap:11px; min-width:0; flex:1;">' +
+                    '<div style="width:44px; height:44px; border-radius:50%; background-image:url(\'' + avatar + '\'); background-size:cover; background-position:center; border:2px solid ' + (isDirect ? '#00e676' : '#FFD700') + '; flex-shrink:0;"></div>' +
+                    '<div style="min-width:0; flex:1;">' +
+                        '<div style="display:flex; align-items:center; gap:6px; flex-wrap:wrap;">' +
+                            '<span style="color:#ffffff; font-size:14px; font-weight:800; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; max-width:120px;">' + nick + '</span>' +
+                            '<span style="background:#2563eb; color:#fff; padding:2px 8px; border-radius:8px; font-size:11px; font-weight:900;">ID ' + m.user_id + '</span>' +
+                            newBadge +
+                        '</div>' +
+                        '<div style="color:#718096; font-size:11px; font-family:monospace; margin-top:2px;">' + shortW + '</div>' +
+                    '</div>' +
+                '</div>' +
+                '<div style="display:flex; align-items:center; gap:4px; flex-shrink:0;">' +
+                    '<span style="background:' + (isDirect ? 'rgba(0,230,118,0.15)' : 'rgba(255,215,0,0.15)') + '; color:' + (isDirect ? '#00e676' : '#FFD700') + '; padding:3px 8px; border-radius:8px; font-size:10px; font-weight:900;">' + (isDirect ? 'DIRECT' : 'TEAM') + '</span>' +
+                    '<i class="material-icons" style="font-size:18px; color:#718096;">chevron_right</i>' +
+                '</div>' +
+            '</div>' +
+            '<div style="display:flex; flex-wrap:wrap; gap:6px; padding-top:8px; border-top:1px solid rgba(255,255,255,0.05);">' + slotsBadges + '</div>' +
+        '</div>';
+    }).join("");
+}
 function closeTeamDetailsModal() {
     const m = document.getElementById("teamDetailsModal");
     if (m) m.classList.remove("active");
@@ -17148,19 +17774,12 @@ async function loadUserNetworkStatsFromSupabase(targetWalletLower, targetId) {
         let dbSlots = [];
         let dbRewards = [];
 
-        if (window.supabase) {
-            try {
-                const client = window.supabase.createClient(MAIN_SUPABASE_URL, MAIN_SUPABASE_KEY);
-                const [membersRes, slotsRes, rewardsRes] = await Promise.all([
-                    client.from('shine_members').select('*').order('user_id', { ascending: true }),
-                    client.from('user_activated_slots').select('*'),
-                    client.from('shine_referral_rewards').select('*').order('created_at', { ascending: false })
-                ]);
-                dbMembers = (membersRes && membersRes.data) ? membersRes.data : [];
-                dbSlots = (slotsRes && slotsRes.data) ? slotsRes.data : [];
-                dbRewards = (rewardsRes && rewardsRes.data) ? rewardsRes.data : [];
-            } catch (dbErr) {}
-        }
+        try {
+            const prefetched = await prefetchNetworkTablesFromSupabase();
+            dbMembers = prefetched.dbMembers || [];
+            dbSlots = prefetched.dbSlots || [];
+            dbRewards = prefetched.dbRewards || [];
+        } catch (dbErr) {}
 
         const memberMap = {};
         dbMembers.forEach(m => {
@@ -17278,14 +17897,24 @@ async function loadUserNetworkStatsFromSupabase(targetWalletLower, targetId) {
 
         const pStatEl = document.getElementById("statPartnersVal");
         const p24El = document.getElementById("statPartners24h");
+        const p24PillEl = document.getElementById("statPartners24hPill");
         const tStatEl = document.getElementById("statTeamVal");
         const t24El = document.getElementById("statTeam24h");
+        const t24PillEl = document.getElementById("statTeam24hPill");
         const rStatEl = document.getElementById("statRatioVal");
 
         if (pStatEl) pStatEl.innerText = directPartners.length.toString();
-        if (p24El) p24El.innerText = direct24hCount > 0 ? "↑ " + direct24hCount : "";
+        if (p24El) p24El.innerText = direct24hCount > 0 ? "↑ " + direct24hCount : "↑ 0";
+        if (p24PillEl) {
+            if (direct24hCount > 0) p24PillEl.classList.add("active");
+            else p24PillEl.classList.remove("active");
+        }
         if (tStatEl) tStatEl.innerText = fullTeam.length.toString();
-        if (t24El) t24El.innerText = team24hCount > 0 ? "↑ " + team24hCount : "";
+        if (t24El) t24El.innerText = team24hCount > 0 ? "↑ " + team24hCount : "↑ 0";
+        if (t24PillEl) {
+            if (team24hCount > 0) t24PillEl.classList.add("active");
+            else t24PillEl.classList.remove("active");
+        }
         if (rStatEl) {
             const ratioPct = myInvestSum > 0 ? Math.round((totalRefProfit / myInvestSum) * 100) : 0;
             rStatEl.innerText = ratioPct + " %";
@@ -17415,38 +18044,18 @@ async function loadUserNetworkStatsFromSupabase(targetWalletLower, targetId) {
         const mList = document.getElementById("modalTeamMembersList");
         const mLog = document.getElementById("modalRewardsLogList");
 
-        if (mTitle) mTitle.innerText = "ID " + targetId + " Partners & Team";
+        window.cachedDirectPartnersList = directPartners;
+        window.cachedUserTeamList = fullTeam;
+        window.cachedAllSlotsList = allSlots;
+        window.cachedTeamTargetWallet = targetWalletLower;
+        window.cachedTeamTargetId = targetId;
+
+        if (mTitle) mTitle.innerText = "ID " + targetId + " Network";
         if (mDir) mDir.innerText = directPartners.length.toString();
         if (mTeam) mTeam.innerText = fullTeam.length.toString();
         if (mProf) mProf.innerText = "+$" + totalRefProfit.toFixed(2);
 
-        if (mList) {
-            if (fullTeam.length === 0) {
-                mList.innerHTML = '<div style="background:#11151e; border:1px solid #1a202c; border-radius:12px; padding:18px; text-align:center; color:#718096; font-size:13px;">No partners joined under ID ' + targetId + ' yet.</div>';
-            } else {
-                mList.innerHTML = fullTeam.map(m => {
-                    const isDirect = m.upline_address === targetWalletLower;
-                    const isNew24h = isWithin24h(m.joined_at);
-                    const memberSlots = allSlots.filter(s => s.wallet_address === m.wallet_address);
-                    const slotsBadges = memberSlots.length > 0
-                        ? memberSlots.map(s => '<span style="background:rgba(0,229,255,0.12); color:#00e5ff; padding:2px 7px; border-radius:6px; font-size:10px; font-weight:800; font-family:monospace;">' + s.program + ' S' + s.level + ' ($' + s.cost + ')</span>').join(" ")
-                        : '<span style="color:#718096; font-size:11px;">V1 S1 ($10)</span>';
-                    const shortW = m.wallet_address.substring(0, 6) + "..." + m.wallet_address.substring(m.wallet_address.length - 4);
-                    const newBadge = isNew24h ? '<span style="background:rgba(76,175,80,0.2); color:#4CAF50; padding:2px 6px; border-radius:6px; font-size:10px; font-weight:900;">NEW 24H</span>' : "";
-                    return '<div style="background:#11151e; border:1px solid #1a202c; border-radius:14px; padding:12px 14px; display:flex; flex-direction:column; gap:8px;">' +
-                        '<div style="display:flex; justify-content:space-between; align-items:center;">' +
-                            '<div style="display:flex; align-items:center; gap:8px;">' +
-                                '<span style="background:#2563eb; color:#fff; padding:3px 9px; border-radius:8px; font-size:12px; font-weight:900; cursor:pointer;" onclick="closeTeamDetailsModal(); previewAccountById(' + m.user_id + ');">ID ' + m.user_id + '</span>' +
-                                '<span style="color:#ffffff; font-size:12px; font-family:monospace;">' + shortW + '</span>' +
-                                newBadge +
-                            '</div>' +
-                            '<span style="background:' + (isDirect ? 'rgba(0,230,118,0.15)' : 'rgba(255,215,0,0.15)') + '; color:' + (isDirect ? '#00e676' : '#FFD700') + '; padding:2px 8px; border-radius:6px; font-size:10px; font-weight:900;">' + (isDirect ? 'DIRECT (5%)' : 'DOWNLINE') + '</span>' +
-                        '</div>' +
-                        '<div style="display:flex; flex-wrap:wrap; gap:6px;">' + slotsBadges + '</div>' +
-                    '</div>';
-                }).join("");
-            }
-        }
+        switchTeamModalTab(window.activeTeamModalTab || "PARTNERS");
 
         if (mLog) {
             if (myRewards.length === 0) {
