@@ -371,8 +371,8 @@
             gap: 8px;
         }
         .currency-row {
-            display: grid;
-            grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr);
+            display: flex;
+            justify-content: space-between;
             align-items: center;
             background-color: var(--primary-bg);
             padding: 12px;
@@ -805,15 +805,17 @@
             bottom: 0;
             left: 0;
             width: 100%;
-            height: 65px;
+            min-height: 65px;
             background: #0d0f17;
             border-top: 1px solid #1f2433;
             display: flex;
             justify-content: space-around;
             align-items: center;
-            z-index: 10000;
+            z-index: 20000;
             box-sizing: border-box;
-            padding: 0 10px;
+            padding: 6px 10px calc(6px + env(safe-area-inset-bottom));
+            transform: translate3d(0, 0, 0);
+            will-change: transform;
         }
         .bot-nav-item {
             display: flex;
@@ -827,6 +829,14 @@
             background: none;
             border: none;
             outline: none;
+            padding: 6px 0;
+            touch-action: manipulation;
+            -webkit-tap-highlight-color: transparent;
+            user-select: none;
+            transition: transform 0.08s ease, color 0.12s ease;
+        }
+        .bot-nav-item:active {
+            transform: scale(0.92);
         }
         .bot-nav-item svg {
             width: 22px;
@@ -1225,6 +1235,14 @@
             flex-direction: column;
             justify-content: space-between;
             overflow: hidden;
+            cursor: pointer;
+            touch-action: manipulation;
+            -webkit-tap-highlight-color: transparent;
+            user-select: none;
+            transition: transform 0.08s ease;
+        }
+        .level-card:active {
+            transform: scale(0.96);
         }
         .level-card.locked { background-color: #2A2A2A; color: #666; }
         .level-card.active { background-color: #3A47A6; color: white; }
@@ -1492,12 +1510,25 @@
     justify-content: center;
     border: 1px solid rgba(255,255,255,0.1);
     cursor: pointer;
-    transition: all 0.2s ease;
+    transition: transform 0.08s ease, background-color 0.08s ease;
     box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+    touch-action: manipulation;
+    -webkit-tap-highlight-color: transparent;
+    user-select: none;
 }
 .slot-box:active {
-    transform: scale(0.95);
+    transform: scale(0.92);
     background: #3A47A6;
+}
+.save-profile-btn, .preview-btn, .copy-btn, .claim-btn {
+    touch-action: manipulation;
+    -webkit-tap-highlight-color: transparent;
+    user-select: none;
+    transition: transform 0.08s ease, opacity 0.08s ease;
+}
+.save-profile-btn:active, .preview-btn:active, .copy-btn:active, .claim-btn:active {
+    transform: scale(0.97);
+    opacity: 0.9;
 }
 .slot-box:hover { background: #333344; }
 .slot-box.active {
@@ -3212,7 +3243,7 @@ input:checked + .tw-slider:before {
                             </svg>
                             <span>SHINE</span>
                         </div>
-                        <span id="homeProfitShine24h" style="color:#4CAF50; font-size:12px; font-weight:700; text-align:center;"></span>
+                        
                         <span class="currency-balance" id="homeProfitShine" style="justify-self:end;">0</span>
                     </div>
                     <div class="currency-row">
@@ -3224,7 +3255,7 @@ input:checked + .tw-slider:before {
                             </svg>
                             <span>USDT</span>
                         </div>
-                        <span id="homeProfitUsdt24h" style="color:#4CAF50; font-size:12px; font-weight:700; text-align:center;"></span>
+                        
                         <span class="currency-balance" id="homeProfitUsdt" style="justify-self:end;">0</span>
                     </div>
                     <div class="currency-row">
@@ -3235,7 +3266,7 @@ input:checked + .tw-slider:before {
                             </svg>
                             <span>BNB</span>
                         </div>
-                        <span id="homeProfitBnb24h" style="color:#4CAF50; font-size:12px; font-weight:700; text-align:center;"></span>
+                        
                         <span class="currency-balance" id="homeProfitBnb" style="justify-self:end;">0</span>
                     </div>
                 </div>
@@ -3271,11 +3302,10 @@ input:checked + .tw-slider:before {
                             <path d="M9.5 14.5L11 16L15 12" stroke="#FFFFFFB3" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
                         </svg>
                     </li>
-                    <li class="rule-item">
+                    <li class="rule-item" style="display:flex; justify-content:space-between;">
                         <span>Trading profit</span>
-                        <span id="ruleTradingProfit24h" style="color:#4CAF50; font-size:12px; font-weight:700; text-align:center;"></span>
-                        <div class="rule-value" style="justify-self:end;">
-                            <span id="ruleTradingProfitVal">0</span>
+                        <div class="rule-value">
+                            <span id="ruleTradingProfitVal">0.00</span>
                             <svg class="icon-sm" viewBox="0 0 100 100" style="width: 20px; height: 20px; border-radius: 50%;">
                                 <circle cx="50" cy="50" r="50" fill="#009393"/>
                                 <path d="M50 42.5 C34 42.5 22 45.2 22 48.5 C22 51.8 34 54.5 50 54.5 C66 54.5 78 51.8 78 48.5 C78 45.2 66 42.5 50 42.5 Z M50 45.8 C62.5 45.8 71.5 47.7 71.5 48.5 C71.5 49.3 62.5 51.2 50 51.2 C37.5 51.2 28.5 49.3 28.5 48.5 C28.5 47.7 37.5 45.8 50 45.8 Z" fill="#FFFFFF"/>
@@ -3284,10 +3314,10 @@ input:checked + .tw-slider:before {
                         </div>
                     </li>
                     <li class="rule-item">
-                        <span>Team Profit</span>
-                        <span id="ruleTeamTradingProfit24h" style="color:#4CAF50; font-size:12px; font-weight:700; text-align:center;"></span>
+                        <span>Global dividend</span>
+                        <span id="globalDivEligibilityBadge" style="font-size:10px; font-weight:800; padding:3px 10px; border-radius:10px; text-align:center; background:rgba(232,117,91,0.18); color:#E8755B;">UNELIGIBLE</span>
                         <div class="rule-value" style="justify-self:end;">
-                            <span id="ruleTeamTradingProfitVal">0</span>
+                            <span id="ruleGlobalDividendVal">0.00</span>
                             <svg class="icon-sm" viewBox="0 0 100 100" style="width: 20px; height: 20px; border-radius: 50%;">
                                 <circle cx="50" cy="50" r="50" fill="#009393"/>
                                 <path d="M50 42.5 C34 42.5 22 45.2 22 48.5 C22 51.8 34 54.5 50 54.5 C66 54.5 78 51.8 78 48.5 C78 45.2 66 42.5 50 42.5 Z M50 45.8 C62.5 45.8 71.5 47.7 71.5 48.5 C71.5 49.3 62.5 51.2 50 51.2 C37.5 51.2 28.5 49.3 28.5 48.5 C28.5 47.7 37.5 45.8 50 45.8 Z" fill="#FFFFFF"/>
@@ -3295,23 +3325,10 @@ input:checked + .tw-slider:before {
                             </svg>
                         </div>
                     </li>
-                    <li class="rule-item">
-                        <span>Unconditional</span>
-                        <span id="ruleUnconditional24h" style="color:#4CAF50; font-size:12px; font-weight:700; text-align:center;"></span>
-                        <div class="rule-value" style="justify-self:end;">
-                            <span id="ruleUnconditionalVal">0</span>
-                            <svg class="icon-sm" viewBox="0 0 100 100" style="width: 20px; height: 20px; border-radius: 50%;">
-                                <circle cx="50" cy="50" r="50" fill="#009393"/>
-                                <path d="M50 42.5 C34 42.5 22 45.2 22 48.5 C22 51.8 34 54.5 50 54.5 C66 54.5 78 51.8 78 48.5 C78 45.2 66 42.5 50 42.5 Z M50 45.8 C62.5 45.8 71.5 47.7 71.5 48.5 C71.5 49.3 62.5 51.2 50 51.2 C37.5 51.2 28.5 49.3 28.5 48.5 C28.5 47.7 37.5 45.8 50 45.8 Z" fill="#FFFFFF"/>
-                                <path d="M29 27 H71 V36 H56 V73 H44 V36 H29 Z" fill="#FFFFFF"/>
-                            </svg>
-                        </div>
-                    </li>
-                    <li class="rule-item">
-                        <span>Active users</span>
-                        <span id="ruleActiveUsers24h" style="color:#4CAF50; font-size:12px; font-weight:700; text-align:center;"></span>
-                        <div class="rule-value" style="justify-self:end;">
-                            <span id="ruleActiveUsersVal">0</span>
+                    <li class="rule-item" style="display:flex; justify-content:space-between;">
+                        <span>Active team</span>
+                        <div class="rule-value">
+                            <span id="ruleActiveTeamVal">0.00</span>
                             <svg class="icon-sm" viewBox="0 0 100 100" style="width: 20px; height: 20px; border-radius: 50%;">
                                 <circle cx="50" cy="50" r="50" fill="#009393"/>
                                 <path d="M50 42.5 C34 42.5 22 45.2 22 48.5 C22 51.8 34 54.5 50 54.5 C66 54.5 78 51.8 78 48.5 C78 45.2 66 42.5 50 42.5 Z M50 45.8 C62.5 45.8 71.5 47.7 71.5 48.5 C71.5 49.3 62.5 51.2 50 51.2 C37.5 51.2 28.5 49.3 28.5 48.5 C28.5 47.7 37.5 45.8 50 45.8 Z" fill="#FFFFFF"/>
@@ -3323,24 +3340,49 @@ input:checked + .tw-slider:before {
             </section>
             <section class="rewards-section">
                 <div class="rewards-title">Daily rewards balances</div>
-                <div class="reward-card" style="display:flex; justify-content:space-between; align-items:center;">
-                    <div>
-                        <div class="reward-label">Global Dividend Claimable</div>
-                        <div class="reward-value-row">
-                            <span id="homeTotalGlobalDivVal">0.00</span>
-                            <svg class="icon-md" viewBox="0 0 100 100" style="width: 24px; height: 24px; border-radius: 50%;">
-                                <circle cx="50" cy="50" r="50" fill="#009393"/>
-                                <path d="M50 42.5 C34 42.5 22 45.2 22 48.5 C22 51.8 34 54.5 50 54.5 C66 54.5 78 51.8 78 48.5 C78 45.2 66 42.5 50 42.5 Z M50 45.8 C62.5 45.8 71.5 47.7 71.5 48.5 C71.5 49.3 62.5 51.2 50 51.2 C37.5 51.2 28.5 49.3 28.5 48.5 C28.5 47.7 37.5 45.8 50 45.8 Z" fill="#FFFFFF"/>
-                                <path d="M29 27 H71 V36 H56 V73 H44 V36 H29 Z" fill="#FFFFFF"/>
-                            </svg>
-                        </div>
-                    </div>
-                    <button id="btnClaimGlobalDiv" onclick="claimOnChainGlobalDividend()" style="background:#3A47A6; color:#fff; border:none; border-radius:10px; padding:10px 16px; font-size:12px; font-weight:800; cursor:pointer;">Claim</button>
-                </div>
+                
                 <div class="reward-card" style="text-align: center; border: 1px solid var(--tertiary-bg);">
                     <div style="color: #FFFFFFB3; font-size: 12px; text-transform: uppercase; letter-spacing: 1px;">Next Global Dividend Distribution</div>
                     <div id="dividendTimer" style="font-size: 24px; font-weight: 900; color: #FFD700; margin: 8px 0;">00:00:00</div>
                     <div style="font-size: 10px; color: #4CAF50;">V1 GLOBAL POOL: <span id="globalPoolAmt">0.00</span> USDT</div>
+                </div>
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 12px;">
+                    <div style="background: var(--secondary-bg); border-radius: 14px; padding: 14px; border: 1px solid rgba(233, 30, 99, 0.25); display: flex; flex-direction: column; justify-content: space-between;">
+                        <div>
+                            <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 6px;">
+                                <div style="display: flex; align-items: center; gap: 5px;">
+                                    <i class="material-icons" style="font-size: 16px; color: #e91e63;">favorite</i>
+                                    <span style="font-size: 11px; font-weight: 800; color: #fff;">CHARITY (5%)</span>
+                                </div>
+                                <a href="https://testnet.bscscan.com/address/0x546c521EF3d3E5a9fDCB9F1F50981FCb7B6AD0E9" target="_blank" style="background: rgba(233, 30, 99, 0.15); color: #e91e63; border: 1px solid rgba(233, 30, 99, 0.4); border-radius: 6px; padding: 2px 6px; font-size: 9px; font-weight: 800; font-family: monospace; text-decoration: none; display: flex; align-items: center; gap: 2px;">
+                                    <span>BSC</span><i class="material-icons" style="font-size: 10px;">open_in_new</i>
+                                </a>
+                            </div>
+                            <div style="font-size: 9px; color: #8c8ca1; line-height: 1.3;">Automated Smart Contract Charity Fund</div>
+                        </div>
+                        <div style="margin-top: 10px;">
+                            <div id="homeCharityFundDisplay" style="font-size: 18px; font-weight: 900; color: #e91e63; font-family: monospace;">$0.00</div>
+                            <div style="font-size: 9px; color: #8c8ca1; font-family: monospace;">0x546c...0E9</div>
+                        </div>
+                    </div>
+                    <div style="background: var(--secondary-bg); border-radius: 14px; padding: 14px; border: 1px solid rgba(255, 215, 0, 0.25); display: flex; flex-direction: column; justify-content: space-between;">
+                        <div>
+                            <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 6px;">
+                                <div style="display: flex; align-items: center; gap: 5px;">
+                                    <i class="material-icons" style="font-size: 16px; color: #FFD700;">stars</i>
+                                    <span style="font-size: 11px; font-weight: 800; color: #fff;">AIRDROP (5%)</span>
+                                </div>
+                                <a href="https://testnet.bscscan.com/address/0xb371Dc77B0E8f7f4eFA06925673B3F063B531832" target="_blank" style="background: rgba(255, 215, 0, 0.15); color: #FFD700; border: 1px solid rgba(255, 215, 0, 0.4); border-radius: 6px; padding: 2px 6px; font-size: 9px; font-weight: 800; font-family: monospace; text-decoration: none; display: flex; align-items: center; gap: 2px;">
+                                    <span>BSC</span><i class="material-icons" style="font-size: 10px;">open_in_new</i>
+                                </a>
+                            </div>
+                            <div style="font-size: 9px; color: #8c8ca1; line-height: 1.3;">Decentralized Liquidity Pool Reserve</div>
+                        </div>
+                        <div style="margin-top: 10px;">
+                            <div id="homeAirdropFundDisplay" style="font-size: 18px; font-weight: 900; color: #FFD700; font-family: monospace;">$0.00</div>
+                            <div style="font-size: 9px; color: #8c8ca1; font-family: monospace;">0xb371...832</div>
+                        </div>
+                    </div>
                 </div>
             </section>
                 <style>
@@ -3571,8 +3613,8 @@ input:checked + .tw-slider:before {
                 <div class="activity-card">
                     <div class="activity-label">Members total</div>
                     <div class="activity-main-row">
-                        <div class="activity-total" id="totalMembers">1,248</div>
-                        <div class="activity-growth" id="memberGrowth">↑ 12</div>
+                        <div class="activity-total" id="totalMembers">0</div>
+                        <div class="activity-growth" id="memberGrowth">↑ 0</div>
                     </div>
                 </div>
                 <div class="activity-card">
@@ -4531,7 +4573,7 @@ input:checked + .tw-slider:before {
                                 <div id="killer2-idle-fund" style="font-size: 16px; font-weight: 900; color: #FFD700; font-family: monospace; margin-top: 2px; white-space: nowrap;">$0.00</div>
                             </div>
                             <div style="flex: 1; padding-left: 12px;">
-                                <div style="font-size: 10px; color: #8c8ca1; font-weight: 800; text-transform: uppercase; white-space: nowrap;">KILLER 2 SOL HOLDING</div>
+                                <div style="font-size: 10px; color: #8c8ca1; font-weight: 800; text-transform: uppercase; white-space: nowrap;">QUANTUM SOL HOLDING</div>
                                 <div id="killer2-sol-pos" style="font-size: 16px; font-weight: 900; color: #fff; font-family: monospace; margin-top: 2px; white-space: nowrap;">0.0000 SOL</div>
                             </div>
                         </div>
@@ -4634,7 +4676,7 @@ input:checked + .tw-slider:before {
                                 <div id="killer3-idle-fund" style="font-size: 16px; font-weight: 900; color: #00e676; font-family: monospace; margin-top: 2px; white-space: nowrap;">$0.00</div>
                             </div>
                             <div style="flex: 1; padding-left: 12px;">
-                                <div style="font-size: 10px; color: #8c8ca1; font-weight: 800; text-transform: uppercase; white-space: nowrap;">KILLER 3 SOL HOLDING</div>
+                                <div style="font-size: 10px; color: #8c8ca1; font-weight: 800; text-transform: uppercase; white-space: nowrap;">TITAN ABYSS SOL HOLDING</div>
                                 <div id="killer3-sol-pos" style="font-size: 16px; font-weight: 900; color: #fff; font-family: monospace; margin-top: 2px; white-space: nowrap;">0.0000 SOL</div>
                             </div>
                         </div>
@@ -4723,11 +4765,11 @@ input:checked + .tw-slider:before {
 
                 <div class="bot-card" id="hyperTitanDashboardCard" style="border: none; background: radial-gradient(circle at top right, #121824 0%, #0d111a 100%); margin-top: 16px;">
                     <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid rgba(255,255,255,0.08); padding-bottom: 12px; margin-bottom: 14px; gap: 6px;">
-                        <div style="display: flex; align-items: center; gap: 8px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">
+                        <div style="display: flex; align-items: center; gap: 6px; min-width: 0; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">
                             <div style="width: 9px; height: 9px; background: #00e5ff; border-radius: 50%; box-shadow: 0 0 10px #00e5ff; animation: livePulseDot 1.2s infinite; flex-shrink: 0;"></div>
-                            <span style="font-size: 13px; font-weight: 900; color: #fff; letter-spacing: 0.5px; text-transform: uppercase;">SHINE HYPER TITAN</span>
+                            <span style="font-size: 13px; font-weight: 900; color: #fff; letter-spacing: 0.4px; text-transform: uppercase;">SHINE HYPER TITAN</span>
                         </div>
-                        <div style="display: flex; align-items: center; gap: 6px; flex-shrink: 0;">
+                        <div style="display: flex; align-items: center; gap: 6px; flex-shrink: 0; white-space: nowrap;">
                             <span id="hyper-status-badge" style="background: rgba(246, 70, 93, 0.15); color: #f6465d; border: 1px solid #f6465d; padding: 2px 7px; border-radius: 12px; font-size: 9px; font-weight: 900; font-family: monospace;">REQ $500+</span>
                             <span id="hyper-orders-badge" style="background: rgba(0, 229, 255, 0.15); color: #00e5ff; border: 1px solid #00e5ff; padding: 2px 8px; border-radius: 12px; font-size: 10px; font-weight: 900; font-family: monospace;">0 OPEN</span>
                         </div>
@@ -4818,7 +4860,7 @@ input:checked + .tw-slider:before {
                     </div>
 
                     <div style="background: rgba(255,255,255,0.02); border: 1px solid rgba(255,255,255,0.04); border-radius: 10px; padding: 10px 12px; margin-bottom: 12px; display: flex; justify-content: space-between; align-items: center; font-family: monospace;">
-                        <span style="color: #8c8ca1; font-size: 11px;">SHARED VAULT CAPITAL:</span>
+                        <span style="color: #8c8ca1; font-size: 11px;">YOUR SHARE INVESTED:</span>
                         <span id="hyper-user-invest-display" style="color: #00e5ff; font-weight: 900; font-size: 13px;">$0.00 USDT</span>
                     </div>
 
@@ -4830,11 +4872,11 @@ input:checked + .tw-slider:before {
 
                 <div class="bot-card" id="singularityDashboardCard" style="border: none; background: radial-gradient(circle at top right, #241433 0%, #0d0817 100%); margin-top: 16px;">
                     <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid rgba(255,255,255,0.08); padding-bottom: 12px; margin-bottom: 14px; gap: 6px;">
-                        <div style="display: flex; align-items: center; gap: 8px; min-width: 0;">
+                        <div style="display: flex; align-items: center; gap: 6px; min-width: 0; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">
                             <div style="width: 10px; height: 10px; background: #e040fb; border-radius: 50%; box-shadow: 0 0 12px #e040fb; animation: livePulseDot 1.2s infinite; flex-shrink: 0;"></div>
-                            <span style="font-size: 12px; font-weight: 900; color: #fff; letter-spacing: 0.3px; text-transform: uppercase; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">SHINE TITAN SINGULARITY</span>
+                            <span style="font-size: 12.5px; font-weight: 900; color: #fff; letter-spacing: 0.3px; text-transform: uppercase;">SHINE TITAN SINGULARITY</span>
                         </div>
-                        <div style="display: flex; align-items: center; gap: 6px; flex-shrink: 0;">
+                        <div style="display: flex; align-items: center; gap: 6px; flex-shrink: 0; white-space: nowrap;">
                             <span id="sng-status-badge" style="background: rgba(246, 70, 93, 0.15); color: #f6465d; border: 1px solid #f6465d; padding: 2px 7px; border-radius: 12px; font-size: 9px; font-weight: 900; font-family: monospace;">REQ $1K+</span>
                             <span id="sng-orders-badge" style="background: rgba(224, 64, 251, 0.15); color: #e040fb; border: 1px solid #e040fb; padding: 2px 8px; border-radius: 12px; font-size: 10px; font-weight: 900; font-family: monospace;">0 OPEN</span>
                         </div>
@@ -4927,7 +4969,7 @@ input:checked + .tw-slider:before {
                     </div>
 
                     <div style="background: rgba(255,255,255,0.02); border: 1px solid rgba(255,255,255,0.04); border-radius: 10px; padding: 10px 12px; margin-bottom: 12px; display: flex; justify-content: space-between; align-items: center; font-family: monospace;">
-                        <span style="color: #8c8ca1; font-size: 11px;">SHARED VAULT CAPITAL:</span>
+                        <span style="color: #8c8ca1; font-size: 11px;">YOUR SHARE INVESTED:</span>
                         <span id="sng-user-invest-display" style="color: #e040fb; font-weight: 900; font-size: 13px;">$0.00 USDT</span>
                     </div>
 
@@ -6247,16 +6289,20 @@ input:checked + .tw-slider:before {
             "function charityWallet() view returns (address)",
             "function lastUserId() view returns (uint256)",
             "function globalDividendPool() view returns (uint256)",
+            "function isGlobalDividendEligible(address _user) view returns (bool)",
             "function getClaimableGlobalDividend(address _user) view returns (uint256)",
             "function claimGlobalDividend() external"
         ];
         const SHINE_VAULT_ABI = [
             "function claimTradingProfit(uint256 _totalEarned, uint256 _deadline, bytes calldata _signature) external",
+            "function claimAllRewards(uint256 _totalUserEarned, uint256 _totalTeamEarned, uint256 _totalGlobalDivCumulative, uint256 _deadline, bytes calldata _signature) external",
             "function claimedTradingProfit(address _user) view returns (uint256)",
+            "function claimedTeamProfit(address _user) view returns (uint256)",
             "function getClaimableTradingProfit(address _user, uint256 _totalEarned) view returns (uint256)"
         ];
         window.activeTradingVaultAddress = SHINE_VAULT_ADDRESS;
         window.userClaimedTradingProfitOnChain = 0;
+        window.userClaimedTeamProfitOnChain = 0;
         window.userGlobalDividendClaimable = 0;
         const ERC20_ABI = [
             "function balanceOf(address account) view returns (uint256)",
@@ -6646,7 +6692,9 @@ function showBcLoader(title, showSuccess = false, subText = "Your transaction is
                         }
                     });
                 }
-            } catch (e) {}
+            } catch (e) {
+                return null;
+            }
             return updatedSlots;
         }
 
@@ -6654,8 +6702,10 @@ function showBcLoader(title, showSuccess = false, subText = "Your transaction is
             if (!userWallet) return;
             try {
                 const updatedSlots = await fetchActiveLevelsForWallet(userWallet);
+                if (!updatedSlots) return;
                 const wLower = userWallet.toLowerCase();
                 const userKey = "shine_active_slots_" + wLower;
+                if (Object.keys(updatedSlots).length === 0 && Object.keys(activeUserLevels).length > 0) return;
                 activeUserLevels = updatedSlots;
                 localStorage.setItem("shine_active_slots", JSON.stringify(activeUserLevels));
                 localStorage.setItem(userKey, JSON.stringify(activeUserLevels));
@@ -6698,12 +6748,28 @@ function showBcLoader(title, showSuccess = false, subText = "Your transaction is
             }
         }
 
-        function resetDashboardAccountUI(statusLabel, addrText) {
+        function restoreCachedSlotsForWallet(wLower) {
+            if (!wLower) return {};
+            const restored = {};
+            try {
+                const saved = JSON.parse(localStorage.getItem("shine_active_slots_" + wLower) || "{}");
+                Object.keys(saved).forEach(k => { if (saved[k]) restored[k] = true; });
+            } catch (e) {}
+            const allCached = [].concat(window.allNetworkSlotsCache || []).concat(window.onChainSlotsCache || []);
+            allCached.forEach(s => {
+                if (s && s.wallet_address && s.wallet_address.toLowerCase() === wLower) {
+                    restored[s.program + "_" + s.level] = true;
+                }
+            });
+            return restored;
+        }
+
+        function resetDashboardAccountUI(statusLabel, addrText, targetWalletLower) {
             window.currentLoggedInId = 0;
             window.currentLoggedInUplineId = 0;
             window.userReferralProfitTotal = 0;
             window.userReferralProfit24h = 0;
-            activeUserLevels = {};
+            activeUserLevels = targetWalletLower ? restoreCachedSlotsForWallet(targetWalletLower) : {};
             currentTotalUserCapital = 0.0;
             const hEl = document.getElementById('headerIdDisplay');
             if (hEl) hEl.innerText = addrText || "SHINE";
@@ -6721,11 +6787,8 @@ function showBcLoader(title, showSuccess = false, subText = "Your transaction is
             const t24Pill = document.getElementById("statTeam24hPill");
             const refDisp = document.getElementById("homeReferralProfitDisplay");
             const ref24 = document.getElementById("homeReferralProfit24h");
-            const hUsdt24 = document.getElementById("homeProfitUsdt24h");
             const hShine = document.getElementById("homeProfitShine");
-            const hShine24 = document.getElementById("homeProfitShine24h");
             const hBnb = document.getElementById("homeProfitBnb");
-            const hBnb24 = document.getElementById("homeProfitBnb24h");
             if (pStat) pStat.innerText = "0";
             if (p24) p24.innerText = "↑ 0";
             if (p24Pill) p24Pill.classList.remove("active");
@@ -6758,15 +6821,18 @@ function showBcLoader(title, showSuccess = false, subText = "Your transaction is
             if (stPill) stPill.classList.remove("active");
             if (refDisp) refDisp.innerText = "+0.00 USDT";
             if (ref24) ref24.innerText = "";
-            if (hUsdt24) hUsdt24.innerText = "";
             if (hShine) hShine.innerText = "0";
-            if (hShine24) hShine24.innerText = "";
             if (hBnb) hBnb.innerText = "0";
-            if (hBnb24) hBnb24.innerText = "";
-            ['ruleTradingProfit24h', 'ruleTeamTradingProfit24h', 'ruleUnconditional24h', 'ruleActiveUsers24h'].forEach(id => {
-                const el = document.getElementById(id);
-                if (el) el.innerText = "";
-            });
+            const rTrEl = document.getElementById("ruleTradingProfitVal");
+            const rGlobEl = document.getElementById("ruleGlobalDividendVal");
+            const gEligBadge = document.getElementById("globalDivEligibilityBadge");
+            if (rTrEl) rTrEl.innerText = "0.00";
+            if (rGlobEl) rGlobEl.innerText = "0.00";
+            if (gEligBadge) {
+                gEligBadge.innerText = "UNELIGIBLE";
+                gEligBadge.style.background = "rgba(232,117,91,0.18)";
+                gEligBadge.style.color = "#E8755B";
+            }
             renderDashboardSlots();
             applyUserBotMetricsToUI("", 0);
         }
@@ -7011,7 +7077,7 @@ function showBcLoader(title, showSuccess = false, subText = "Your transaction is
             const isNewWallet = window.lastSyncedWallet !== wLower;
             if (isNewWallet) {
                 window.lastSyncedWallet = wLower;
-                resetDashboardAccountUI("LOADING", shortW);
+                resetDashboardAccountUI("LOADING", shortW, wLower);
             }
 
             if (wLower === ROOT_OWNER_ADDRESS.toLowerCase()) {
@@ -7084,6 +7150,12 @@ function showBcLoader(title, showSuccess = false, subText = "Your transaction is
             } else {
                 fastStatsPromise = prefetchNetworkTablesFromSupabase().then(tables => {
                     if (mySyncSeq !== window.walletSyncSeq) return;
+                    const dbSlotsList = (tables && tables.dbSlots || []).filter(s => s && s.wallet_address && s.wallet_address.toLowerCase() === wLower);
+                    if (dbSlotsList.length > 0 && !window.currentPreviewWallet) {
+                        dbSlotsList.forEach(s => { activeUserLevels[s.program + "_" + s.level] = true; });
+                        localStorage.setItem("shine_active_slots_" + wLower, JSON.stringify(activeUserLevels));
+                        renderDashboardSlots();
+                    }
                     const found = (tables && tables.dbMembers || []).find(m => m.wallet_address && m.wallet_address.toLowerCase() === wLower);
                     if (found && Number(found.user_id) > 0) {
                         window.currentLoggedInId = Number(found.user_id);
@@ -7226,6 +7298,40 @@ function showBcLoader(title, showSuccess = false, subText = "Your transaction is
             const sucM = document.getElementById('forsageSuccessModal');
             if (sucM) sucM.classList.remove('active');
         }
+        function isUserGlobalDividendEligible(targetWallet, targetId) {
+            const wLower = targetWallet ? targetWallet.toLowerCase() : "";
+            if (!wLower) return false;
+            if (Number(targetId) === 1 || wLower === ROOT_OWNER_ADDRESS.toLowerCase()) return true;
+
+            const activeSet = new Set();
+            const allSlots = []
+                .concat(window.allNetworkSlotsCache || [])
+                .concat(window.onChainSlotsCache || []);
+            allSlots.forEach(s => {
+                if (s && s.wallet_address && s.wallet_address.toLowerCase() === wLower && s.program === "V1") {
+                    activeSet.add(Number(s.level));
+                }
+            });
+
+            if (window.isViewingOtherProfile && window.currentPreviewWallet && window.currentPreviewWallet.toLowerCase() === wLower && window.previewActiveLevels) {
+                for (let l = 1; l <= 4; l++) {
+                    if (window.previewActiveLevels["V1_" + l]) activeSet.add(l);
+                }
+            } else if (userWallet && userWallet.toLowerCase() === wLower) {
+                try {
+                    const saved = JSON.parse(localStorage.getItem("shine_active_slots_" + wLower) || "{}");
+                    for (let l = 1; l <= 4; l++) {
+                        if (saved["V1_" + l]) activeSet.add(l);
+                    }
+                } catch (e) {}
+            }
+
+            for (let l = 1; l <= 4; l++) {
+                if (!activeSet.has(l)) return false;
+            }
+            return true;
+        }
+
         function getUserClaimedProfit(targetWallet) {
             if (!targetWallet) return 0;
             if (userWallet && userWallet.toLowerCase() === targetWallet.toLowerCase()) {
@@ -7237,9 +7343,20 @@ function showBcLoader(title, showSuccess = false, subText = "Your transaction is
             return 0;
         }
 
+        function getUserClaimedTeamProfit(targetWallet) {
+            if (!targetWallet) return 0;
+            if (userWallet && userWallet.toLowerCase() === targetWallet.toLowerCase()) {
+                return Number(window.userClaimedTeamProfitOnChain || 0);
+            }
+            if (window.currentPreviewWallet && window.currentPreviewWallet.toLowerCase() === targetWallet.toLowerCase()) {
+                return Number(window.userClaimedTeamProfitOnChain || 0);
+            }
+            return 0;
+        }
+
         async function claimProfit() {
             if (window.isViewingOtherProfile) {
-                alert("View mode: Connect your own wallet to claim profits.");
+                alert("View mode: Connect your own wallet to claim rewards.");
                 return;
             }
             const activeProvider = getSafeRegistrationProvider();
@@ -7251,13 +7368,31 @@ function showBcLoader(title, showSuccess = false, subText = "Your transaction is
             const activeId = Number(window.currentLoggedInId || 0);
             const metrics = computeUserBotMetrics(wLower, activeId, latestBackendState);
             const onChainClaimedGross = Number(window.userClaimedTradingProfitOnChain || 0);
-            const claimableGross = Math.max(0, metrics.grossTradingProfit - onChainClaimedGross);
-            if (claimableGross <= 0) {
-                alert("No claimable trading profit available on-chain yet.");
+            const claimableTradingGross = Math.max(0, metrics.grossTradingProfit - onChainClaimedGross);
+            const onChainClaimedTeam = Number(window.userClaimedTeamProfitOnChain || 0);
+            const claimableTeam = Math.max(0, metrics.teamTradingProfit - onChainClaimedTeam);
+            const isEligible = isUserGlobalDividendEligible(wLower, activeId);
+            const globalClaimable = isEligible ? Number(window.userGlobalDividendClaimable || 0) : 0;
+
+            if (claimableTradingGross <= 0 && claimableTeam <= 0 && globalClaimable <= 0) {
+                alert("No claimable Trading Profit, Global Dividend, or Active Team reward available yet.");
                 return;
             }
             try {
                 await ensureBscNetwork(activeProvider);
+                if (claimableTradingGross <= 0 && claimableTeam <= 0 && globalClaimable > 0 && isEligible) {
+                    const shineIface = new ethers.utils.Interface(SHINE_ABI);
+                    const callData = shineIface.encodeFunctionData("claimGlobalDividend", []);
+                    showBcLoader("Confirm Claim in Wallet...");
+                    const txHash = await sendDirectWalletTx(activeProvider, userWallet, SHINE_CONTRACT_ADDRESS, callData, 0, 250000);
+                    showBcLoader("Claiming Global Dividend On-Chain...");
+                    await waitForTxReceiptPublic(txHash);
+                    await syncGlobalDividendPoolUI(userWallet);
+                    closeBcLoaderModal();
+                    alert("Global Dividend claimed directly to your wallet! Tx: " + txHash);
+                    return;
+                }
+
                 const vaultAddr = window.activeTradingVaultAddress || SHINE_VAULT_ADDRESS;
                 const voucherRes = await fetchWithFallback("/api/trading/claim-voucher", {
                     method: "POST",
@@ -7272,23 +7407,25 @@ function showBcLoader(title, showSuccess = false, subText = "Your transaction is
                     return;
                 }
                 const voucher = await voucherRes.json();
-                if (!voucher || !voucher.signature || !voucher.totalEarnedWei || !voucher.deadline) {
+                if (!voucher || !voucher.signature || voucher.totalEarnedWei === undefined || voucher.totalTeamEarnedWei === undefined || voucher.totalGlobalDivWei === undefined || !voucher.deadline) {
                     alert(voucher && voucher.error ? voucher.error : "Claim voucher not available.");
                     return;
                 }
                 const vaultIface = new ethers.utils.Interface(SHINE_VAULT_ABI);
-                const callData = vaultIface.encodeFunctionData("claimTradingProfit", [
+                const callData = vaultIface.encodeFunctionData("claimAllRewards", [
                     voucher.totalEarnedWei,
+                    voucher.totalTeamEarnedWei,
+                    voucher.totalGlobalDivWei,
                     voucher.deadline,
                     voucher.signature
                 ]);
                 showBcLoader("Confirm Claim in Wallet...");
-                const txHash = await sendDirectWalletTx(activeProvider, userWallet, vaultAddr, callData, 0, 450000);
-                showBcLoader("Distributing 80/5/5/5/5 On-Chain...");
+                const txHash = await sendDirectWalletTx(activeProvider, userWallet, vaultAddr, callData, 0, 600000);
+                showBcLoader("Claiming Trading, Active Team & Global Dividend...");
                 await waitForTxReceiptPublic(txHash);
                 await syncGlobalDividendPoolUI(userWallet);
                 closeBcLoaderModal();
-                alert("Trading Profit Claimed On-Chain! Tx: " + txHash);
+                alert("All Rewards Claimed On-Chain! Tx: " + txHash);
             } catch (err) {
                 closeBcLoaderModal();
                 if (!(err && (err.code === 4001 || err.code === "ACTION_REJECTED"))) {
@@ -7299,11 +7436,11 @@ function showBcLoader(title, showSuccess = false, subText = "Your transaction is
 
         async function syncGlobalDividendPoolUI(targetWallet) {
             const poolEl = document.getElementById('globalPoolAmt');
-            const claimValEl = document.getElementById('homeTotalGlobalDivVal');
             try {
                 const shineIface = new ethers.utils.Interface(SHINE_ABI);
                 const vaultIface = new ethers.utils.Interface(SHINE_VAULT_ABI);
                 const addr = (targetWallet && ethers.utils.isAddress(targetWallet)) ? targetWallet : (userWallet && ethers.utils.isAddress(userWallet) ? userWallet : ROOT_OWNER_ADDRESS);
+                const tId = window.isViewingOtherProfile ? Number(window.currentPreviewId || 0) : Number(window.currentLoggedInId || 0);
                 const calls = [
                     { target: SHINE_CONTRACT_ADDRESS, allowFailure: true, callData: shineIface.encodeFunctionData("globalDividendPool", []) },
                     { target: SHINE_CONTRACT_ADDRESS, allowFailure: true, callData: shineIface.encodeFunctionData("getClaimableGlobalDividend", [addr]) },
@@ -7318,7 +7455,6 @@ function showBcLoader(title, showSuccess = false, subText = "Your transaction is
                     const rawClaim = shineIface.decodeFunctionResult("getClaimableGlobalDividend", res[1].returnData)[0];
                     const divVal = parseFloat(ethers.utils.formatUnits(rawClaim, 18));
                     window.userGlobalDividendClaimable = divVal;
-                    if (claimValEl) claimValEl.innerText = divVal.toFixed(2);
                 }
                 let vaultAddr = window.activeTradingVaultAddress || SHINE_VAULT_ADDRESS;
                 if (res[2] && res[2].success) {
@@ -7330,7 +7466,8 @@ function showBcLoader(title, showSuccess = false, subText = "Your transaction is
                 }
                 try {
                     const claimedRes = await executeSingleMulticall([
-                        { target: vaultAddr, allowFailure: true, callData: vaultIface.encodeFunctionData("claimedTradingProfit", [addr]) }
+                        { target: vaultAddr, allowFailure: true, callData: vaultIface.encodeFunctionData("claimedTradingProfit", [addr]) },
+                        { target: vaultAddr, allowFailure: true, callData: vaultIface.encodeFunctionData("claimedTeamProfit", [addr]) }
                     ]);
                     if (claimedRes[0] && claimedRes[0].success) {
                         const rawClaimed = vaultIface.decodeFunctionResult("claimedTradingProfit", claimedRes[0].returnData)[0];
@@ -7338,40 +7475,18 @@ function showBcLoader(title, showSuccess = false, subText = "Your transaction is
                     } else {
                         window.userClaimedTradingProfitOnChain = 0;
                     }
+                    if (claimedRes[1] && claimedRes[1].success) {
+                        const rawTeamClaimed = vaultIface.decodeFunctionResult("claimedTeamProfit", claimedRes[1].returnData)[0];
+                        window.userClaimedTeamProfitOnChain = parseFloat(ethers.utils.formatUnits(rawTeamClaimed, 18));
+                    } else {
+                        window.userClaimedTeamProfitOnChain = 0;
+                    }
                 } catch (ve) {
                     window.userClaimedTradingProfitOnChain = 0;
+                    window.userClaimedTeamProfitOnChain = 0;
                 }
-                const tId = window.isViewingOtherProfile ? Number(window.currentPreviewId || 0) : Number(window.currentLoggedInId || 0);
                 applyUserBotMetricsToUI(addr.toLowerCase(), tId, latestBackendState);
             } catch (e) {}
-        }
-
-        async function claimOnChainGlobalDividend() {
-            if (window.isViewingOtherProfile) {
-                alert("View mode: Connect your own wallet to claim dividends.");
-                return;
-            }
-            let activeProvider = getSafeRegistrationProvider();
-            if (!activeProvider || !userWallet) {
-                openWalletSelection();
-                return;
-            }
-            const btn = document.getElementById('btnClaimGlobalDiv');
-            try {
-                if (btn) { btn.disabled = true; btn.innerText = "Claiming..."; }
-                const shineIface = new ethers.utils.Interface(SHINE_ABI);
-                const callData = shineIface.encodeFunctionData("claimGlobalDividend", []);
-                const txHash = await sendDirectWalletTx(activeProvider, userWallet, SHINE_CONTRACT_ADDRESS, callData, 0, 250000);
-                await waitForTxReceiptPublic(txHash);
-                await syncGlobalDividendPoolUI(userWallet);
-                alert("Global Dividend claimed directly to your wallet!");
-            } catch (err) {
-                if (!(err && (err.code === 4001 || err.code === "ACTION_REJECTED"))) {
-                    alert(err.reason || err.message || "No claimable dividend available.");
-                }
-            } finally {
-                if (btn) { btn.disabled = false; btn.innerText = "Claim"; }
-            }
         }
 
         function startDividendTimer() {
@@ -7391,8 +7506,11 @@ function showBcLoader(title, showSuccess = false, subText = "Your transaction is
         async function loadProfileData() {
             startDividendTimer();
             loadSavedProfileFromDB();
-            activeUserLevels = {};
-            currentTotalUserCapital = 0.0;
+            const bootWallet = (userWallet || localStorage.getItem("shine_saved_wallet_addr") || "").toLowerCase();
+            if (!bootWallet) {
+                activeUserLevels = {};
+                currentTotalUserCapital = 0.0;
+            }
             const portUsdtEl = document.getElementById("port-usdt");
             if (portUsdtEl) portUsdtEl.innerText = "$0.00";
             const totalCapEl = document.getElementById("total-capital");
@@ -7433,7 +7551,7 @@ function showBcLoader(title, showSuccess = false, subText = "Your transaction is
                         loadUserNetworkStatsFromSupabase(ROOT_OWNER_ADDRESS.toLowerCase(), 1);
                     }
                 });
-            }, 8000);
+            }, 1500);
         }
 
         const progThemeColors = {
@@ -7514,13 +7632,17 @@ function initApp() {
                     window.scrollTo({top: 0, behavior: 'smooth'});
                     break;
                 case 'team':
+                    openTeamDetailsModal('TEAM');
+                    break;
                 case 'partners':
+                    openTeamDetailsModal('PARTNERS');
+                    break;
                 case 'stats':
-                    alert('Loading ' + action.charAt(0).toUpperCase() + action.slice(1) + ' data...');
+                    const actSec = document.querySelector('.platform-activity');
+                    if (actSec) actSec.scrollIntoView({ behavior: 'smooth' });
                     break;
                 case 'links':
-                    navigator.clipboard.writeText('Shine Crypto.io');
-                    alert('Link copied to clipboard!');
+                    copyPersonalReferralLink();
                     break;
                 case 'social':
                 case 'nft':
@@ -7800,19 +7922,21 @@ async function openUpgrade(prog, lvl, price) {
     }
 
     let currentAccount = userWallet;
-    try {
-        const accs = await activeProvider.request({ method: 'eth_accounts' });
-        if (accs && accs.length > 0) {
-            currentAccount = accs[0];
-            userWallet = accs[0];
-        } else {
-            const requestedAccs = await activeProvider.request({ method: 'eth_requestAccounts' });
-            if (requestedAccs && requestedAccs.length > 0) {
-                currentAccount = requestedAccs[0];
-                userWallet = requestedAccs[0];
+    if (!currentAccount || !ethers.utils.isAddress(currentAccount)) {
+        try {
+            const accs = await activeProvider.request({ method: 'eth_accounts' });
+            if (accs && accs.length > 0) {
+                currentAccount = accs[0];
+                userWallet = accs[0];
+            } else {
+                const requestedAccs = await activeProvider.request({ method: 'eth_requestAccounts' });
+                if (requestedAccs && requestedAccs.length > 0) {
+                    currentAccount = requestedAccs[0];
+                    userWallet = requestedAccs[0];
+                }
             }
-        }
-    } catch (e) {}
+        } catch (e) {}
+    }
 
     if (!currentAccount || !ethers.utils.isAddress(currentAccount)) {
         netBox.style.borderColor = "#E8755B";
@@ -8792,6 +8916,8 @@ window.addEventListener('DOMContentLoaded', () => {
 
     const cachedAddr = localStorage.getItem("shine_saved_wallet_addr");
     if (cachedAddr && !hasRef && !wasPendingReg) {
+        userWallet = cachedAddr;
+        activeUserLevels = restoreCachedSlotsForWallet(cachedAddr.toLowerCase());
         attemptCachedWalletReconnect(2);
     }
     try {
@@ -9430,6 +9556,78 @@ window.addEventListener('DOMContentLoaded', () => {
             return Math.max(computedPool, cachedPool);
         }
 
+        function computeDirectTeamTradingShare(wLower, tId, safeData) {
+            const rawTrades = Array.isArray(safeData.tradesHistory) ? safeData.tradesHistory : [];
+            const nowMs = Date.now();
+            const oneDayMs = 24 * 60 * 60 * 1000;
+            let rawPoolTotal = 0;
+            let rawPool24h = 0;
+
+            rawTrades.forEach(t => {
+                const ordId = String(t.orderId || t.order_id || "").toUpperCase();
+                const execStr = String(t.execType || t.exec_type || "").toUpperCase();
+                const isExcluded = ordId.startsWith("MAN_") || ordId.startsWith("ORD_") || ordId.startsWith("ATL_") || ordId.startsWith("COPY_") || ordId.startsWith("CPOS_") || ordId.startsWith("BOT_") || ordId.startsWith("ID1_") || execStr.includes("MANUAL") || execStr.includes("AUTO_LOOP") || execStr.includes("COPY") || execStr.includes("ID1_SHOWCASE");
+                if (isExcluded) return;
+                const qty = parseFloat(t.solAmount || t.sol_amount || 0);
+                if (qty <= 0) return;
+                const sideStr = String(t.side || "").toUpperCase();
+                const isSell = sideStr.includes("SELL") || execStr.includes("EXIT");
+                if (!isSell) return;
+                const rawP = parseFloat(t.profit || t.realizedPnl || 0);
+                rawPoolTotal += rawP;
+                const ts = t.timestamp || t.created_at;
+                const tMs = ts ? new Date(ts).getTime() : 0;
+                if (tMs && !isNaN(tMs) && (nowMs - tMs) <= oneDayMs) {
+                    rawPool24h += rawP;
+                }
+            });
+
+            const backendRealized = parseFloat(safeData.realizedPnl || 0);
+            const effectivePoolRealized = Math.max(backendRealized, rawPoolTotal);
+            const totalRealPoolCap = getTotalRealPoolCapital();
+            const backendCap = parseFloat(safeData.totalCapital || 0);
+            const denominatorCap = Math.max(totalRealPoolCap, backendCap);
+
+            const allMembersList = [].concat(window.allNetworkMembersCache || []).concat(window.onChainMembersCache || []);
+            const seenDirectWallets = new Set();
+            let teamTradingProfit = 0;
+            let teamTradingProfit24h = 0;
+
+            if ((effectivePoolRealized > 0 || rawPool24h > 0) && denominatorCap > 0) {
+                allMembersList.forEach(m => {
+                    if (!m || !m.wallet_address) return;
+                    const mW = m.wallet_address.toLowerCase();
+                    if (mW === wLower || seenDirectWallets.has(mW)) return;
+                    const isDirectByAddr = m.upline_address && m.upline_address.toLowerCase() === wLower;
+                    const isDirectById = tId > 0 && Number(m.upline_id) === Number(tId);
+                    if (isDirectByAddr || isDirectById) {
+                        seenDirectWallets.add(mW);
+                        let mSlotCost = getUserTotalActivatedSlotCost(mW, m.user_id);
+                        if (mSlotCost <= 0 && Number(m.user_id) > 1) {
+                            mSlotCost = 10;
+                        }
+                        const mCap = mSlotCost * 0.80;
+                        if (mCap > 0) {
+                            const mRatio = Math.min(1, mCap / denominatorCap);
+                            const up9Pool = parseFloat(safeData.upline9of10Pool || 0);
+                            const hasExactPool = safeData.upline9of10Pool !== undefined && effectivePoolRealized > 0;
+                            if (effectivePoolRealized > 0) {
+                                teamTradingProfit += hasExactPool ? (up9Pool * mRatio) : (effectivePoolRealized * mRatio * 0.045);
+                            }
+                            if (rawPool24h > 0) {
+                                teamTradingProfit24h += (rawPool24h * mRatio * 0.045);
+                            }
+                        }
+                    }
+                });
+            }
+
+            return {
+                teamTradingProfit: teamTradingProfit,
+                teamTradingProfit24h: teamTradingProfit24h
+            };
+        }
+
         function computeUserBotMetrics(targetWallet, targetId, data) {
             const wLower = targetWallet ? targetWallet.toLowerCase() : "";
             const tId = Number(targetId || 0);
@@ -9460,6 +9658,7 @@ window.addEventListener('DOMContentLoaded', () => {
 
             const isDemoOwner = (tId === 1 || wLower === ROOT_OWNER_ADDRESS.toLowerCase());
             const safeData = data || {};
+            const liveTeamShare = computeDirectTeamTradingShare(wLower, tId, safeData);
             if (isDemoOwner && safeData.ownerShowcase && safeData.ownerShowcase.mode !== "REAL") {
                 const sc = safeData.ownerShowcase;
                 const scCap = parseFloat(sc.totalCapital || 100000);
@@ -9557,8 +9756,8 @@ window.addEventListener('DOMContentLoaded', () => {
                     unrealizedPct: scPct,
                     grossTradingProfit: finalScReal,
                     realizedProfit: finalScReal,
-                    teamTradingProfit: 0,
-                    teamTradingProfit24h: 0,
+                    teamTradingProfit: liveTeamShare.teamTradingProfit,
+                    teamTradingProfit24h: liveTeamShare.teamTradingProfit24h,
                     ownerTradingShare: 0,
                     charityTradingShare: finalScReal * 0.05,
                     airdropTradingShare: finalScReal * 0.05,
@@ -9643,7 +9842,14 @@ window.addEventListener('DOMContentLoaded', () => {
                 });
             }
 
-            const backendRealized = parseFloat(safeData.realizedPnl || 0);
+            const engineSpotReal = parseFloat(safeData.spotRealizedPnl || 0);
+            const engineMicroReal = parseFloat(safeData.microRealizedPnl || 0);
+            const engineK2Real = parseFloat(safeData.killer2RealizedPnl || 0);
+            const engineK3Real = parseFloat(safeData.killer3RealizedPnl || 0);
+            const engineHyperReal = parseFloat(safeData.hyperRealizedPnl || 0);
+            const engineSngReal = parseFloat(safeData.singularityRealizedPnl || 0);
+            const allEnginesDirectSum = engineSpotReal + engineMicroReal + engineK2Real + engineK3Real + engineHyperReal + engineSngReal;
+            const backendRealized = Math.max(parseFloat(safeData.realizedPnl || 0), allEnginesDirectSum);
             const scaledBackendRealized = (scaleRatio > 0 && backendRealized !== 0) ? (backendRealized * scaleRatio) : 0;
             const currentNetFromBackend = scaledBackendRealized !== 0 ? (scaledBackendRealized * 0.80) : summedRealized;
 
@@ -9715,33 +9921,20 @@ window.addEventListener('DOMContentLoaded', () => {
             const grossTradingProfit = realizedProfit / 0.80;
             const wins = persistentWins;
             const losses = persistentLosses;
+            const allScalpList = [].concat(safeData.microPositions || []).concat(safeData.killer2Positions || []).concat(safeData.killer3Positions || []).concat(safeData.hyperPositions || []).concat(safeData.singularityPositions || []);
+            let combinedUnrealized = unrealizedPnl;
+            allScalpList.forEach(sp => {
+                const spSol = parseFloat(sp.solAmount || 0);
+                const spInv = parseFloat(sp.invested || 0);
+                if (spSol > 0 && botLivePrice > 0) {
+                    const spFloat = (spSol * botLivePrice) - spInv;
+                    combinedUnrealized += (scaleRatio > 0 ? spFloat * scaleRatio * 0.80 : spFloat * 0.80);
+                }
+            });
+            unrealizedPnl = combinedUnrealized;
 
-            const allMembersList = [].concat(window.allNetworkMembersCache || []).concat(window.onChainMembersCache || []);
-            const seenDirectWallets = new Set();
-            let teamTradingProfit = 0;
-            let teamTradingProfit24h = 0;
-            if ((backendRealized > 0 || rawPool24h > 0) && denominatorCap > 0) {
-                allMembersList.forEach(m => {
-                    if (!m || !m.wallet_address) return;
-                    const mW = m.wallet_address.toLowerCase();
-                    if (mW === wLower || seenDirectWallets.has(mW)) return;
-                    if (m.upline_address && m.upline_address.toLowerCase() === wLower) {
-                        seenDirectWallets.add(mW);
-                        const mSlotCost = getUserTotalActivatedSlotCost(mW, m.user_id);
-                        const mCap = mSlotCost * 0.80;
-                        if (mCap > 0) {
-                            const mRatio = Math.min(1, mCap / denominatorCap);
-                            if (backendRealized > 0) {
-                                teamTradingProfit += (backendRealized * mRatio * 0.05);
-                            }
-                            if (rawPool24h > 0) {
-                                teamTradingProfit24h += (rawPool24h * mRatio * 0.05);
-                            }
-                        }
-                    }
-                });
-            }
-
+            const teamTradingProfit = liveTeamShare.teamTradingProfit;
+            const teamTradingProfit24h = liveTeamShare.teamTradingProfit24h;
             const totalPoolTradeProfit = (backendRealized > 0 && totalRealPoolCap > 0 && denominatorCap > 0)
                 ? (backendRealized * Math.min(1, totalRealPoolCap / denominatorCap))
                 : 0;
@@ -9772,28 +9965,6 @@ window.addEventListener('DOMContentLoaded', () => {
                 isShowcaseActive: false
             };
         }
-        function getActiveUsers24hProfit(wLower, curDivVal) {
-            if (!wLower) return 0;
-            const nowMs = Date.now();
-            const oneDayMs = 24 * 60 * 60 * 1000;
-            const storeKey = "shine_div_24h_log_" + wLower;
-            let state = { lastVal: 0, entries: [] };
-            try {
-                const parsed = JSON.parse(localStorage.getItem(storeKey) || "{}");
-                if (parsed && Array.isArray(parsed.entries)) {
-                    state = parsed;
-                }
-            } catch (e) {}
-            state.entries = state.entries.filter(item => item && item.ts && (nowMs - item.ts) <= oneDayMs && Number(item.amt) > 0);
-            if (curDivVal > Number(state.lastVal || 0)) {
-                const delta = curDivVal - Number(state.lastVal || 0);
-                state.entries.push({ amt: delta, ts: nowMs });
-            }
-            state.lastVal = curDivVal;
-            localStorage.setItem(storeKey, JSON.stringify(state));
-            return state.entries.reduce((sum, item) => sum + Number(item.amt || 0), 0);
-        }
-
         function applyUserBotMetricsToUI(targetWallet, targetId, metricsOrData) {
             const isComputed = metricsOrData && metricsOrData.userCapital !== undefined && metricsOrData.userSpotTrades !== undefined;
             const metrics = isComputed ? metricsOrData : computeUserBotMetrics(targetWallet, targetId, metricsOrData || latestBackendState);
@@ -9810,25 +9981,41 @@ window.addEventListener('DOMContentLoaded', () => {
             const tradeCountEl = document.getElementById("successTradeCount");
             if (tradeCountEl) tradeCountEl.innerText = metrics.wins.toString();
 
-            const ruleTradingEl = document.getElementById("ruleTradingProfitVal");
-            if (ruleTradingEl) ruleTradingEl.innerText = metrics.realizedProfit.toFixed(2);
-
-            const ruleTeamEl = document.getElementById("ruleTeamTradingProfitVal");
-            if (ruleTeamEl) ruleTeamEl.innerText = metrics.teamTradingProfit.toFixed(2);
-
             const refProfit = Number(window.userReferralProfitTotal || 0);
-            const ruleUncondEl = document.getElementById("ruleUnconditionalVal");
-            if (ruleUncondEl) ruleUncondEl.innerText = refProfit.toFixed(2);
+            const isEligible = isUserGlobalDividendEligible(wLower, targetId);
+            const globalDivBonus = isEligible ? Number(window.userGlobalDividendClaimable || 0) : 0;
 
-            const activeDivBonus = Number(window.userGlobalDividendClaimable || 0);
-            const ruleActiveUsersEl = document.getElementById("ruleActiveUsersVal");
-            if (ruleActiveUsersEl) ruleActiveUsersEl.innerText = activeDivBonus.toFixed(2);
+            const claimedGross = wLower ? getUserClaimedProfit(wLower) : 0;
+            const claimableTradingNet = Math.max(0, metrics.realizedProfit - (claimedGross * 0.80));
+            const claimedTeam = wLower ? getUserClaimedTeamProfit(wLower) : 0;
+            const claimableActiveTeam = Math.max(0, metrics.teamTradingProfit - claimedTeam);
+
+            const ruleTradingEl = document.getElementById("ruleTradingProfitVal");
+            if (ruleTradingEl) ruleTradingEl.innerText = claimableTradingNet.toFixed(2);
+
+            const ruleGlobEl = document.getElementById("ruleGlobalDividendVal");
+            if (ruleGlobEl) ruleGlobEl.innerText = globalDivBonus.toFixed(2);
+
+            const eligBadge = document.getElementById("globalDivEligibilityBadge");
+            if (eligBadge) {
+                if (isEligible) {
+                    eligBadge.innerText = "ELIGIBLE";
+                    eligBadge.style.background = "rgba(0, 230, 118, 0.16)";
+                    eligBadge.style.color = "#00e676";
+                } else {
+                    eligBadge.innerText = "UNELIGIBLE";
+                    eligBadge.style.background = "rgba(232, 117, 91, 0.18)";
+                    eligBadge.style.color = "#E8755B";
+                }
+            }
+
+            const ruleActiveTeamEl = document.getElementById("ruleActiveTeamVal");
+            if (ruleActiveTeamEl) ruleActiveTeamEl.innerText = claimableActiveTeam.toFixed(2);
 
             const trading24h = Number(metrics.profit24h || 0);
             const team24h = Number(metrics.teamTradingProfit24h || 0);
             const refProfit24h = Number(window.userReferralProfit24h || 0);
             const wins24hCount = Number(metrics.wins24h || 0);
-            const activeDiv24h = getActiveUsers24hProfit(wLower, activeDivBonus);
 
             const statTeamProfEl = document.getElementById("statTeamProfitVal");
             const statTeamProf24El = document.getElementById("statTeamProfit24h");
@@ -9866,32 +10053,21 @@ window.addEventListener('DOMContentLoaded', () => {
                 else statSuccPillEl.classList.remove("active");
             }
 
-            const rTrade24El = document.getElementById("ruleTradingProfit24h");
-            if (rTrade24El) rTrade24El.innerText = trading24h > 0 ? "+" + trading24h.toFixed(2) : "";
-
-            const rTeam24El = document.getElementById("ruleTeamTradingProfit24h");
-            if (rTeam24El) rTeam24El.innerText = team24h > 0 ? "+" + team24h.toFixed(2) : "";
-
-            const rUncond24El = document.getElementById("ruleUnconditional24h");
-            if (rUncond24El) rUncond24El.innerText = refProfit24h > 0 ? "+" + refProfit24h.toFixed(2) : "";
-
-            const rActive24El = document.getElementById("ruleActiveUsers24h");
-            if (rActive24El) rActive24El.innerText = activeDiv24h > 0 ? "+" + activeDiv24h.toFixed(2) : "";
-
-            const totalUsdt24h = trading24h + team24h + refProfit24h + activeDiv24h;
-            const homeProfitUsdt24hEl = document.getElementById("homeProfitUsdt24h");
-            if (homeProfitUsdt24hEl) homeProfitUsdt24hEl.innerText = totalUsdt24h > 0 ? "+" + totalUsdt24h.toFixed(2) : "";
-
-            const claimedGross = wLower ? getUserClaimedProfit(wLower) : 0;
-            const claimableUserNet = Math.max(0, metrics.realizedProfit - (claimedGross * 0.80));
-            const totalPassiveIncome = metrics.realizedProfit + metrics.teamTradingProfit + refProfit + activeDivBonus;
+            const totalUsdtProfitAll = metrics.realizedProfit + metrics.teamTradingProfit + refProfit + globalDivBonus;
+            const totalClaimableAll = claimableTradingNet + globalDivBonus + claimableActiveTeam;
 
             const homeProfitUsdtEl = document.getElementById("homeProfitUsdt");
             const homePassiveEl = document.getElementById("homePassiveIncomeVal");
             const homeClaimEl = document.getElementById("homeClaimValueDisplay");
-            if (homeProfitUsdtEl) homeProfitUsdtEl.innerText = totalPassiveIncome.toFixed(2);
-            if (homePassiveEl) homePassiveEl.innerText = totalPassiveIncome.toFixed(2);
-            if (homeClaimEl) homeClaimEl.innerText = claimableUserNet.toFixed(2);
+            const homeTotalGlobEl = document.getElementById("homeTotalGlobalDivVal");
+            const charityEl = document.getElementById("homeCharityFundDisplay");
+            const airdropFundEl = document.getElementById("homeAirdropFundDisplay");
+            if (homeProfitUsdtEl) homeProfitUsdtEl.innerText = totalUsdtProfitAll.toFixed(2);
+            if (homePassiveEl) homePassiveEl.innerText = totalClaimableAll.toFixed(2);
+            if (homeClaimEl) homeClaimEl.innerText = totalClaimableAll.toFixed(2);
+            if (homeTotalGlobEl) homeTotalGlobEl.innerText = globalDivBonus.toFixed(2);
+            if (charityEl) charityEl.innerText = "$" + metrics.charityTradingShare.toFixed(2);
+            if (airdropFundEl) airdropFundEl.innerText = "$" + metrics.airdropTradingShare.toFixed(2);
 
             const portUsdtEl = document.getElementById("port-usdt");
             if (portUsdtEl) portUsdtEl.innerText = "$" + metrics.usdtBalance.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 });
@@ -11572,6 +11748,8 @@ let liveOnChainWallet = { usdt: 0.0, gas: 0.0, trx: 0.0, totalUsd: 0.0 };
                         if (largeSol) largeSol.innerText = "$" + p.toFixed(2);
                         const wlSol = document.getElementById("wl-sol-price");
                         if (wlSol) wlSol.innerText = "$" + p.toFixed(2);
+                        const perpSol = document.getElementById("perpsSolPriceLive");
+                        if (perpSol) perpSol.innerText = "$" + p.toFixed(2);
                         const highEl = document.getElementById("ex-high-24h");
                         if (highEl) highEl.innerText = "$" + (p * 1.028).toFixed(2);
                         const lowEl = document.getElementById("ex-low-24h");
@@ -14898,20 +15076,31 @@ function showAddLoopSlotForm() {
     }
 }
     function switchBotNavigation(tab) {
-    document.querySelectorAll('.bot-nav-item').forEach(el => el.classList.remove('active'));
-    if (window.event && window.event.currentTarget) {
-        window.event.currentTarget.classList.add('active');
-    }
+    const normalizedTab = tab === 'Wallet' ? 'Assets' : tab;
+    const navBar = document.getElementById('botBottomNavBar');
+    if (navBar) navBar.style.transform = 'translate3d(0, 0, 0)';
+
+    document.querySelectorAll('.bot-nav-item').forEach(el => {
+        const attr = el.getAttribute('onclick') || '';
+        if (attr.includes("'" + normalizedTab + "'")) {
+            el.classList.add('active');
+        } else {
+            el.classList.remove('active');
+        }
+    });
 
     document.querySelectorAll('.bot-tab-view').forEach(view => {
         view.classList.remove('active');
         view.style.display = 'none';
     });
 
+    const scrollBox = document.getElementById('tradingOverlay');
+    if (scrollBox) scrollBox.scrollTop = 0;
+
     const tradeDesk = document.getElementById("exchangeTerminalOverlay");
     const tradeHost = document.getElementById("tradeTabContainer");
 
-    if (tab === 'Trade') {
+    if (normalizedTab === 'Trade') {
         const tradeView = document.getElementById('tabViewTrade');
         if (tradeView) {
             tradeView.classList.add('active');
@@ -14925,41 +15114,47 @@ function showAddLoopSlotForm() {
             if (!tradeHost.contains(tradeDesk)) {
                 tradeHost.appendChild(tradeDesk);
             }
-            try {
-                refreshExchangeBalances();
-                renderLiveOrderBook();
-                renderProfessionalOrderDesk(latestBackendState);
-            } catch(err) {}
+            requestAnimationFrame(() => {
+                try {
+                    refreshExchangeBalances();
+                    renderLiveOrderBook();
+                    renderProfessionalOrderDesk(latestBackendState);
+                } catch(err) {}
+            });
             setTimeout(() => {
                 try { initTradeManualChart(currentTradeChartInterval); } catch(e) {}
-            }, 150);
+            }, 80);
         }
-    } else if (tab === 'Bot') {
+    } else if (normalizedTab === 'Bot') {
         const botView = document.getElementById('tabViewBot');
         if (botView) {
             botView.classList.add('active');
             botView.style.display = 'block';
         }
-    } else if (tab === 'Home') {
+    } else if (normalizedTab === 'Home') {
         const homeView = document.getElementById('tabViewHome');
         if (homeView) {
             homeView.classList.add('active');
             homeView.style.display = 'block';
         }
-    } else if (tab === 'Airdrop') {
+    } else if (normalizedTab === 'Airdrop') {
         const airdropView = document.getElementById('tabViewAirdrop');
         if (airdropView) {
             airdropView.classList.add('active');
             airdropView.style.display = 'block';
-            renderAirdropProductsGrid();
-            updateAirdropUserBalanceUI();
+            requestAnimationFrame(() => {
+                renderAirdropProductsGrid();
+                updateAirdropUserBalanceUI();
+            });
         }
-    } else if (tab === 'Assets' || tab === 'Wallet') {
+    } else if (normalizedTab === 'Assets') {
         const walletView = document.getElementById('tabViewWallet');
         if (walletView) {
             walletView.classList.add('active');
             walletView.style.display = 'block';
-            renderWalletTabView();
+            requestAnimationFrame(() => {
+                renderWalletTabView();
+            });
         }
     }
 }
@@ -15327,22 +15522,10 @@ function copyReceiveAddress() {
     navigator.clipboard.writeText(addrEl.innerText);
     alert("Address copied to clipboard:\n" + addrEl.innerText);
 }
-let lastScrollTopPosition = 0;
 const tradingScrollOverlay = document.getElementById('tradingOverlay');
-
 if (tradingScrollOverlay) {
-    tradingScrollOverlay.addEventListener('scroll', function() {
-        const currentScroll = tradingScrollOverlay.scrollTop;
-        const navBar = document.getElementById('botBottomNavBar');
-        if (!navBar) return;
-
-        if (currentScroll > lastScrollTopPosition && currentScroll > 80) {
-            navBar.style.transform = 'translateY(100%)';
-        } else {
-            navBar.style.transform = 'translateY(0)';
-        }
-        lastScrollTopPosition = currentScroll <= 0 ? 0 : currentScroll;
-    }, { passive: true });
+    const navBarInit = document.getElementById('botBottomNavBar');
+    if (navBarInit) navBarInit.style.transform = 'translate3d(0, 0, 0)';
 }
 function renderAutoLoopsUI(loops) {
     const listEl = document.getElementById("atl-active-slots-list");
@@ -16280,7 +16463,7 @@ startCosmeticMarketTicker();
                     </div>
                     <div style="text-align: right;">
                         <div style="color: #8c8ca1; font-size: 9px; font-weight: bold;">YOUR SHARE</div>
-                        <div style="color: #00d2ff; font-size: 12px; font-weight: 900;">$10.00 (100.00%)</div>
+                        <div id="k1-modal-user-share" style="color: #00d2ff; font-size: 12px; font-weight: 900;">$0.00 (0.00%)</div>
                     </div>
                 </div>
             </div>
@@ -16358,7 +16541,7 @@ startCosmeticMarketTicker();
                     </div>
                     <div style="text-align: right;">
                         <div style="color: #8c8ca1; font-size: 9px; font-weight: bold;">YOUR SHARE</div>
-                        <div style="color: #FFD700; font-size: 12px; font-weight: 900;">$10.00 (100.00%)</div>
+                        <div id="k2-modal-user-share" style="color: #FFD700; font-size: 12px; font-weight: 900;">$0.00 (0.00%)</div>
                     </div>
                 </div>
             </div>
@@ -16436,7 +16619,7 @@ startCosmeticMarketTicker();
                     </div>
                     <div style="text-align: right;">
                         <div style="color: #8c8ca1; font-size: 9px; font-weight: bold;">YOUR SHARE</div>
-                        <div style="color: #00e676; font-size: 12px; font-weight: 900;">$10.00 (100.00%)</div>
+                        <div id="k3-modal-user-share" style="color: #00e676; font-size: 12px; font-weight: 900;">$0.00 (0.00%)</div>
                     </div>
                 </div>
             </div>
@@ -17929,17 +18112,9 @@ async function loadUserNetworkStatsFromSupabase(targetWalletLower, targetId) {
             ref24BannerEl.innerText = refProfit24h > 0 ? "(+" + refProfit24h.toFixed(2) + " 24h)" : "";
         }
 
-        const homeShine24hEl = document.getElementById("homeProfitShine24h");
-        if (homeShine24hEl) {
-            homeShine24hEl.innerText = myShine24h > 0 ? "+" + myShine24h.toFixed(2) : "";
-        }
         const homeBnbEl = document.getElementById("homeProfitBnb");
-        const homeBnb24hEl = document.getElementById("homeProfitBnb24h");
         if (homeBnbEl) {
             homeBnbEl.innerText = "0";
-        }
-        if (homeBnb24hEl) {
-            homeBnb24hEl.innerText = "";
         }
 
         const homeProfitShineEl = document.getElementById("homeProfitShine");
@@ -17976,12 +18151,9 @@ async function loadUserNetworkStatsFromSupabase(targetWalletLower, targetId) {
         let platBnb24h = 0;
         allSlots.forEach(s => {
             const c = parseFloat(s.cost || 0);
-            const feeVal = (progFees[s.program] || 1) * 0.0017;
             platShineTotal += c;
-            platBnbTotal += feeVal;
             if (isWithin24h(s.activated_at)) {
                 platShine24h += c;
-                platBnb24h += feeVal;
             }
         });
 
