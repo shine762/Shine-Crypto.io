@@ -1,4 +1,4 @@
-                
+                  
  <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -1205,12 +1205,12 @@
         .program-title-row {
     display: flex;
     justify-content: space-between;
-    align-items: baseline;
-    gap: 12px;
+    align-items: center;
+    gap: 8px;
     margin-bottom: 20px;
 }
-.program-title-row h1 { font-size: 26px; margin: 0; line-height: 1.2; }
-.program-total-profit { font-size: 24px; font-weight: 800; white-space: nowrap; flex-shrink: 0; }
+.program-title-row h1 { font-size: 16px; margin: 0; line-height: 1.2; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.program-total-profit { font-size: 16px; font-weight: 800; white-space: nowrap; flex-shrink: 0; }
         .school-banner {
             background: #1A1A1A;
             border-radius: 16px;
@@ -3313,11 +3313,10 @@ input:checked + .tw-slider:before {
                             </svg>
                         </div>
                     </li>
-                    <li class="rule-item">
-                        <span>Global dividend</span>
-                        <span id="globalDivEligibilityBadge" style="font-size:10px; font-weight:800; padding:3px 10px; border-radius:10px; text-align:center; background:rgba(232,117,91,0.18); color:#E8755B;">UNELIGIBLE</span>
-                        <div class="rule-value" style="justify-self:end;">
-                            <span id="ruleGlobalDividendVal">0.00</span>
+                    <li class="rule-item" style="display:flex; justify-content:space-between;">
+                        <span>Team Profit</span>
+                        <div class="rule-value">
+                            <span id="ruleActiveTeamVal">0.00</span>
                             <svg class="icon-sm" viewBox="0 0 100 100" style="width: 20px; height: 20px; border-radius: 50%;">
                                 <circle cx="50" cy="50" r="50" fill="#009393"/>
                                 <path d="M50 42.5 C34 42.5 22 45.2 22 48.5 C22 51.8 34 54.5 50 54.5 C66 54.5 78 51.8 78 48.5 C78 45.2 66 42.5 50 42.5 Z M50 45.8 C62.5 45.8 71.5 47.7 71.5 48.5 C71.5 49.3 62.5 51.2 50 51.2 C37.5 51.2 28.5 49.3 28.5 48.5 C28.5 47.7 37.5 45.8 50 45.8 Z" fill="#FFFFFF"/>
@@ -3325,10 +3324,11 @@ input:checked + .tw-slider:before {
                             </svg>
                         </div>
                     </li>
-                    <li class="rule-item" style="display:flex; justify-content:space-between;">
-                        <span>Active team</span>
-                        <div class="rule-value">
-                            <span id="ruleActiveTeamVal">0.00</span>
+                    <li class="rule-item">
+                        <span>Global dividend</span>
+                        <span id="globalDivEligibilityBadge" style="font-size:10px; font-weight:800; padding:3px 10px; border-radius:10px; text-align:center; background:rgba(232,117,91,0.18); color:#E8755B;">UNELIGIBLE</span>
+                        <div class="rule-value" style="justify-self:end;">
+                            <span id="ruleGlobalDividendVal">0.00</span>
                             <svg class="icon-sm" viewBox="0 0 100 100" style="width: 20px; height: 20px; border-radius: 50%;">
                                 <circle cx="50" cy="50" r="50" fill="#009393"/>
                                 <path d="M50 42.5 C34 42.5 22 45.2 22 48.5 C22 51.8 34 54.5 50 54.5 C66 54.5 78 51.8 78 48.5 C78 45.2 66 42.5 50 42.5 Z M50 45.8 C62.5 45.8 71.5 47.7 71.5 48.5 C71.5 49.3 62.5 51.2 50 51.2 C37.5 51.2 28.5 49.3 28.5 48.5 C28.5 47.7 37.5 45.8 50 45.8 Z" fill="#FFFFFF"/>
@@ -3343,44 +3343,24 @@ input:checked + .tw-slider:before {
                 
                 <div class="reward-card" style="text-align: center; border: 1px solid var(--tertiary-bg);">
                     <div style="color: #FFFFFFB3; font-size: 12px; text-transform: uppercase; letter-spacing: 1px;">Next Global Dividend Distribution</div>
-                    <div id="dividendTimer" style="font-size: 24px; font-weight: 900; color: #FFD700; margin: 8px 0;">00:00:00</div>
+                    <div id="dividendTimer" style="font-size: 24px; font-weight: 900; color: #00e676; margin: 8px 0;">00:00:00</div>
                     <div style="font-size: 10px; color: #4CAF50;">V1 GLOBAL POOL: <span id="globalPoolAmt">0.00</span> USDT</div>
                 </div>
-                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 12px;">
-                    <div style="background: var(--secondary-bg); border-radius: 14px; padding: 14px; border: 1px solid rgba(233, 30, 99, 0.25); display: flex; flex-direction: column; justify-content: space-between;">
-                        <div>
-                            <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 6px;">
-                                <div style="display: flex; align-items: center; gap: 5px;">
-                                    <i class="material-icons" style="font-size: 16px; color: #e91e63;">favorite</i>
-                                    <span style="font-size: 11px; font-weight: 800; color: #fff;">CHARITY (5%)</span>
-                                </div>
-                                <a href="https://testnet.bscscan.com/address/0x546c521EF3d3E5a9fDCB9F1F50981FCb7B6AD0E9" target="_blank" style="background: rgba(233, 30, 99, 0.15); color: #e91e63; border: 1px solid rgba(233, 30, 99, 0.4); border-radius: 6px; padding: 2px 6px; font-size: 9px; font-weight: 800; font-family: monospace; text-decoration: none; display: flex; align-items: center; gap: 2px;">
-                                    <span>BSC</span><i class="material-icons" style="font-size: 10px;">open_in_new</i>
-                                </a>
-                            </div>
-                            <div style="font-size: 9px; color: #8c8ca1; line-height: 1.3;">Automated Smart Contract Charity Fund</div>
-                        </div>
-                        <div style="margin-top: 10px;">
-                            <div id="homeCharityFundDisplay" style="font-size: 18px; font-weight: 900; color: #e91e63; font-family: monospace;">$0.00</div>
-                            <div style="font-size: 9px; color: #8c8ca1; font-family: monospace;">0x546c...0E9</div>
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-top: 12px;">
+                    <div class="reward-card" style="text-align: center; border: none; margin-bottom: 0;">
+                        <div style="color: #FFFFFFB3; font-size: 12px; text-transform: uppercase; letter-spacing: 1px;">Airdrop Reserve (5%)</div>
+                        <div id="homeAirdropFundDisplay" style="font-size: 24px; font-weight: 900; color: #FFD700; margin: 8px 0; font-family: monospace;">$0.00</div>
+                        <div style="display: flex; align-items: center; justify-content: center; gap: 6px; white-space: nowrap;">
+                            <span style="font-size: 10px; color: #4CAF50;">AIRDROP POOL: 5%</span>
+                            <a id="airdropWalletBscLink" href="https://testnet.bscscan.com/address/0xEEe011D9d6Cb0C5A382C5baffE8E05c384631159" target="_blank" style="background: rgba(240, 185, 11, 0.16); color: #F0B90B; border: 1px solid rgba(240, 185, 11, 0.45); border-radius: 6px; padding: 2px 6px; font-size: 9px; font-weight: 900; text-decoration: none; letter-spacing: 0.4px; line-height: 1.2;">BSC</a>
                         </div>
                     </div>
-                    <div style="background: var(--secondary-bg); border-radius: 14px; padding: 14px; border: 1px solid rgba(255, 215, 0, 0.25); display: flex; flex-direction: column; justify-content: space-between;">
-                        <div>
-                            <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 6px;">
-                                <div style="display: flex; align-items: center; gap: 5px;">
-                                    <i class="material-icons" style="font-size: 16px; color: #FFD700;">stars</i>
-                                    <span style="font-size: 11px; font-weight: 800; color: #fff;">AIRDROP (5%)</span>
-                                </div>
-                                <a href="https://testnet.bscscan.com/address/0xb371Dc77B0E8f7f4eFA06925673B3F063B531832" target="_blank" style="background: rgba(255, 215, 0, 0.15); color: #FFD700; border: 1px solid rgba(255, 215, 0, 0.4); border-radius: 6px; padding: 2px 6px; font-size: 9px; font-weight: 800; font-family: monospace; text-decoration: none; display: flex; align-items: center; gap: 2px;">
-                                    <span>BSC</span><i class="material-icons" style="font-size: 10px;">open_in_new</i>
-                                </a>
-                            </div>
-                            <div style="font-size: 9px; color: #8c8ca1; line-height: 1.3;">Decentralized Liquidity Pool Reserve</div>
-                        </div>
-                        <div style="margin-top: 10px;">
-                            <div id="homeAirdropFundDisplay" style="font-size: 18px; font-weight: 900; color: #FFD700; font-family: monospace;">$0.00</div>
-                            <div style="font-size: 9px; color: #8c8ca1; font-family: monospace;">0xb371...832</div>
+                    <div class="reward-card" style="text-align: center; border: none; margin-bottom: 0;">
+                        <div style="color: #FFFFFFB3; font-size: 12px; text-transform: uppercase; letter-spacing: 1px;">Global Charity (5%)</div>
+                        <div id="homeCharityFundDisplay" style="font-size: 24px; font-weight: 900; color: #e91e63; margin: 8px 0; font-family: monospace;">$0.00</div>
+                        <div style="display: flex; align-items: center; justify-content: center; gap: 6px; white-space: nowrap;">
+                            <span style="font-size: 10px; color: #4CAF50;">CHARITY FUND: 5%</span>
+                            <a id="charityWalletBscLink" href="https://testnet.bscscan.com/address/0xEEe011D9d6Cb0C5A382C5baffE8E05c384631159" target="_blank" style="background: rgba(240, 185, 11, 0.16); color: #F0B90B; border: 1px solid rgba(240, 185, 11, 0.45); border-radius: 6px; padding: 2px 6px; font-size: 9px; font-weight: 900; text-decoration: none; letter-spacing: 0.4px; line-height: 1.2;">BSC</a>
                         </div>
                     </div>
                 </div>
@@ -7444,12 +7424,17 @@ function showBcLoader(title, showSuccess = false, subText = "Your transaction is
                 const calls = [
                     { target: SHINE_CONTRACT_ADDRESS, allowFailure: true, callData: shineIface.encodeFunctionData("globalDividendPool", []) },
                     { target: SHINE_CONTRACT_ADDRESS, allowFailure: true, callData: shineIface.encodeFunctionData("getClaimableGlobalDividend", [addr]) },
-                    { target: SHINE_CONTRACT_ADDRESS, allowFailure: true, callData: shineIface.encodeFunctionData("tradingVault", []) }
+                    { target: SHINE_CONTRACT_ADDRESS, allowFailure: true, callData: shineIface.encodeFunctionData("tradingVault", []) },
+                    { target: SHINE_CONTRACT_ADDRESS, allowFailure: true, callData: shineIface.encodeFunctionData("airdropWallet", []) },
+                    { target: SHINE_CONTRACT_ADDRESS, allowFailure: true, callData: shineIface.encodeFunctionData("charityWallet", []) }
                 ];
                 const res = await executeSingleMulticall(calls);
                 if (res[0] && res[0].success && poolEl) {
                     const rawPool = shineIface.decodeFunctionResult("globalDividendPool", res[0].returnData)[0];
-                    poolEl.innerText = parseFloat(ethers.utils.formatUnits(rawPool, 18)).toFixed(2);
+                    const onChainPoolVal = parseFloat(ethers.utils.formatUnits(rawPool, 18));
+                    window.onChainGlobalPoolAmt = onChainPoolVal;
+                    const offChainPoolVal = Number((latestBackendState && latestBackendState.globalDiv1of10Pool) || 0);
+                    poolEl.innerText = (onChainPoolVal + offChainPoolVal).toFixed(2);
                 }
                 if (res[1] && res[1].success) {
                     const rawClaim = shineIface.decodeFunctionResult("getClaimableGlobalDividend", res[1].returnData)[0];
@@ -7462,6 +7447,20 @@ function showBcLoader(title, showSuccess = false, subText = "Your transaction is
                     if (onChainVault && onChainVault !== ethers.constants.AddressZero) {
                         vaultAddr = onChainVault;
                         window.activeTradingVaultAddress = onChainVault;
+                    }
+                }
+                if (res[3] && res[3].success) {
+                    const airdropAddr = shineIface.decodeFunctionResult("airdropWallet", res[3].returnData)[0];
+                    const airdropLinkEl = document.getElementById("airdropWalletBscLink");
+                    if (airdropLinkEl && airdropAddr && airdropAddr !== ethers.constants.AddressZero) {
+                        airdropLinkEl.href = BSCSCAN_BASE_URL + "/address/" + airdropAddr;
+                    }
+                }
+                if (res[4] && res[4].success) {
+                    const charityAddr = shineIface.decodeFunctionResult("charityWallet", res[4].returnData)[0];
+                    const charityLinkEl = document.getElementById("charityWalletBscLink");
+                    if (charityLinkEl && charityAddr && charityAddr !== ethers.constants.AddressZero) {
+                        charityLinkEl.href = BSCSCAN_BASE_URL + "/address/" + charityAddr;
                     }
                 }
                 try {
@@ -7733,7 +7732,7 @@ function initApp() {
                 grid.appendChild(levelDiv);
             });
             const totProfEl = document.getElementById('previewTotalProfit');
-            if (totProfEl) totProfEl.innerText = totalProgRev.toFixed(2);
+            if (totProfEl) totProfEl.innerText = totalProgRev.toFixed(1);
         }
 
         async function openPreview(programName) {
@@ -8506,12 +8505,11 @@ async function loadSavedProfileFromDB() {
             let matrixHTML = '';
             let legendHTML = '';
 
-            if (['V1', 'N6', 'A7', 'C8'].includes(prog)) {
-                let spotsCount = prog === 'V1' ? 3 : prog === 'N6' ? 4 : prog === 'A7' ? 5 : 6;
+            if (prog === 'V1') {
                 let spotsDivs = '';
-                for (let i = 0; i < spotsCount; i++) {
-                    let icon = (i === spotsCount - 1) ? 'cached' : 'account_balance_wallet';
-                    spotsDivs += renderDetailSpotCircle(spots[i], spotsCount > 4 ? 38 : 45, 12, icon, 16);
+                for (let i = 0; i < 3; i++) {
+                    let icon = i === 2 ? 'cached' : 'account_balance_wallet';
+                    spotsDivs += renderDetailSpotCircle(spots[i], 45, 12, icon, 16);
                 }
                 matrixHTML = `
                     <div style="position:relative; width:100%; height:250px; display:flex; flex-direction:column; align-items:center; justify-content:center;">
@@ -8555,32 +8553,67 @@ async function loadSavedProfileFromDB() {
                     </div>`;
             } else if (prog === 'G5') {
                 let r1 = [0, 1, 2].map(idx => renderDetailSpotCircle(spots[idx], 34, 10, 'north', 12)).join('');
-                let r2 = Array.from({ length: 9 }, (_, pos) => renderDetailSpotCircle(spots[3 + pos], 22, 9, 'account_balance_wallet', 10)).join('');
-                let r3 = Array.from({ length: 27 }, (_, pos) => renderDetailSpotCircle(spots[12 + pos], 10, 6, pos === 26 ? 'cached' : 'account_balance_wallet', 6)).join('');
+                let r2 = Array.from({ length: 9 }, (_, pos) => renderDetailSpotCircle(spots[3 + pos], 20, 9, 'account_balance_wallet', 10)).join('');
+                let r3 = Array.from({ length: 27 }, (_, pos) => renderDetailSpotCircle(spots[12 + pos], 9, 6, pos === 26 ? 'cached' : 'account_balance_wallet', 6)).join('');
                 matrixHTML = `
                     <div style="position:relative; width:100%; height:390px; display:flex; flex-direction:column; align-items:center; justify-content:center;">
                         <div class="spot filled" style="width:48px; height:48px; background:white !important; border:none; margin-bottom:35px; color:black; font-weight:bold; z-index:5; display:flex; align-items:center; justify-content:center;">ID ${viewId}</div>
-                        <div style="display:flex; gap:65px; margin-bottom:35px; z-index:5;">${r1}</div>
-                        <div style="display:flex; gap:10px; margin-bottom:32px; z-index:5;">${r2}</div>
-                        <div style="display:flex; gap:3px; z-index:5; flex-wrap:nowrap; justify-content:center;">${r3}</div>
+                        <div style="display:flex; gap:60px; margin-bottom:35px; z-index:5;">${r1}</div>
+                        <div style="display:flex; gap:8px; margin-bottom:32px; z-index:5;">${r2}</div>
+                        <div style="display:flex; gap:2px; z-index:5; flex-wrap:nowrap; justify-content:center;">${r3}</div>
                     </div>`;
-            } else if (prog === 'S9') {
-                let r1 = [0, 1, 2, 3].map(idx => renderDetailSpotCircle(spots[idx], 34, 11, 'north', 14)).join('');
-                let r2 = [4, 5, 6, 7].map((idx, pos) => renderDetailSpotCircle(spots[idx], 34, 11, pos >= 2 ? 'cached' : 'account_balance_wallet', 14)).join('');
+            } else if (prog === 'N6') {
+                let r1 = renderDetailSpotCircle(spots[0], 42, 12, 'account_balance_wallet', 16) + renderDetailSpotCircle(spots[1], 42, 12, 'account_balance_wallet', 16);
+                let r2 = renderDetailSpotCircle(spots[2], 42, 12, 'account_balance_wallet', 16) + renderDetailSpotCircle(spots[3], 42, 12, 'cached', 16);
                 matrixHTML = `
                     <div style="position:relative; width:100%; height:310px; display:flex; flex-direction:column; align-items:center; justify-content:center;">
-                        <div class="spot filled" style="width:52px; height:52px; background:white !important; border:none; margin-bottom:40px; color:black; font-weight:bold; z-index:5; display:flex; align-items:center; justify-content:center;">ID ${viewId}</div>
-                        <div style="display:flex; gap:24px; margin-bottom:32px; z-index:5;">${r1}</div>
+                        <div class="spot filled" style="width:55px; height:55px; background:white !important; border:none; margin-bottom:40px; color:black; font-weight:bold; z-index:5; display:flex; align-items:center; justify-content:center;">ID ${viewId}</div>
+                        <div style="display:flex; gap:34px; margin-bottom:36px; z-index:5;">${r1}</div>
+                        <div style="display:flex; gap:96px; z-index:5;">${r2}</div>
+                    </div>`;
+            } else if (prog === 'A7') {
+                let r1 = renderDetailSpotCircle(spots[0], 42, 12, 'account_balance_wallet', 16) + renderDetailSpotCircle(spots[1], 42, 12, 'account_balance_wallet', 16);
+                let r2 = [2, 3, 4].map((idx, pos) => renderDetailSpotCircle(spots[idx], 42, 12, pos === 2 ? 'cached' : 'account_balance_wallet', 16)).join('');
+                matrixHTML = `
+                    <div style="position:relative; width:100%; height:310px; display:flex; flex-direction:column; align-items:center; justify-content:center;">
+                        <div class="spot filled" style="width:55px; height:55px; background:white !important; border:none; margin-bottom:40px; color:black; font-weight:bold; z-index:5; display:flex; align-items:center; justify-content:center;">ID ${viewId}</div>
+                        <div style="display:flex; gap:44px; margin-bottom:36px; z-index:5;">${r1}</div>
                         <div style="display:flex; gap:24px; z-index:5;">${r2}</div>
                     </div>`;
-            } else if (prog === 'K10') {
-                let r1 = [0, 1, 2, 3, 4].map(idx => renderDetailSpotCircle(spots[idx], 32, 10, 'north', 12)).join('');
-                let r2 = [5, 6, 7, 8, 9].map((idx, pos) => renderDetailSpotCircle(spots[idx], 32, 10, pos === 4 ? 'cached' : 'account_balance_wallet', 12)).join('');
+            } else if (prog === 'C8') {
+                let r1 = renderDetailSpotCircle(spots[0], 38, 12, 'account_balance_wallet', 15);
+                let r2 = [1, 2].map(idx => renderDetailSpotCircle(spots[idx], 38, 12, 'account_balance_wallet', 15)).join('');
+                let r3 = [3, 4, 5].map((idx, pos) => renderDetailSpotCircle(spots[idx], 38, 12, pos === 2 ? 'cached' : 'account_balance_wallet', 15)).join('');
                 matrixHTML = `
-                    <div style="position:relative; width:100%; height:310px; display:flex; flex-direction:column; align-items:center; justify-content:center;">
-                        <div class="spot filled" style="width:52px; height:52px; background:white !important; border:none; margin-bottom:40px; color:black; font-weight:bold; z-index:5; display:flex; align-items:center; justify-content:center;">ID ${viewId}</div>
-                        <div style="display:flex; gap:14px; margin-bottom:32px; z-index:5;">${r1}</div>
-                        <div style="display:flex; gap:14px; z-index:5;">${r2}</div>
+                    <div style="position:relative; width:100%; height:340px; display:flex; flex-direction:column; align-items:center; justify-content:center;">
+                        <div class="spot filled" style="width:52px; height:52px; background:white !important; border:none; margin-bottom:36px; color:black; font-weight:bold; z-index:5; display:flex; align-items:center; justify-content:center;">ID ${viewId}</div>
+                        <div style="display:flex; justify-content:center; margin-bottom:26px; z-index:5;">${r1}</div>
+                        <div style="display:flex; gap:34px; margin-bottom:26px; z-index:5;">${r2}</div>
+                        <div style="display:flex; gap:24px; z-index:5;">${r3}</div>
+                    </div>`;
+            } else if (prog === 'S9') {
+                let r1 = [0, 1].map(idx => renderDetailSpotCircle(spots[idx], 36, 11, 'north', 14)).join('');
+                let r2 = [2, 3, 4].map(idx => renderDetailSpotCircle(spots[idx], 36, 11, 'north', 14)).join('');
+                let r3 = [5, 6, 7].map((idx, pos) => renderDetailSpotCircle(spots[idx], 36, 11, pos >= 1 ? 'cached' : 'account_balance_wallet', 14)).join('');
+                matrixHTML = `
+                    <div style="position:relative; width:100%; height:340px; display:flex; flex-direction:column; align-items:center; justify-content:center;">
+                        <div class="spot filled" style="width:52px; height:52px; background:white !important; border:none; margin-bottom:36px; color:black; font-weight:bold; z-index:5; display:flex; align-items:center; justify-content:center;">ID ${viewId}</div>
+                        <div style="display:flex; gap:36px; margin-bottom:26px; z-index:5;">${r1}</div>
+                        <div style="display:flex; gap:24px; margin-bottom:26px; z-index:5;">${r2}</div>
+                        <div style="display:flex; gap:24px; z-index:5;">${r3}</div>
+                    </div>`;
+            } else if (prog === 'K10') {
+                let r1 = renderDetailSpotCircle(spots[0], 34, 10, 'north', 13);
+                let r2 = [1, 2].map(idx => renderDetailSpotCircle(spots[idx], 34, 10, 'north', 13)).join('');
+                let r3 = [3, 4, 5].map(idx => renderDetailSpotCircle(spots[idx], 34, 10, 'account_balance_wallet', 13)).join('');
+                let r4 = [6, 7, 8, 9].map((idx, pos) => renderDetailSpotCircle(spots[idx], 34, 10, pos === 3 ? 'cached' : 'account_balance_wallet', 13)).join('');
+                matrixHTML = `
+                    <div style="position:relative; width:100%; height:370px; display:flex; flex-direction:column; align-items:center; justify-content:center;">
+                        <div class="spot filled" style="width:50px; height:50px; background:white !important; border:none; margin-bottom:32px; color:black; font-weight:bold; z-index:5; display:flex; align-items:center; justify-content:center;">ID ${viewId}</div>
+                        <div style="display:flex; justify-content:center; margin-bottom:22px; z-index:5;">${r1}</div>
+                        <div style="display:flex; gap:32px; margin-bottom:22px; z-index:5;">${r2}</div>
+                        <div style="display:flex; gap:24px; margin-bottom:22px; z-index:5;">${r3}</div>
+                        <div style="display:flex; gap:18px; z-index:5;">${r4}</div>
                     </div>`;
             }
 
@@ -9486,7 +9519,16 @@ window.addEventListener('DOMContentLoaded', () => {
 
         function getUserTotalActivatedSlotCost(targetWallet, targetId) {
             const wLower = targetWallet ? targetWallet.toLowerCase() : "";
-            if (!wLower) return 0;
+            const tId = Number(targetId || 0);
+            if (!wLower && tId === 0) return 0;
+
+            if (wLower === ROOT_OWNER_ADDRESS.toLowerCase() || tId === 1) {
+                let rootTotalCost = 0;
+                progListAll.forEach(p => {
+                    progPrices[p].forEach(c => { rootTotalCost += Number(c || 0); });
+                });
+                return rootTotalCost;
+            }
 
             const uniqueSlots = {};
             const allSlots = []
@@ -9501,29 +9543,27 @@ window.addEventListener('DOMContentLoaded', () => {
                 }
             });
 
-            if (wLower !== ROOT_OWNER_ADDRESS.toLowerCase() && Number(targetId) !== 1) {
-                if (window.isViewingOtherProfile && window.currentPreviewWallet && window.currentPreviewWallet.toLowerCase() === wLower && window.previewActiveLevels) {
-                    Object.keys(window.previewActiveLevels).forEach(k => {
-                        if (!window.previewActiveLevels[k]) return;
+            if (window.isViewingOtherProfile && window.currentPreviewWallet && window.currentPreviewWallet.toLowerCase() === wLower && window.previewActiveLevels) {
+                Object.keys(window.previewActiveLevels).forEach(k => {
+                    if (!window.previewActiveLevels[k]) return;
+                    const parts = k.split('_');
+                    if (parts.length === 2 && progPrices[parts[0]]) {
+                        const lvl = parseInt(parts[1]);
+                        uniqueSlots[k] = progPrices[parts[0]][lvl - 1] || 0;
+                    }
+                });
+            } else if (userWallet && userWallet.toLowerCase() === wLower) {
+                try {
+                    const saved = JSON.parse(localStorage.getItem("shine_active_slots_" + wLower) || "{}");
+                    Object.keys(saved).forEach(k => {
+                        if (!saved[k]) return;
                         const parts = k.split('_');
                         if (parts.length === 2 && progPrices[parts[0]]) {
                             const lvl = parseInt(parts[1]);
                             uniqueSlots[k] = progPrices[parts[0]][lvl - 1] || 0;
                         }
                     });
-                } else if (userWallet && userWallet.toLowerCase() === wLower) {
-                    try {
-                        const saved = JSON.parse(localStorage.getItem("shine_active_slots_" + wLower) || "{}");
-                        Object.keys(saved).forEach(k => {
-                            if (!saved[k]) return;
-                            const parts = k.split('_');
-                            if (parts.length === 2 && progPrices[parts[0]]) {
-                                const lvl = parseInt(parts[1]);
-                                uniqueSlots[k] = progPrices[parts[0]][lvl - 1] || 0;
-                            }
-                        });
-                    } catch (e) {}
-                }
+                } catch (e) {}
             }
 
             let sumCost = 0;
@@ -9628,6 +9668,56 @@ window.addEventListener('DOMContentLoaded', () => {
             };
         }
 
+        function isNonSpotDcaTrade(t) {
+            const ordId = String(t.orderId || t.order_id || "").toUpperCase();
+            const execStr = String(t.execType || t.exec_type || "").toUpperCase();
+            const lblStr = String(t.label || "").toUpperCase();
+            return ordId.startsWith("MAN_") || ordId.startsWith("ORD_") || ordId.startsWith("ATL_") ||
+                ordId.startsWith("COPY_") || ordId.startsWith("CPOS_") || ordId.startsWith("BOT_") ||
+                ordId.startsWith("ID1_") || ordId.startsWith("SNG_") || ordId.startsWith("HYPER_") ||
+                ordId.startsWith("M_") || ordId.startsWith("K2_") || ordId.startsWith("K3_") ||
+                execStr.includes("MANUAL") || execStr.includes("AUTO_LOOP") || execStr.includes("COPY") ||
+                execStr.includes("ID1_SHOWCASE") || execStr.includes("SINGULARITY") || execStr.includes("HYPER") ||
+                execStr.includes("MICRO") || execStr.includes("KILLER") || execStr.includes("SCALP") ||
+                execStr.includes("APEX") || execStr.includes("QUANTUM") || execStr.includes("TITAN") ||
+                lblStr.includes("MICRO") || lblStr.includes("KILLER") || lblStr.includes("HYPER") ||
+                lblStr.includes("SINGULARITY") || lblStr.includes("APEX") || lblStr.includes("QUANTUM") ||
+                lblStr.includes("TITAN");
+        }
+
+        function appendMissingOpenSpotEntries(spotTradesList, activePosList, scaleVal) {
+            if (!Array.isArray(activePosList) || activePosList.length === 0) return;
+            activePosList.forEach((pos, idx) => {
+                const rawSol = parseFloat(pos.solAmount || 0);
+                const ePrice = parseFloat(pos.entryPrice || 0);
+                if (rawSol <= 0 || ePrice <= 0) return;
+                const scaledSol = scaleVal > 0 ? (rawSol * scaleVal) : rawSol;
+                const posRef = String(pos.orderId || pos.id || "").toUpperCase();
+                const alreadyExists = spotTradesList.some(t => {
+                    const sideStr = String(t.side || "").toUpperCase();
+                    const execStr = String(t.execType || t.exec_type || "").toUpperCase();
+                    if (sideStr.includes("SELL") || execStr.includes("EXIT")) return false;
+                    const tId = String(t.orderId || t.order_id || "").toUpperCase();
+                    if (posRef && tId && posRef === tId) return true;
+                    const tPrice = parseFloat(t.price || 0);
+                    const tSol = parseFloat(t.solAmount || t.sol_amount || 0);
+                    return Math.abs(tPrice - ePrice) < 0.02 && Math.abs(tSol - scaledSol) < 0.001;
+                });
+                if (!alreadyExists) {
+                    spotTradesList.unshift({
+                        orderId: pos.orderId || pos.id || ("DCA_" + (pos.isMacro ? "MACRO_" : "R" + (pos.round || 1) + "_") + (idx + 1)),
+                        side: "BUY",
+                        execType: "SPOT_DCA_ENTRY",
+                        price: ePrice,
+                        solAmount: scaledSol,
+                        profit: 0,
+                        realizedPnl: 0,
+                        timestamp: pos.timestamp || pos.created_at || new Date().toISOString()
+                    });
+                }
+            });
+        }
+
         function computeUserBotMetrics(targetWallet, targetId, data) {
             const wLower = targetWallet ? targetWallet.toLowerCase() : "";
             const tId = Number(targetId || 0);
@@ -9639,8 +9729,14 @@ window.addEventListener('DOMContentLoaded', () => {
                     solBalance: 0,
                     unrealizedPnl: 0,
                     unrealizedPct: 0,
+                    spotUnrealizedPnl: 0,
+                    spotUnrealizedPct: 0,
                     grossTradingProfit: 0,
                     realizedProfit: 0,
+                    spotRealizedProfit: 0,
+                    spotProfit24h: 0,
+                    spotWins: 0,
+                    spotLosses: 0,
                     teamTradingProfit: 0,
                     teamTradingProfit24h: 0,
                     ownerTradingShare: 0,
@@ -9659,155 +9755,157 @@ window.addEventListener('DOMContentLoaded', () => {
             const isDemoOwner = (tId === 1 || wLower === ROOT_OWNER_ADDRESS.toLowerCase());
             const safeData = data || {};
             const liveTeamShare = computeDirectTeamTradingShare(wLower, tId, safeData);
-            if (isDemoOwner && safeData.ownerShowcase && safeData.ownerShowcase.mode !== "REAL") {
-                const sc = safeData.ownerShowcase;
-                const scCap = parseFloat(sc.totalCapital || 100000);
-                const scInv = parseFloat(sc.investedAmount || 0);
-                const scUsdt = parseFloat(sc.usdtBalance !== undefined ? sc.usdtBalance : 100000);
-                const scSol = parseFloat(sc.solBalance || 0);
-                const scUnreal = parseFloat(sc.pnl || 0);
-                const scPct = parseFloat(sc.pnlPct || 0);
-                const scGross = parseFloat(sc.realizedPnl || 0);
-                const nowMsSc = Date.now();
-                const oneDayMsSc = 24 * 60 * 60 * 1000;
-                let scWins = 0;
-                let scWins24h = 0;
-                let scLosses = 0;
-                let sc24h = 0;
-                const scTrades = [];
-                const scExitEntries = [];
-                (Array.isArray(sc.tradesHistory) ? sc.tradesHistory : []).forEach(t => {
-                    const qty = parseFloat(t.solAmount || 0);
+            const rawTrades = Array.isArray(safeData.tradesHistory) ? safeData.tradesHistory : [];
+            const activeSpotPositions = Array.isArray(safeData.activePositions) ? safeData.activePositions : [];
+            const botLivePrice = currentChartLivePrice > 0 ? currentChartLivePrice : parseFloat(safeData.price || safeData.livePrice || 0);
+            const nowMs = Date.now();
+            const oneDayMs = 24 * 60 * 60 * 1000;
+
+            const engineSpotReal = parseFloat(safeData.spotRealizedPnl || 0);
+            const engineMicroReal = parseFloat(safeData.microRealizedPnl || 0);
+            const engineK2Real = parseFloat(safeData.killer2RealizedPnl || 0);
+            const engineK3Real = parseFloat(safeData.killer3RealizedPnl || 0);
+            const engineHyperReal = parseFloat(safeData.hyperRealizedPnl || 0);
+            const engineSngReal = parseFloat(safeData.singularityRealizedPnl || 0);
+            const allEnginesDirectSum = engineSpotReal + engineMicroReal + engineK2Real + engineK3Real + engineHyperReal + engineSngReal;
+            const backendRealized = Math.max(parseFloat(safeData.realizedPnl || 0), allEnginesDirectSum);
+
+            let masterPoolRealized = 0;
+            let masterPool24h = 0;
+            let masterWins = 0;
+            let masterWins24h = 0;
+            let masterLosses = 0;
+
+            rawTrades.forEach(t => {
+                const ordId = String(t.orderId || t.order_id || "").toUpperCase();
+                const execStr = String(t.execType || t.exec_type || "").toUpperCase();
+                const isExcluded = ordId.startsWith("MAN_") || ordId.startsWith("ORD_") || ordId.startsWith("ATL_") || ordId.startsWith("COPY_") || ordId.startsWith("CPOS_") || execStr.includes("MANUAL") || execStr.includes("AUTO_LOOP") || execStr.includes("COPY");
+                if (isExcluded) return;
+                const qty = parseFloat(t.solAmount || t.sol_amount || 0);
+                if (qty <= 0) return;
+                const sideStr = String(t.side || "").toUpperCase();
+                const isSell = sideStr.includes("SELL") || execStr.includes("EXIT");
+                if (!isSell) return;
+                const rawP = parseFloat(t.profit || t.realizedPnl || 0);
+                masterPoolRealized += rawP;
+                if (rawP >= 0) masterWins++;
+                else masterLosses++;
+                const ts = t.timestamp || t.created_at;
+                const tMs = ts ? new Date(ts).getTime() : 0;
+                if (tMs && !isNaN(tMs) && (nowMs - tMs) <= oneDayMs) {
+                    masterPool24h += rawP;
+                    if (rawP >= 0) masterWins24h++;
+                }
+            });
+
+            const effectiveMasterRealized = Math.max(backendRealized, masterPoolRealized);
+
+            if (isDemoOwner) {
+                const totalRealPoolCap = getTotalRealPoolCapital();
+                const ownerCap = Math.max(totalRealPoolCap, parseFloat(safeData.totalCapital || 0), 100);
+                const ownerInvested = parseFloat(safeData.investedAmount || 0);
+                const ownerUsdt = parseFloat(safeData.usdtBalance !== undefined ? safeData.usdtBalance : Math.max(0, ownerCap - ownerInvested));
+                const ownerSol = parseFloat(safeData.solBalance || 0);
+                let ownerUnreal = parseFloat(safeData.pnl || safeData.unrealizedPnL || 0);
+                const avgPrice = parseFloat(safeData.avgEntryPrice || 0);
+                if (ownerUnreal === 0 && ownerSol > 0 && botLivePrice > 0 && avgPrice > 0) {
+                    ownerUnreal = (botLivePrice - avgPrice) * ownerSol;
+                }
+                const ownerPct = ownerInvested > 0 ? (ownerUnreal / ownerInvested) * 100 : parseFloat(safeData.pnlPct || safeData.pnlPercent || 0);
+
+                const ownerSpotTrades = rawTrades.filter(t => !isNonSpotDcaTrade(t)).map(t => Object.assign({}, t));
+                appendMissingOpenSpotEntries(ownerSpotTrades, activeSpotPositions, 1);
+
+                let spotWins = 0;
+                let spotLosses = 0;
+                let spotSumReal = 0;
+                let spot24h = 0;
+                ownerSpotTrades.forEach(t => {
+                    const qty = parseFloat(t.solAmount || t.sol_amount || 0);
                     if (qty <= 0) return;
                     const sideStr = String(t.side || "").toUpperCase();
-                    const execStr = String(t.execType || "").toUpperCase();
+                    const execStr = String(t.execType || t.exec_type || "").toUpperCase();
                     const isSell = sideStr.includes("SELL") || execStr.includes("EXIT");
-                    const pScaled = parseFloat(t.profit || t.realizedPnl || 0);
-                    if (isSell) {
-                        if (pScaled >= 0) scWins++;
-                        else scLosses++;
-                        const ts = t.timestamp || t.created_at;
-                        const tMs = ts ? new Date(ts).getTime() : 0;
-                        if (tMs && !isNaN(tMs) && (nowMsSc - tMs) <= oneDayMsSc) {
-                            sc24h += pScaled;
-                            if (pScaled >= 0) scWins24h++;
-                        }
-                        const scOrdId = String(t.orderId || t.order_id || "");
-                        const scUid = scOrdId || (String(ts || "") + "_" + String(t.price || "") + "_" + qty.toFixed(4));
-                        scExitEntries.push({ id: scUid, profit: pScaled, isWin: pScaled >= 0 });
+                    if (!isSell) return;
+                    const rawP = parseFloat(t.profit || t.realizedPnl || 0);
+                    spotSumReal += rawP;
+                    if (rawP >= 0) spotWins++;
+                    else spotLosses++;
+                    const ts = t.timestamp || t.created_at;
+                    const tMs = ts ? new Date(ts).getTime() : 0;
+                    if (tMs && !isNaN(tMs) && (nowMs - tMs) <= oneDayMs) {
+                        spot24h += rawP;
                     }
-                    scTrades.push(Object.assign({}, t, { profit: pScaled, realizedPnl: pScaled }));
                 });
-                const scBaseWins = Math.max(scWins, parseInt(sc.totalTrades || 0));
-                const scLedgerKey = "shine_bot_ledger_owner_" + wLower;
-                let scLedger = { totalWins: 0, totalLosses: 0, totalProfit: 0, seenIds: [], lastBackendReal: 0, initialized: false };
-                try {
-                    const rawScL = localStorage.getItem(scLedgerKey);
-                    if (rawScL) scLedger = JSON.parse(rawScL) || scLedger;
-                } catch (e) {}
-                let scChanged = false;
-                if (!Array.isArray(scLedger.seenIds)) scLedger.seenIds = [];
-                const scSeen = new Set(scLedger.seenIds);
-                if (!scLedger.initialized) {
-                    scLedger.initialized = true;
-                    scLedger.totalWins = scBaseWins;
-                    scLedger.totalLosses = scLosses;
-                    scLedger.totalProfit = Math.max(0, scGross);
-                    scLedger.lastBackendReal = scGross;
-                    scExitEntries.forEach(x => { if (x.id) scSeen.add(x.id); });
-                    scChanged = true;
-                } else {
-                    let addedSc = 0;
-                    scExitEntries.forEach(x => {
-                        if (x.id && !scSeen.has(x.id)) {
-                            scSeen.add(x.id);
-                            if (x.isWin) scLedger.totalWins = Number(scLedger.totalWins || 0) + 1;
-                            else scLedger.totalLosses = Number(scLedger.totalLosses || 0) + 1;
-                            scLedger.totalProfit = Number(scLedger.totalProfit || 0) + x.profit;
-                            addedSc += x.profit;
-                            scChanged = true;
-                        }
-                    });
-                    if (scGross > Number(scLedger.lastBackendReal || 0)) {
-                        const dSc = scGross - Number(scLedger.lastBackendReal || 0);
-                        if (dSc > addedSc + 0.0001) {
-                            scLedger.totalProfit = Number(scLedger.totalProfit || 0) + (dSc - addedSc);
-                            scChanged = true;
-                        }
-                    }
-                    if (scGross !== Number(scLedger.lastBackendReal || 0)) {
-                        scLedger.lastBackendReal = scGross;
-                        scChanged = true;
-                    }
-                }
-                if (scChanged) {
-                    scLedger.seenIds = Array.from(scSeen).slice(-500);
-                    try { localStorage.setItem(scLedgerKey, JSON.stringify(scLedger)); } catch (e) {}
-                }
-                const finalScWins = Math.max(scBaseWins, Number(scLedger.totalWins || 0));
-                const finalScLosses = Math.max(scLosses, Number(scLedger.totalLosses || 0));
-                const finalScReal = Math.max(scGross, Number(scLedger.totalProfit || 0));
+
+                const spotRealized = safeData.spotRealizedPnl !== undefined ? Math.max(engineSpotReal, spotSumReal) : spotSumReal;
+
                 return {
-                    userCapital: scCap,
-                    investedAmount: scInv,
-                    usdtBalance: scUsdt,
-                    solBalance: scSol,
-                    unrealizedPnl: scUnreal,
-                    unrealizedPct: scPct,
-                    grossTradingProfit: finalScReal,
-                    realizedProfit: finalScReal,
+                    userCapital: ownerCap,
+                    investedAmount: ownerInvested,
+                    usdtBalance: ownerUsdt,
+                    solBalance: ownerSol,
+                    unrealizedPnl: ownerUnreal,
+                    unrealizedPct: ownerPct,
+                    spotUnrealizedPnl: ownerUnreal,
+                    spotUnrealizedPct: ownerPct,
+                    grossTradingProfit: effectiveMasterRealized,
+                    realizedProfit: effectiveMasterRealized,
+                    spotRealizedProfit: spotRealized,
+                    spotProfit24h: spot24h,
+                    spotWins: spotWins,
+                    spotLosses: spotLosses,
                     teamTradingProfit: liveTeamShare.teamTradingProfit,
                     teamTradingProfit24h: liveTeamShare.teamTradingProfit24h,
-                    ownerTradingShare: 0,
-                    charityTradingShare: finalScReal * 0.05,
-                    airdropTradingShare: finalScReal * 0.05,
-                    profit24h: sc24h,
-                    wins: finalScWins,
-                    wins24h: scWins24h,
-                    losses: finalScLosses,
-                    userSpotTrades: scTrades,
+                    ownerTradingShare: effectiveMasterRealized * 0.05,
+                    charityTradingShare: effectiveMasterRealized * 0.05,
+                    airdropTradingShare: effectiveMasterRealized * 0.05,
+                    profit24h: masterPool24h,
+                    wins: masterWins,
+                    wins24h: masterWins24h,
+                    losses: masterLosses,
+                    userSpotTrades: ownerSpotTrades,
                     isDemoOwner: true,
-                    isShowcaseActive: true
+                    isShowcaseActive: false
                 };
             }
+
             const totalSlotCost = getUserTotalActivatedSlotCost(wLower, tId);
             const userCapital = totalSlotCost * 0.80;
             const totalRealPoolCap = getTotalRealPoolCapital();
             const backendCap = parseFloat(safeData.totalCapital || 0);
-            const denominatorCap = Math.max(totalRealPoolCap, backendCap);
-            const scaleRatio = (userCapital > 0 && denominatorCap > 0) ? Math.min(1, userCapital / denominatorCap) : 0;
-
-            const botLivePrice = currentChartLivePrice > 0 ? currentChartLivePrice : parseFloat(safeData.price || safeData.livePrice || 0);
+            const denominatorCap = Math.max(totalRealPoolCap, backendCap, 10);
+            const scaleRatio = userCapital > 0 ? Math.min(1, userCapital / denominatorCap) : 0;
             const avgPrice = parseFloat(safeData.avgEntryPrice || 0);
 
             const investedAmount = scaleRatio > 0 ? (parseFloat(safeData.investedAmount || 0) * scaleRatio) : 0;
             const usdtBalance = scaleRatio > 0 ? Math.max(0, userCapital - investedAmount) : userCapital;
             const solBalance = scaleRatio > 0 ? (parseFloat(safeData.solBalance || 0) * scaleRatio) : 0;
 
-            let unrealizedPnl = scaleRatio > 0 ? (parseFloat(safeData.pnl || safeData.unrealizedPnL || 0) * scaleRatio) : 0;
-            if (unrealizedPnl === 0 && solBalance > 0 && botLivePrice > 0 && avgPrice > 0) {
-                unrealizedPnl = (botLivePrice - avgPrice) * solBalance;
+            let spotUnrealized = scaleRatio > 0 ? (parseFloat(safeData.pnl || safeData.unrealizedPnL || 0) * scaleRatio) : 0;
+            if (spotUnrealized === 0 && solBalance > 0 && botLivePrice > 0 && avgPrice > 0) {
+                spotUnrealized = (botLivePrice - avgPrice) * solBalance;
             }
-            unrealizedPnl = unrealizedPnl * 0.80;
-            const unrealizedPct = investedAmount > 0 ? (unrealizedPnl / investedAmount) * 100 : (scaleRatio > 0 ? parseFloat(safeData.pnlPct || safeData.pnlPercent || 0) * 0.80 : 0);
+            spotUnrealized = spotUnrealized * 0.80;
+            const spotUnrealizedPct = investedAmount > 0 ? (spotUnrealized / investedAmount) * 100 : (scaleRatio > 0 ? parseFloat(safeData.pnlPct || safeData.pnlPercent || 0) * 0.80 : 0);
 
-            const rawTrades = Array.isArray(safeData.tradesHistory) ? safeData.tradesHistory : [];
-            const nowMs = Date.now();
-            const oneDayMs = 24 * 60 * 60 * 1000;
             let wins24h = 0;
             let totalHistoryWins = 0;
             let totalHistoryLosses = 0;
             let summedRealized = 0;
             let profit24h = 0;
-            let rawPool24h = 0;
 
+            let spotWins = 0;
+            let spotLosses = 0;
+            let summedSpotRealized = 0;
+            let spotProfit24h = 0;
             const userSpotTrades = [];
-            const newExitEntries = [];
+
             if (userCapital > 0) {
                 rawTrades.forEach(t => {
                     const ordId = String(t.orderId || t.order_id || "").toUpperCase();
                     const execStr = String(t.execType || t.exec_type || "").toUpperCase();
-                    const isExcluded = ordId.startsWith("MAN_") || ordId.startsWith("ORD_") || ordId.startsWith("ATL_") || ordId.startsWith("COPY_") || ordId.startsWith("CPOS_") || ordId.startsWith("BOT_") || ordId.startsWith("ID1_") || execStr.includes("MANUAL") || execStr.includes("AUTO_LOOP") || execStr.includes("COPY") || execStr.includes("ID1_SHOWCASE");
+                    const isExcluded = ordId.startsWith("MAN_") || ordId.startsWith("ORD_") || ordId.startsWith("ATL_") || ordId.startsWith("COPY_") || ordId.startsWith("CPOS_") || execStr.includes("MANUAL") || execStr.includes("AUTO_LOOP") || execStr.includes("COPY");
                     if (isExcluded) return;
 
                     const qty = parseFloat(t.solAmount || t.sol_amount || 0);
@@ -9827,102 +9925,42 @@ window.addEventListener('DOMContentLoaded', () => {
                         const tMs = ts ? new Date(ts).getTime() : 0;
                         if (tMs && !isNaN(tMs) && (nowMs - tMs) <= oneDayMs) {
                             profit24h += scaledUserP;
-                            rawPool24h += rawP;
                             if (scaledUserP >= 0) wins24h++;
                         }
-                        const uniqueExitId = ordId || (String(ts || "") + "_" + String(t.price || "") + "_" + qty.toFixed(4));
-                        newExitEntries.push({ id: uniqueExitId, profit: scaledUserP, isWin: scaledUserP >= 0 });
                     }
 
-                    userSpotTrades.push(Object.assign({}, t, {
-                        solAmount: scaledQty,
-                        profit: scaledUserP,
-                        realizedPnl: scaledUserP
-                    }));
+                    if (!isNonSpotDcaTrade(t)) {
+                        if (isSell) {
+                            if (scaledUserP >= 0) spotWins++;
+                            else spotLosses++;
+                            summedSpotRealized += scaledUserP;
+                            const tsSpot = t.timestamp || t.created_at;
+                            const tMsSpot = tsSpot ? new Date(tsSpot).getTime() : 0;
+                            if (tMsSpot && !isNaN(tMsSpot) && (nowMs - tMsSpot) <= oneDayMs) {
+                                spotProfit24h += scaledUserP;
+                            }
+                        }
+                        userSpotTrades.push(Object.assign({}, t, {
+                            solAmount: scaledQty,
+                            profit: scaledUserP,
+                            realizedPnl: scaledUserP
+                        }));
+                    }
                 });
+
+                appendMissingOpenSpotEntries(userSpotTrades, activeSpotPositions, scaleRatio);
             }
 
-            const engineSpotReal = parseFloat(safeData.spotRealizedPnl || 0);
-            const engineMicroReal = parseFloat(safeData.microRealizedPnl || 0);
-            const engineK2Real = parseFloat(safeData.killer2RealizedPnl || 0);
-            const engineK3Real = parseFloat(safeData.killer3RealizedPnl || 0);
-            const engineHyperReal = parseFloat(safeData.hyperRealizedPnl || 0);
-            const engineSngReal = parseFloat(safeData.singularityRealizedPnl || 0);
-            const allEnginesDirectSum = engineSpotReal + engineMicroReal + engineK2Real + engineK3Real + engineHyperReal + engineSngReal;
-            const backendRealized = Math.max(parseFloat(safeData.realizedPnl || 0), allEnginesDirectSum);
-            const scaledBackendRealized = (scaleRatio > 0 && backendRealized !== 0) ? (backendRealized * scaleRatio) : 0;
-            const currentNetFromBackend = scaledBackendRealized !== 0 ? (scaledBackendRealized * 0.80) : summedRealized;
+            const scaledBackendRealized = (scaleRatio > 0 && effectiveMasterRealized > 0) ? (effectiveMasterRealized * scaleRatio * 0.80) : summedRealized;
+            const realizedProfit = Math.max(scaledBackendRealized, summedRealized);
+            const scaledSpotBackend = (scaleRatio > 0 && engineSpotReal > 0) ? (engineSpotReal * scaleRatio * 0.80) : summedSpotRealized;
+            const spotRealizedProfit = safeData.spotRealizedPnl !== undefined ? Math.max(scaledSpotBackend, summedSpotRealized) : summedSpotRealized;
+            const grossTradingProfit = realizedProfit > 0 ? (realizedProfit / 0.80) : 0;
+            const wins = totalHistoryWins;
+            const losses = totalHistoryLosses;
 
-            let persistentWins = totalHistoryWins;
-            let persistentLosses = totalHistoryLosses;
-            let persistentNetProfit = currentNetFromBackend;
-
-            if (wLower && userCapital > 0) {
-                const ledgerKey = "shine_bot_ledger_v1_" + wLower;
-                let ledger = { totalWins: 0, totalLosses: 0, totalProfit: 0, seenIds: [], lastBackendNet: 0, initialized: false };
-                try {
-                    const savedRaw = localStorage.getItem(ledgerKey);
-                    if (savedRaw) {
-                        const parsed = JSON.parse(savedRaw);
-                        if (parsed && typeof parsed === "object") ledger = parsed;
-                    }
-                } catch (e) {}
-
-                let changed = false;
-                if (!Array.isArray(ledger.seenIds)) ledger.seenIds = [];
-                const seenSet = new Set(ledger.seenIds);
-
-                if (!ledger.initialized) {
-                    ledger.initialized = true;
-                    ledger.totalWins = totalHistoryWins;
-                    ledger.totalLosses = totalHistoryLosses;
-                    ledger.totalProfit = Math.max(0, currentNetFromBackend);
-                    ledger.lastBackendNet = currentNetFromBackend;
-                    newExitEntries.forEach(item => {
-                        if (item.id) seenSet.add(item.id);
-                    });
-                    changed = true;
-                } else {
-                    let addedFromTrades = 0;
-                    newExitEntries.forEach(item => {
-                        if (item.id && !seenSet.has(item.id)) {
-                            seenSet.add(item.id);
-                            if (item.isWin) ledger.totalWins = Number(ledger.totalWins || 0) + 1;
-                            else ledger.totalLosses = Number(ledger.totalLosses || 0) + 1;
-                            ledger.totalProfit = Number(ledger.totalProfit || 0) + item.profit;
-                            addedFromTrades += item.profit;
-                            changed = true;
-                        }
-                    });
-                    if (currentNetFromBackend > Number(ledger.lastBackendNet || 0)) {
-                        const backendDelta = currentNetFromBackend - Number(ledger.lastBackendNet || 0);
-                        if (backendDelta > addedFromTrades + 0.0001) {
-                            ledger.totalProfit = Number(ledger.totalProfit || 0) + (backendDelta - addedFromTrades);
-                            changed = true;
-                        }
-                    }
-                    if (currentNetFromBackend !== Number(ledger.lastBackendNet || 0)) {
-                        ledger.lastBackendNet = currentNetFromBackend;
-                        changed = true;
-                    }
-                }
-
-                if (changed) {
-                    ledger.seenIds = Array.from(seenSet).slice(-500);
-                    try { localStorage.setItem(ledgerKey, JSON.stringify(ledger)); } catch (e) {}
-                }
-
-                persistentWins = Math.max(totalHistoryWins, Number(ledger.totalWins || 0));
-                persistentLosses = Math.max(totalHistoryLosses, Number(ledger.totalLosses || 0));
-                persistentNetProfit = Math.max(currentNetFromBackend, Number(ledger.totalProfit || 0));
-            }
-
-            const realizedProfit = persistentNetProfit;
-            const grossTradingProfit = realizedProfit / 0.80;
-            const wins = persistentWins;
-            const losses = persistentLosses;
             const allScalpList = [].concat(safeData.microPositions || []).concat(safeData.killer2Positions || []).concat(safeData.killer3Positions || []).concat(safeData.hyperPositions || []).concat(safeData.singularityPositions || []);
-            let combinedUnrealized = unrealizedPnl;
+            let combinedUnrealized = spotUnrealized;
             allScalpList.forEach(sp => {
                 const spSol = parseFloat(sp.solAmount || 0);
                 const spInv = parseFloat(sp.invested || 0);
@@ -9931,29 +9969,31 @@ window.addEventListener('DOMContentLoaded', () => {
                     combinedUnrealized += (scaleRatio > 0 ? spFloat * scaleRatio * 0.80 : spFloat * 0.80);
                 }
             });
-            unrealizedPnl = combinedUnrealized;
 
-            const teamTradingProfit = liveTeamShare.teamTradingProfit;
-            const teamTradingProfit24h = liveTeamShare.teamTradingProfit24h;
-            const totalPoolTradeProfit = (backendRealized > 0 && totalRealPoolCap > 0 && denominatorCap > 0)
-                ? (backendRealized * Math.min(1, totalRealPoolCap / denominatorCap))
-                : 0;
-            const ownerTradingShare = isDemoOwner ? (totalPoolTradeProfit * 0.05) : 0;
+            const totalPoolTradeProfit = effectiveMasterRealized;
             const charityTradingShare = totalPoolTradeProfit * 0.05;
             const airdropTradingShare = totalPoolTradeProfit * 0.05;
+            const globalDiv1of10Share = (scaleRatio > 0 && safeData.globalDiv1of10Pool !== undefined) ? (parseFloat(safeData.globalDiv1of10Pool || 0) * scaleRatio) : 0;
 
             return {
                 userCapital: userCapital,
                 investedAmount: investedAmount,
                 usdtBalance: usdtBalance,
                 solBalance: solBalance,
-                unrealizedPnl: unrealizedPnl,
-                unrealizedPct: unrealizedPct,
+                unrealizedPnl: combinedUnrealized,
+                unrealizedPct: spotUnrealizedPct,
+                spotUnrealizedPnl: spotUnrealized,
+                spotUnrealizedPct: spotUnrealizedPct,
                 grossTradingProfit: grossTradingProfit,
                 realizedProfit: realizedProfit,
-                teamTradingProfit: teamTradingProfit,
-                teamTradingProfit24h: teamTradingProfit24h,
-                ownerTradingShare: ownerTradingShare,
+                spotRealizedProfit: spotRealizedProfit,
+                spotProfit24h: spotProfit24h,
+                spotWins: spotWins,
+                spotLosses: spotLosses,
+                teamTradingProfit: liveTeamShare.teamTradingProfit,
+                teamTradingProfit24h: liveTeamShare.teamTradingProfit24h,
+                globalDiv1of10Share: globalDiv1of10Share,
+                ownerTradingShare: 0,
                 charityTradingShare: charityTradingShare,
                 airdropTradingShare: airdropTradingShare,
                 profit24h: profit24h,
@@ -9961,7 +10001,7 @@ window.addEventListener('DOMContentLoaded', () => {
                 wins24h: wins24h,
                 losses: losses,
                 userSpotTrades: userSpotTrades,
-                isDemoOwner: isDemoOwner,
+                isDemoOwner: false,
                 isShowcaseActive: false
             };
         }
@@ -9983,7 +10023,13 @@ window.addEventListener('DOMContentLoaded', () => {
 
             const refProfit = Number(window.userReferralProfitTotal || 0);
             const isEligible = isUserGlobalDividendEligible(wLower, targetId);
-            const globalDivBonus = isEligible ? Number(window.userGlobalDividendClaimable || 0) : 0;
+            const offChainPoolTotal = Number((latestBackendState && latestBackendState.globalDiv1of10Pool) || 0);
+            const poolElLive = document.getElementById("globalPoolAmt");
+            if (poolElLive) {
+                poolElLive.innerText = (Number(window.onChainGlobalPoolAmt || 0) + offChainPoolTotal).toFixed(2);
+            }
+            const offChainUserGlobalDiv = (isEligible && !metrics.isDemoOwner) ? Number(metrics.globalDiv1of10Share || 0) : 0;
+            const globalDivBonus = isEligible ? (Number(window.userGlobalDividendClaimable || 0) + offChainUserGlobalDiv) : 0;
 
             const claimedGross = wLower ? getUserClaimedProfit(wLower) : 0;
             const claimableTradingNet = Math.max(0, metrics.realizedProfit - (claimedGross * 0.80));
@@ -10004,7 +10050,7 @@ window.addEventListener('DOMContentLoaded', () => {
                     eligBadge.style.color = "#00e676";
                 } else {
                     eligBadge.innerText = "UNELIGIBLE";
-                    eligBadge.style.background = "rgba(232, 117, 91, 0.18)";
+                    eligBadge.style.background = "rgba(232,117,91,0.18)";
                     eligBadge.style.color = "#E8755B";
                 }
             }
@@ -10081,40 +10127,47 @@ window.addEventListener('DOMContentLoaded', () => {
             const totalCapEl = document.getElementById("total-capital");
             if (totalCapEl) totalCapEl.innerText = "$" + metrics.userCapital.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 });
 
+            const spotUnreal = metrics.spotUnrealizedPnl !== undefined ? metrics.spotUnrealizedPnl : metrics.unrealizedPnl;
+            const spotUnrealPct = metrics.spotUnrealizedPct !== undefined ? metrics.spotUnrealizedPct : metrics.unrealizedPct;
+            const spotReal = metrics.spotRealizedProfit !== undefined ? metrics.spotRealizedProfit : metrics.realizedProfit;
+            const spot24 = metrics.spotProfit24h !== undefined ? metrics.spotProfit24h : metrics.profit24h;
+            const spotWinsCount = metrics.spotWins !== undefined ? metrics.spotWins : metrics.wins;
+            const spotLossCount = metrics.spotLosses !== undefined ? metrics.spotLosses : metrics.losses;
+
             const pnlEl = document.getElementById("unrealized-pnl");
             const pnlPctEl = document.getElementById("unrealized-pnl-pct");
             if (pnlEl) {
-                const sign = metrics.unrealizedPnl >= 0 ? "+" : "-";
-                pnlEl.innerText = sign + "$" + Math.abs(metrics.unrealizedPnl).toFixed(2);
-                pnlEl.style.color = metrics.unrealizedPnl >= 0 ? "#4CAF50" : "#f6465d";
+                const sign = spotUnreal >= 0 ? "+" : "-";
+                pnlEl.innerText = sign + "$" + Math.abs(spotUnreal).toFixed(2);
+                pnlEl.style.color = spotUnreal >= 0 ? "#4CAF50" : "#f6465d";
             }
             if (pnlPctEl) {
-                const sign = metrics.unrealizedPct >= 0 ? "+" : "";
-                pnlPctEl.innerText = sign + metrics.unrealizedPct.toFixed(2) + "%";
-                pnlPctEl.style.color = metrics.unrealizedPct >= 0 ? "#4CAF50" : "#f6465d";
-                pnlPctEl.style.background = metrics.unrealizedPct >= 0 ? "rgba(76, 175, 80, 0.12)" : "rgba(246, 70, 93, 0.12)";
+                const sign = spotUnrealPct >= 0 ? "+" : "";
+                pnlPctEl.innerText = sign + spotUnrealPct.toFixed(2) + "%";
+                pnlPctEl.style.color = spotUnrealPct >= 0 ? "#4CAF50" : "#f6465d";
+                pnlPctEl.style.background = spotUnrealPct >= 0 ? "rgba(76, 175, 80, 0.12)" : "rgba(246, 70, 93, 0.12)";
             }
 
             const realBotEl = document.getElementById("realized-pnl-val");
             if (realBotEl) {
-                const sign = metrics.realizedProfit >= 0 ? "+" : "-";
-                realBotEl.innerText = sign + "$" + Math.abs(metrics.realizedProfit).toFixed(2);
-                realBotEl.style.color = metrics.realizedProfit >= 0 ? "#4CAF50" : "#f6465d";
+                const sign = spotReal >= 0 ? "+" : "-";
+                realBotEl.innerText = sign + "$" + Math.abs(spotReal).toFixed(2);
+                realBotEl.style.color = spotReal >= 0 ? "#4CAF50" : "#f6465d";
             }
 
             const bot24El = document.getElementById("bot-24h-profit");
             if (bot24El) {
-                const sign = metrics.profit24h >= 0 ? "+" : "-";
-                bot24El.innerText = sign + "$" + Math.abs(metrics.profit24h).toFixed(2);
-                bot24El.style.color = metrics.profit24h >= 0 ? "#00e676" : "#f6465d";
+                const sign = spot24 >= 0 ? "+" : "-";
+                bot24El.innerText = sign + "$" + Math.abs(spot24).toFixed(2);
+                bot24El.style.color = spot24 >= 0 ? "#00e676" : "#f6465d";
             }
 
             const countPill = document.getElementById("trade-count-pill");
             const winTag = document.getElementById("win-tag");
             const lossTag = document.getElementById("loss-tag");
-            if (countPill) countPill.innerText = (metrics.wins + metrics.losses).toString();
-            if (winTag) winTag.innerText = metrics.wins.toString();
-            if (lossTag) lossTag.innerText = metrics.losses.toString();
+            if (countPill) countPill.innerText = (spotWinsCount + spotLossCount).toString();
+            if (winTag) winTag.innerText = spotWinsCount.toString();
+            if (lossTag) lossTag.innerText = spotLossCount.toString();
 
             const posterIdEl = document.getElementById("posterUserId");
             if (posterIdEl) posterIdEl.innerText = "ID " + (targetId || 1);
@@ -10323,13 +10376,11 @@ window.addEventListener('DOMContentLoaded', () => {
                 return s ? 'spot filled' : ('spot ' + (extraCls || ''));
             };
 
-            if (['V1', 'N6', 'A7', 'C8'].includes(prog)) {
-                let spotCount = prog === 'V1' ? 3 : prog === 'N6' ? 4 : prog === 'A7' ? 5 : 6;
-                let spotSize = spotCount > 4 ? 26 : spotCount === 4 ? 32 : 42;
+            if (prog === 'V1') {
                 let html = '';
-                for (let i = 0; i < spotCount; i++) {
-                    let extraClass = (prog === 'V1' && i === 2) ? 'velocity-spot' : '';
-                    html += `<div class="${spotClass(i, extraClass)}" style="width:${spotSize}px; height:${spotSize}px; ${spotBg(i, extraClass)}"></div>`;
+                for (let i = 0; i < 3; i++) {
+                    let extraClass = i === 2 ? 'velocity-spot' : '';
+                    html += `<div class="${spotClass(i, extraClass)}" style="width:42px; height:42px; ${spotBg(i, extraClass)}"></div>`;
                 }
                 return `<div class="level-spots" style="display:flex; justify-content:center; gap:8px; margin:40px 0; flex-wrap:wrap;">${html}</div>`;
             }
@@ -10345,66 +10396,111 @@ window.addEventListener('DOMContentLoaded', () => {
                 </div>`;
             }
             if (prog === 'T3') {
-                return `<div class="level-spots" style="display:flex; flex-direction:column; align-items:center; gap:8px; margin:15px 0;">
-                    <div style="display:flex; justify-content:center; gap:25px;">
-                        <div class="${spotClass(0)}" style="width:42px; height:42px; ${spotBg(0)}"></div>
-                        <div class="${spotClass(1)}" style="width:42px; height:42px; ${spotBg(1)}"></div>
+                return `<div class="level-spots" style="display:flex; flex-direction:column; align-items:center; gap:10px; margin:15px 0;">
+                    <div style="display:flex; justify-content:center; gap:24px;">
+                        <div class="${spotClass(0)}" style="width:40px; height:40px; ${spotBg(0)}"></div>
+                        <div class="${spotClass(1)}" style="width:40px; height:40px; ${spotBg(1)}"></div>
                     </div>
                     <div style="display:flex; justify-content:center; gap:12px;">
                         ${[2, 3, 4, 5].map(idx => `<div class="${spotClass(idx)}" style="width:22px; height:22px; ${spotBg(idx)}"></div>`).join('')}
                     </div>
-                    <div style="display:flex; justify-content:center; gap:4px;">
-                        ${[6, 7, 8, 9, 10, 11, 12, 13].map(idx => `<div class="${spotClass(idx)}" style="width:12px; height:12px; ${spotBg(idx)}"></div>`).join('')}
+                    <div style="display:flex; justify-content:center; gap:5px;">
+                        ${[6, 7, 8, 9, 10, 11, 12, 13].map(idx => `<div class="${spotClass(idx)}" style="width:15px; height:15px; ${spotBg(idx)}"></div>`).join('')}
                     </div>
                 </div>`;
             }
             if (prog === 'S4') {
-                return `<div class="level-spots" style="display:flex; flex-direction:column; align-items:center; gap:6px; margin:10px 0;">
-                    <div style="display:flex; justify-content:center; gap:30px;">
-                        <div class="${spotClass(0)}" style="width:40px; height:40px; ${spotBg(0)}"></div>
-                        <div class="${spotClass(1)}" style="width:40px; height:40px; ${spotBg(1)}"></div>
+                return `<div class="level-spots" style="display:flex; flex-direction:column; align-items:center; gap:8px; margin:12px 0;">
+                    <div style="display:flex; justify-content:center; gap:28px;">
+                        <div class="${spotClass(0)}" style="width:38px; height:38px; ${spotBg(0)}"></div>
+                        <div class="${spotClass(1)}" style="width:38px; height:38px; ${spotBg(1)}"></div>
                     </div>
-                    <div style="display:flex; justify-content:center; gap:15px;">
+                    <div style="display:flex; justify-content:center; gap:14px;">
                         ${[2, 3, 4, 5].map(idx => `<div class="${spotClass(idx)}" style="width:22px; height:22px; ${spotBg(idx)}"></div>`).join('')}
                     </div>
                     <div style="display:flex; justify-content:center; gap:6px;">
                         ${[6, 7, 8, 9, 10, 11, 12, 13].map(idx => `<div class="${spotClass(idx)}" style="width:12px; height:12px; ${spotBg(idx)}"></div>`).join('')}
                     </div>
-                    <div style="display:flex; justify-content:center; gap:2px;">
-                        ${Array.from({ length: 16 }, (_, pos) => `<div class="${spotClass(14 + pos)}" style="width:6px; height:6px; ${spotBg(14 + pos)}"></div>`).join('')}
+                    <div style="display:flex; justify-content:center; gap:3px;">
+                        ${Array.from({ length: 16 }, (_, pos) => `<div class="${spotClass(14 + pos)}" style="width:8px; height:8px; ${spotBg(14 + pos)}"></div>`).join('')}
                     </div>
                 </div>`;
             }
             if (prog === 'G5') {
-                return `<div class="level-spots" style="display:flex; flex-direction:column; align-items:center; gap:10px; margin:14px 0;">
-                    <div style="display:flex; justify-content:center; gap:24px;">
-                        ${[0, 1, 2].map(idx => `<div class="${spotClass(idx)}" style="width:34px; height:34px; ${spotBg(idx)}"></div>`).join('')}
+                return `<div class="level-spots" style="display:flex; flex-direction:column; align-items:center; gap:12px; margin:14px 0;">
+                    <div style="display:flex; justify-content:center; gap:20px;">
+                        ${[0, 1, 2].map(idx => `<div class="${spotClass(idx)}" style="width:32px; height:32px; ${spotBg(idx)}"></div>`).join('')}
                     </div>
-                    <div style="display:flex; justify-content:center; gap:6px;">
-                        ${Array.from({ length: 9 }, (_, pos) => `<div class="${spotClass(3 + pos)}" style="width:14px; height:14px; ${spotBg(3 + pos)}"></div>`).join('')}
+                    <div style="display:flex; justify-content:center; gap:5px;">
+                        ${Array.from({ length: 9 }, (_, pos) => `<div class="${spotClass(3 + pos)}" style="width:13px; height:13px; ${spotBg(3 + pos)}"></div>`).join('')}
                     </div>
                     <div style="display:flex; justify-content:center; gap:2px;">
-                        ${Array.from({ length: 27 }, (_, pos) => `<div class="${spotClass(12 + pos)}" style="width:4.5px; height:4.5px; ${spotBg(12 + pos)}"></div>`).join('')}
+                        ${Array.from({ length: 27 }, (_, pos) => `<div class="${spotClass(12 + pos)}" style="width:5.5px; height:5.5px; ${spotBg(12 + pos)}"></div>`).join('')}
+                    </div>
+                </div>`;
+            }
+            if (prog === 'N6') {
+                return `<div class="level-spots" style="display:flex; flex-direction:column; align-items:center; gap:14px; margin:20px 0;">
+                    <div style="display:flex; justify-content:center; gap:20px;">
+                        <div class="${spotClass(0)}" style="width:36px; height:36px; ${spotBg(0)}"></div>
+                        <div class="${spotClass(1)}" style="width:36px; height:36px; ${spotBg(1)}"></div>
+                    </div>
+                    <div style="display:flex; justify-content:center; gap:56px;">
+                        <div class="${spotClass(2)}" style="width:36px; height:36px; ${spotBg(2)}"></div>
+                        <div class="${spotClass(3)}" style="width:36px; height:36px; ${spotBg(3)}"></div>
+                    </div>
+                </div>`;
+            }
+            if (prog === 'A7') {
+                return `<div class="level-spots" style="display:flex; flex-direction:column; align-items:center; gap:14px; margin:20px 0;">
+                    <div style="display:flex; justify-content:center; gap:26px;">
+                        <div class="${spotClass(0)}" style="width:38px; height:38px; ${spotBg(0)}"></div>
+                        <div class="${spotClass(1)}" style="width:38px; height:38px; ${spotBg(1)}"></div>
+                    </div>
+                    <div style="display:flex; justify-content:center; gap:16px;">
+                        ${[2, 3, 4].map(idx => `<div class="${spotClass(idx)}" style="width:38px; height:38px; ${spotBg(idx)}"></div>`).join('')}
+                    </div>
+                </div>`;
+            }
+            if (prog === 'C8') {
+                return `<div class="level-spots" style="display:flex; flex-direction:column; align-items:center; gap:10px; margin:14px 0;">
+                    <div style="display:flex; justify-content:center;">
+                        <div class="${spotClass(0)}" style="width:32px; height:32px; ${spotBg(0)}"></div>
+                    </div>
+                    <div style="display:flex; justify-content:center; gap:16px;">
+                        ${[1, 2].map(idx => `<div class="${spotClass(idx)}" style="width:32px; height:32px; ${spotBg(idx)}"></div>`).join('')}
+                    </div>
+                    <div style="display:flex; justify-content:center; gap:12px;">
+                        ${[3, 4, 5].map(idx => `<div class="${spotClass(idx)}" style="width:32px; height:32px; ${spotBg(idx)}"></div>`).join('')}
                     </div>
                 </div>`;
             }
             if (prog === 'S9') {
-                return `<div class="level-spots" style="display:flex; flex-direction:column; align-items:center; gap:12px; margin:20px 0;">
-                    <div style="display:flex; justify-content:center; gap:10px;">
-                        ${[0, 1, 2, 3].map(idx => `<div class="${spotClass(idx)}" style="width:28px; height:28px; ${spotBg(idx)}"></div>`).join('')}
+                return `<div class="level-spots" style="display:flex; flex-direction:column; align-items:center; gap:10px; margin:14px 0;">
+                    <div style="display:flex; justify-content:center; gap:16px;">
+                        ${[0, 1].map(idx => `<div class="${spotClass(idx)}" style="width:30px; height:30px; ${spotBg(idx)}"></div>`).join('')}
                     </div>
-                    <div style="display:flex; justify-content:center; gap:10px;">
-                        ${[4, 5, 6, 7].map(idx => `<div class="${spotClass(idx)}" style="width:28px; height:28px; ${spotBg(idx)}"></div>`).join('')}
+                    <div style="display:flex; justify-content:center; gap:12px;">
+                        ${[2, 3, 4].map(idx => `<div class="${spotClass(idx)}" style="width:30px; height:30px; ${spotBg(idx)}"></div>`).join('')}
+                    </div>
+                    <div style="display:flex; justify-content:center; gap:12px;">
+                        ${[5, 6, 7].map(idx => `<div class="${spotClass(idx)}" style="width:30px; height:30px; ${spotBg(idx)}"></div>`).join('')}
                     </div>
                 </div>`;
             }
             if (prog === 'K10') {
-                return `<div class="level-spots" style="display:flex; flex-direction:column; align-items:center; gap:12px; margin:20px 0;">
-                    <div style="display:flex; justify-content:center; gap:8px;">
-                        ${[0, 1, 2, 3, 4].map(idx => `<div class="${spotClass(idx)}" style="width:24px; height:24px; ${spotBg(idx)}"></div>`).join('')}
+                return `<div class="level-spots" style="display:flex; flex-direction:column; align-items:center; gap:8px; margin:10px 0;">
+                    <div style="display:flex; justify-content:center;">
+                        <div class="${spotClass(0)}" style="width:24px; height:24px; ${spotBg(0)}"></div>
                     </div>
-                    <div style="display:flex; justify-content:center; gap:8px;">
-                        ${[5, 6, 7, 8, 9].map(idx => `<div class="${spotClass(idx)}" style="width:24px; height:24px; ${spotBg(idx)}"></div>`).join('')}
+                    <div style="display:flex; justify-content:center; gap:14px;">
+                        ${[1, 2].map(idx => `<div class="${spotClass(idx)}" style="width:24px; height:24px; ${spotBg(idx)}"></div>`).join('')}
+                    </div>
+                    <div style="display:flex; justify-content:center; gap:12px;">
+                        ${[3, 4, 5].map(idx => `<div class="${spotClass(idx)}" style="width:24px; height:24px; ${spotBg(idx)}"></div>`).join('')}
+                    </div>
+                    <div style="display:flex; justify-content:center; gap:10px;">
+                        ${[6, 7, 8, 9].map(idx => `<div class="${spotClass(idx)}" style="width:24px; height:24px; ${spotBg(idx)}"></div>`).join('')}
                     </div>
                 </div>`;
             }
@@ -10521,8 +10617,8 @@ window.addEventListener('DOMContentLoaded', () => {
             const investedVal = userMetrics.investedAmount;
             const usdtBal = userMetrics.usdtBalance;
             const solBal = userMetrics.solBalance;
-            pnl = userMetrics.unrealizedPnl;
-            pnlPct = userMetrics.unrealizedPct;
+            pnl = userMetrics.spotUnrealizedPnl !== undefined ? userMetrics.spotUnrealizedPnl : userMetrics.unrealizedPnl;
+            pnlPct = userMetrics.spotUnrealizedPct !== undefined ? userMetrics.spotUnrealizedPct : userMetrics.unrealizedPct;
             const scActive = Boolean(userMetrics.isShowcaseActive && data.ownerShowcase);
             const avgPrice = scActive ? parseFloat(data.ownerShowcase.avgEntryPrice || 0) : parseFloat(data.avgEntryPrice || 0);
             const tHigh = scActive ? parseFloat(data.ownerShowcase.tsHigh || 0) : parseFloat(data.tsHigh || data.trailingHigh || data.lastPeakPrice || 0);
@@ -10830,23 +10926,21 @@ window.addEventListener('DOMContentLoaded', () => {
 
             const botBadge = document.getElementById("bot-positions-badge");
             const botCont = document.getElementById("bot-positions-container");
-            const activePosList = (userMetrics.isShowcaseActive && data.ownerShowcase && Array.isArray(data.ownerShowcase.activePositions))
-                ? data.ownerShowcase.activePositions
-                : ((data.activePositions && Array.isArray(data.activePositions)) ? data.activePositions : []);
+            const activePosList = (data.activePositions && Array.isArray(data.activePositions)) ? data.activePositions : [];
 
             if (activePosList.length > 0) {
                 if (botBadge) botBadge.innerText = activePosList.length + " OPEN";
-                const regularList = activePosList.filter(p => !p.isMacro);
+                const openCount = activePosList.length;
                 const maxUserSlots = 24;
                 let dotsHTML = '';
                 for (let i = 1; i <= maxUserSlots; i++) {
-                    dotsHTML += i <= regularList.length 
+                    dotsHTML += i <= openCount 
                         ? '<span style="color:#00d2ff; font-size:11px; text-align:center;">●</span>' 
                         : '<span style="color:#444; font-size:11px; text-align:center;">○</span>';
                 }
                 let nextTargetHTML = '';
-                if (regularList.length > 0) {
-                    const lastPos = regularList[regularList.length - 1];
+                const lastPos = activePosList[activePosList.length - 1];
+                if (lastPos) {
                     const nextDip = (parseFloat(lastPos.entryPrice || 0) * 0.982).toFixed(2);
                     nextTargetHTML = '<div style="display:flex; justify-content:space-between; align-items:center; margin-top:8px; padding-top:8px; border-top:1px dashed rgba(255,255,255,0.1); font-size:11px;">' +
                         '<span style="color:#757575;">Next Safety Entry (-1.8%):</span>' +
@@ -10856,7 +10950,7 @@ window.addEventListener('DOMContentLoaded', () => {
                 let counterHeader = '<div style="background:rgba(255,255,255,0.03); border:1px solid rgba(255,255,255,0.05); border-radius:10px; padding:10px; margin-bottom:12px;">' +
                     '<div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:6px;">' +
                     '<span style="font-size:12px; font-weight:bold; color:#fff;">DCA SAFETY ORDERS:</span>' +
-                    '<span style="font-size:11px; color:#00d2ff; font-weight:bold; font-family:monospace;">(' + regularList.length + '/' + maxUserSlots + ')</span>' +
+                    '<span style="font-size:11px; color:#00d2ff; font-weight:bold; font-family:monospace;">(' + openCount + '/' + maxUserSlots + ')</span>' +
                     '</div>' +
                     '<div style="display:grid; grid-template-columns:repeat(12, 14px); gap:3px; justify-content:center; margin:6px 0;">' + dotsHTML + '</div>' +
                     nextTargetHTML + '</div>';
@@ -11856,8 +11950,7 @@ function updateSingularityModalData(data) {
 
     const realProfit = parseFloat(data.singularityRealizedPnl || 0);
     const avgEntry = totalSol > 0 ? (totalInvested / totalSol) : 0;
-    const poolUsdtAvail = Math.max(0, parseFloat(data.usdtBalance || 0));
-
+    const poolUsdtAvail = Math.max(0, totalInitialPool - totalInvested);
     const usersEl = document.getElementById("sng-modal-total-users");
     if (usersEl) usersEl.innerText = data.singularityActive ? "ACTIVE ($1K+)" : "LOCKED (REQ $1K)";
 
@@ -11944,12 +12037,15 @@ function updateSingularityModalData(data) {
         }
     }
 
-    const sngTrades = (Array.isArray(data.singularityTradesHistory) && data.singularityTradesHistory.length > 0) ? data.singularityTradesHistory : (Array.isArray(data.tradesHistory) ? data.tradesHistory.filter(t => String(t.orderId || t.order_id || "").toUpperCase().startsWith("SNG_") || String(t.execType || "").toUpperCase().includes("SINGULARITY")) : []);
+    const sngTrades = (Array.isArray(data.singularityTradesHistory) && data.singularityTradesHistory.length > 0) ? data.singularityTradesHistory : (Array.isArray(data.tradesHistory) ? data.tradesHistory.filter(t => String(t.orderId || t.order_id || "").toUpperCase().startsWith("SNG_") || String(t.execType || t.exec_type || "").toUpperCase().includes("SINGULARITY")) : []);
     const seenSng = new Set();
     const cleanSngTrades = sngTrades.filter(t => {
         const oId = String(t.orderId || t.order_id || "").toUpperCase();
-        if (oId && !seenSng.has(oId) && parseFloat(t.solAmount || t.sol_amount || 0) > 0) {
-            seenSng.add(oId);
+        const ex = String(t.execType || t.exec_type || "").toUpperCase();
+        const isValidBot = oId.startsWith("SNG_") || ex.includes("SINGULARITY") || (Array.isArray(data.singularityTradesHistory) && data.singularityTradesHistory.length > 0);
+        const uKey = oId || `${t.timestamp || t.created_at || ""}_${t.side || ""}_${t.price || ""}_${t.solAmount || t.sol_amount || ""}`;
+        if (isValidBot && !seenSng.has(uKey) && parseFloat(t.solAmount || t.sol_amount || 0) > 0) {
+            seenSng.add(uKey);
             return true;
         }
         return false;
@@ -11973,7 +12069,9 @@ function updateKiller1ModalData(data) {
     const realProfit = parseFloat(data.microRealizedPnl || 0);
     const userRealizedProfit = realProfit / totalUsers;
     const avgEntry = totalSol > 0 ? (totalInvested / totalSol) : 0;
-    const botUsdtAvail = Math.max(0, parseFloat(data.usdtBalance || 0));
+    const botUsdtAvail = Math.max(0, parseFloat(data.microIdleFundAvail !== undefined ? data.microIdleFundAvail : (totalInitialPool - totalInvested)));
+    const uShareEl = document.getElementById("k1-modal-user-share");
+    if (uShareEl) uShareEl.innerText = "$" + totalInvested.toFixed(2) + " (" + (totalInitialPool > 0 ? ((totalInvested / totalInitialPool) * 100).toFixed(1) : "0.0") + "%)";
 
     const usersEl = document.getElementById("k1-modal-total-users");
     if (usersEl) usersEl.innerText = totalUsers.toString();
@@ -12047,10 +12145,11 @@ function updateKiller1ModalData(data) {
     k1Trades = sourceK1.filter(t => {
         const id = String(t.orderId || t.order_id || "").toUpperCase();
         const ex = String(t.execType || t.exec_type || "").toUpperCase();
-        const isSng = id.startsWith("SNG_") || ex.includes("SINGULARITY");
-        const isK1 = !isSng && (id.startsWith("M_") || ex.includes("MICRO") || ex.includes("APEX"));
-        if (isK1 && !seenK1.has(id) && parseFloat(t.solAmount || t.sol_amount || 0) > 0) {
-            seenK1.add(id);
+        const isOther = id.startsWith("SNG_") || id.startsWith("HYPER_") || id.startsWith("K2_") || id.startsWith("K3_") || ex.includes("SINGULARITY") || ex.includes("HYPER") || ex.includes("KILLER2") || ex.includes("KILLER3") || ex.includes("QUANTUM") || ex.includes("ABYSS");
+        const isK1 = !isOther && (id.startsWith("M_") || ex.includes("MICRO") || ex.includes("APEX") || (Array.isArray(data.microTradesHistory) && data.microTradesHistory.length > 0));
+        const uKey = id || `${t.timestamp || t.created_at || ""}_${t.side || ""}_${t.price || ""}_${t.solAmount || t.sol_amount || ""}`;
+        if (isK1 && !seenK1.has(uKey) && parseFloat(t.solAmount || t.sol_amount || 0) > 0) {
+            seenK1.add(uKey);
             return true;
         }
         return false;
@@ -12074,7 +12173,9 @@ function updateKiller2ModalData(data) {
     const realProfit = parseFloat(data.killer2RealizedPnl || 0);
     const userRealizedProfit = realProfit / totalUsers;
     const avgEntry = totalSol > 0 ? (totalInvested / totalSol) : 0;
-    const botUsdtAvail = Math.max(0, parseFloat(data.usdtBalance || 0));
+    const botUsdtAvail = Math.max(0, parseFloat(data.killer2IdleFundAvail !== undefined ? data.killer2IdleFundAvail : (totalInitialPool - totalInvested)));
+    const uShareEl = document.getElementById("k2-modal-user-share");
+    if (uShareEl) uShareEl.innerText = "$" + totalInvested.toFixed(2) + " (" + (totalInitialPool > 0 ? ((totalInvested / totalInitialPool) * 100).toFixed(1) : "0.0") + "%)";
 
     const usersEl = document.getElementById("k2-modal-total-users");
     if (usersEl) usersEl.innerText = totalUsers.toString();
@@ -12148,10 +12249,11 @@ function updateKiller2ModalData(data) {
     k2Trades = sourceK2.filter(t => {
         const id = String(t.orderId || t.order_id || "").toUpperCase();
         const ex = String(t.execType || t.exec_type || "").toUpperCase();
-        const isSng = id.startsWith("SNG_") || ex.includes("SINGULARITY");
-        const isK2 = !isSng && (id.startsWith("K2_") || ex.includes("KILLER2") || ex.includes("QUANTUM"));
-        if (isK2 && !seenK2.has(id) && parseFloat(t.solAmount || t.sol_amount || 0) > 0) {
-            seenK2.add(id);
+        const isOther = id.startsWith("SNG_") || id.startsWith("HYPER_") || id.startsWith("M_") || id.startsWith("K3_") || ex.includes("SINGULARITY") || ex.includes("HYPER") || ex.includes("MICRO") || ex.includes("KILLER3") || ex.includes("APEX") || ex.includes("ABYSS");
+        const isK2 = !isOther && (id.startsWith("K2_") || ex.includes("KILLER2") || ex.includes("QUANTUM") || (Array.isArray(data.killer2TradesHistory) && data.killer2TradesHistory.length > 0));
+        const uKey = id || `${t.timestamp || t.created_at || ""}_${t.side || ""}_${t.price || ""}_${t.solAmount || t.sol_amount || ""}`;
+        if (isK2 && !seenK2.has(uKey) && parseFloat(t.solAmount || t.sol_amount || 0) > 0) {
+            seenK2.add(uKey);
             return true;
         }
         return false;
@@ -12175,7 +12277,9 @@ function updateKiller3ModalData(data) {
     const realProfit = parseFloat(data.killer3RealizedPnl || 0);
     const userRealizedProfit = realProfit / totalUsers;
     const avgEntry = totalSol > 0 ? (totalInvested / totalSol) : 0;
-    const botUsdtAvail = Math.max(0, parseFloat(data.usdtBalance || 0));
+    const botUsdtAvail = Math.max(0, parseFloat(data.killer3IdleFundAvail !== undefined ? data.killer3IdleFundAvail : (totalInitialPool - totalInvested)));
+    const uShareEl = document.getElementById("k3-modal-user-share");
+    if (uShareEl) uShareEl.innerText = "$" + totalInvested.toFixed(2) + " (" + (totalInitialPool > 0 ? ((totalInvested / totalInitialPool) * 100).toFixed(1) : "0.0") + "%)";
 
     const usersEl = document.getElementById("k3-modal-total-users");
     if (usersEl) usersEl.innerText = totalUsers.toString();
@@ -12249,10 +12353,11 @@ function updateKiller3ModalData(data) {
     k3Trades = sourceK3.filter(t => {
         const id = String(t.orderId || t.order_id || "").toUpperCase();
         const ex = String(t.execType || t.exec_type || "").toUpperCase();
-        const isSng = id.startsWith("SNG_") || ex.includes("SINGULARITY");
-        const isK3 = !isSng && (id.startsWith("K3_") || ex.includes("KILLER3") || ex.includes("ABYSS"));
-        if (isK3 && !seenK3.has(id) && parseFloat(t.solAmount || t.sol_amount || 0) > 0) {
-            seenK3.add(id);
+        const isOther = id.startsWith("SNG_") || id.startsWith("HYPER_") || id.startsWith("M_") || id.startsWith("K2_") || ex.includes("SINGULARITY") || ex.includes("HYPER") || ex.includes("MICRO") || ex.includes("KILLER2") || ex.includes("APEX") || ex.includes("QUANTUM");
+        const isK3 = !isOther && (id.startsWith("K3_") || ex.includes("KILLER3") || ex.includes("ABYSS") || (Array.isArray(data.killer3TradesHistory) && data.killer3TradesHistory.length > 0));
+        const uKey = id || `${t.timestamp || t.created_at || ""}_${t.side || ""}_${t.price || ""}_${t.solAmount || t.sol_amount || ""}`;
+        if (isK3 && !seenK3.has(uKey) && parseFloat(t.solAmount || t.sol_amount || 0) > 0) {
+            seenK3.add(uKey);
             return true;
         }
         return false;
@@ -12344,7 +12449,7 @@ function updateHyperTitanModalData(data) {
     });
 
     const totalRealizedPoolProfit = parseFloat(data.hyperRealizedPnl || 0);
-    const botUsdtAvail = Math.max(0, parseFloat(data.usdtBalance || 0));
+    const botUsdtAvail = Math.max(0, totalInitialPool - totalInvested);
     const avgEntry = totalSol > 0 ? (totalInvested / totalSol) : 0;
 
     const usersEl = document.getElementById("hyper-modal-total-users");
@@ -12421,10 +12526,11 @@ function updateHyperTitanModalData(data) {
         const ord = String(t.orderId || t.order_id || "").toUpperCase();
         const lbl = String(t.label || "").toUpperCase();
         const exec = String(t.execType || t.exec_type || "").toUpperCase();
-        const isSng = ord.startsWith("SNG_") || exec.includes("SINGULARITY");
-        const isHyp = !isSng && (ord.startsWith("HYPER_") || lbl.includes("HYPER") || exec.includes("HYPER"));
-        if (isHyp && !seenHyper.has(ord) && parseFloat(t.solAmount || t.sol_amount || 0) > 0) {
-            seenHyper.add(ord);
+        const isOther = ord.startsWith("SNG_") || ord.startsWith("M_") || ord.startsWith("K2_") || ord.startsWith("K3_") || exec.includes("SINGULARITY") || exec.includes("MICRO") || exec.includes("KILLER");
+        const isHyp = !isOther && (ord.startsWith("HYPER_") || lbl.includes("HYPER") || exec.includes("HYPER") || (Array.isArray(data.hyperTradesHistory) && data.hyperTradesHistory.length > 0));
+        const uKey = ord || `${t.timestamp || t.created_at || ""}_${t.side || ""}_${t.price || ""}_${t.solAmount || t.sol_amount || ""}`;
+        if (isHyp && !seenHyper.has(uKey) && parseFloat(t.solAmount || t.sol_amount || 0) > 0) {
+            seenHyper.add(uKey);
             return true;
         }
         return false;
@@ -15012,7 +15118,7 @@ let showFullCombinedScalpHistory = false;
     function renderAuditHistoryList(trades) {
         const historyContainer = document.getElementById("trade-history-list");
         if (!historyContainer) return;
-        const validTrades = Array.isArray(trades) ? trades.filter(t => parseFloat(t.solAmount || 0) > 0) : [];
+        const validTrades = Array.isArray(trades) ? trades.filter(t => parseFloat(t.solAmount || t.sol_amount || 0) > 0) : [];
         if (validTrades.length === 0) {
             historyContainer.innerHTML = '<div class="empty-msg">NO BOT TRADES RECORDED</div>';
             return;
@@ -15020,13 +15126,14 @@ let showFullCombinedScalpHistory = false;
         const displayList = showFullAuditHistory ? validTrades : validTrades.slice(0, 10);
         historyContainer.innerHTML = displayList.map((t) => {
             const sideStr = String(t.side || "").toUpperCase();
-            const execStr = String(t.execType || "").toUpperCase();
+            const execStr = String(t.execType || t.exec_type || "").toUpperCase();
             const isSell = sideStr.includes("SELL") || execStr.includes("SELL") || execStr.includes("EXIT");
             const pVal = parseFloat(t.profit || t.realizedPnl || 0);
             const isWin = pVal >= 0;
             let dateStr = "";
-            if (t.timestamp) {
-                const parsedDate = new Date(t.timestamp);
+            const rawTs = t.timestamp || t.created_at;
+            if (rawTs) {
+                const parsedDate = new Date(rawTs);
                 if (!isNaN(parsedDate.getTime())) {
                     dateStr = parsedDate.toLocaleString("en-PK", {
                         timeZone: "Asia/Karachi",
@@ -15039,14 +15146,15 @@ let showFullCombinedScalpHistory = false;
                         hour12: true
                     });
                 } else {
-                    dateStr = String(t.timestamp);
+                    dateStr = String(rawTs);
                 }
             }
             const badgeBg = isSell ? (isWin ? "rgba(76,175,80,0.2)" : "rgba(246,70,93,0.2)") : "rgba(0,229,255,0.2)";
             const badgeColor = isSell ? (isWin ? "#4CAF50" : "#f6465d") : "#00e5ff";
             const actionLabel = isSell ? "EXIT" : "ENTRY";
             const pnlDisplay = isSell ? '<span style="color:' + badgeColor + '; font-weight:bold;">' + (isWin ? "+" : "") + pVal.toFixed(4) + ' USDT</span>' : '<span style="color:#757575;">EXECUTED</span>';
-            const orderIdDisplay = t.orderId ? t.orderId : "DCA";
+            const orderIdDisplay = t.orderId || t.order_id || "DCA";
+            const solDisplay = parseFloat(t.solAmount || t.sol_amount || 0).toFixed(4);
 
             return '<div style="background:#151518; border:1px solid #222; border-radius:8px; padding:10px 12px; display:flex; flex-direction:column; gap:4px; font-family:monospace;">' +
                    '<div style="display:flex; justify-content:space-between; align-items:center;">' +
@@ -15054,7 +15162,7 @@ let showFullCombinedScalpHistory = false;
                    '<span style="color:#757575; font-size:10px;">' + dateStr + '</span>' +
                    '</div>' +
                    '<div style="display:flex; justify-content:space-between; align-items:center; font-size:12px; margin-top:2px;">' +
-                   '<span style="color:#fff;">$' + parseFloat(t.price || 0).toFixed(2) + ' <span style="color:#757575;">(' + parseFloat(t.solAmount || 0).toFixed(4) + ' SOL)</span></span>' +
+                   '<span style="color:#fff;">$' + parseFloat(t.price || 0).toFixed(2) + ' <span style="color:#757575;">(' + solDisplay + ' SOL)</span></span>' +
                    pnlDisplay +
                    '</div>' +
                    '<div style="display:flex; justify-content:space-between; align-items:center; margin-top:4px; padding-top:4px; border-top:1px solid rgba(255,255,255,0.03); font-size:10px;">' +
@@ -17162,15 +17270,15 @@ function renderTeamMembersModalList(list, emptyMsg) {
         const isNew24h = jTime > 0 && (nowMs - jTime) <= oneDayMs;
         const memberSlots = slotsAll.filter(s => s.wallet_address === wL);
         const slotsBadges = memberSlots.length > 0
-            ? memberSlots.map(s => '<span style="background:rgba(0,229,255,0.12); color:#00e5ff; padding:2px 7px; border-radius:6px; font-size:10px; font-weight:800; font-family:monospace;">' + s.program + ' S' + s.level + ' ($' + s.cost + ')</span>').join(" ")
-            : '<span style="background:rgba(0,229,255,0.12); color:#00e5ff; padding:2px 7px; border-radius:6px; font-size:10px; font-weight:800; font-family:monospace;">V1 S1 ($10)</span>';
+            ? memberSlots.map(s => '<span style="background:rgba(0,229,255,0.12); color:#00e5ff; padding:5px 4px; border-radius:7px; font-size:10.5px; font-weight:800; font-family:monospace; text-align:center; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; display:block;">' + s.program + ' S' + s.level + ' ($' + s.cost + ')</span>').join("")
+            : '<span style="background:rgba(0,229,255,0.12); color:#00e5ff; padding:5px 4px; border-radius:7px; font-size:10.5px; font-weight:800; font-family:monospace; text-align:center; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; display:block;">V1 S1 ($10)</span>';
         const shortW = wL.substring(0, 6) + "..." + wL.substring(wL.length - 4);
         const newBadge = isNew24h ? '<span style="background:rgba(76,175,80,0.2); color:#4CAF50; padding:2px 6px; border-radius:6px; font-size:9px; font-weight:900;">NEW</span>' : "";
 
         return '<div onclick="closeTeamDetailsModal(); previewAccountById(' + m.user_id + ');" style="background:linear-gradient(145deg, #131926 0%, #0d121c 100%); border:1px solid rgba(255,255,255,0.07); border-radius:16px; padding:12px 14px; display:flex; flex-direction:column; gap:10px; cursor:pointer; box-shadow:0 4px 14px rgba(0,0,0,0.35);">' +
             '<div style="display:flex; justify-content:space-between; align-items:center; gap:10px;">' +
                 '<div style="display:flex; align-items:center; gap:11px; min-width:0; flex:1;">' +
-                    '<div style="width:44px; height:44px; border-radius:50%; background-image:url(\'' + avatar + '\'); background-size:cover; background-position:center; border:2px solid ' + (isDirect ? '#00e676' : '#FFD700') + '; flex-shrink:0;"></div>' +
+                    '<div style="width:44px; height:44px; border-radius:50%; background-image:url(\'' + avatar + '\'); background-size:cover; background-position:center; flex-shrink:0;"></div>' +
                     '<div style="min-width:0; flex:1;">' +
                         '<div style="display:flex; align-items:center; gap:6px; flex-wrap:wrap;">' +
                             '<span style="color:#ffffff; font-size:14px; font-weight:800; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; max-width:120px;">' + nick + '</span>' +
@@ -17185,7 +17293,7 @@ function renderTeamMembersModalList(list, emptyMsg) {
                     '<i class="material-icons" style="font-size:18px; color:#718096;">chevron_right</i>' +
                 '</div>' +
             '</div>' +
-            '<div style="display:flex; flex-wrap:wrap; gap:6px; padding-top:8px; border-top:1px solid rgba(255,255,255,0.05);">' + slotsBadges + '</div>' +
+            '<div style="display:grid; grid-template-columns:repeat(3, minmax(0, 1fr)); gap:6px; padding-top:8px; border-top:1px solid rgba(255,255,255,0.05);">' + slotsBadges + '</div>' +
         '</div>';
     }).join("");
 }
